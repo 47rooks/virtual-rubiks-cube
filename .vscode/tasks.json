@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "eslint",
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"label": "eslint: lint whole folder",
+			"group": "build"
+		},
+		{
+			"type": "lime",
+			"command": "test",
+			"targetConfiguration": "HashLink / Debug",
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe",
+				"$haxe-error",
+				"$haxe-trace"
+			],
+			"label": "lime: test hl -debug",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
