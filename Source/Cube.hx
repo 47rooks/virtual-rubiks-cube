@@ -55,15 +55,15 @@ class Cube {
 			 side / 2, -side / 2,  side / 2,  0, 0,  color.right.r, color.right.g, color.right.b, color.right.a,
 			 side / 2, -side / 2, -side / 2,  1, 0,  color.right.r, color.right.g, color.right.b, color.right.a,
 
-			 side / 2, -side / 2,  side / 2,  1, 0,  color.top.r, color.top.g, color.top.b, color.top.a,  // Bottom
-			-side / 2, -side / 2,  side / 2,  1, 1,  color.top.r, color.top.g, color.top.b, color.top.a,  // Use top color due to y-axis flip
-			-side / 2, -side / 2, -side / 2,  0, 1,  color.top.r, color.top.g, color.top.b, color.top.a,
-			 side / 2, -side / 2, -side / 2,  0, 0,  color.top.r, color.top.g, color.top.b, color.top.a,
+			 side / 2, -side / 2,  side / 2,  1, 0,  color.bottom.r, color.bottom.g, color.bottom.b, color.bottom.a,  // Bottom
+			-side / 2, -side / 2,  side / 2,  1, 1,  color.bottom.r, color.bottom.g, color.bottom.b, color.bottom.a,
+			-side / 2, -side / 2, -side / 2,  0, 1,  color.bottom.r, color.bottom.g, color.bottom.b, color.bottom.a,
+			 side / 2, -side / 2, -side / 2,  0, 0,  color.bottom.r, color.bottom.g, color.bottom.b, color.bottom.a,
 
-			 side / 2,  side / 2, -side / 2,  1, 0,  color.bottom.r, color.bottom.g, color.bottom.b, color.bottom.a,  // Top
-			 side / 2,  side / 2,  side / 2,  0, 0,  color.bottom.r, color.bottom.g, color.bottom.b, color.bottom.a,  // Use bottom color due to y-axis flip
-			-side / 2,  side / 2,  side / 2,  0, 1,  color.bottom.r, color.bottom.g, color.bottom.b, color.bottom.a,
-			-side / 2,  side / 2, -side / 2,  1, 1,  color.bottom.r, color.bottom.g, color.bottom.b, color.bottom.a
+			 side / 2,  side / 2, -side / 2,  1, 0,  color.top.r, color.top.g, color.top.b, color.top.a,  // Top
+			 side / 2,  side / 2,  side / 2,  0, 0,  color.top.r, color.top.g, color.top.b, color.top.a,
+			-side / 2,  side / 2,  side / 2,  0, 1,  color.top.r, color.top.g, color.top.b, color.top.a,
+			-side / 2,  side / 2, -side / 2,  1, 1,  color.top.r, color.top.g, color.top.b, color.top.a
 		]);
 
         bitmapVertexBuffer = context.createVertexBuffer (24, 9);

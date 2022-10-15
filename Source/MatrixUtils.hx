@@ -1,0 +1,134 @@
+/**
+ * MatrixUtils provides a collection of matrix helper functions.
+ */
+
+package;
+
+import openfl.geom.Vector3D;
+import openfl.Vector;
+import openfl.geom.Matrix3D;
+
+/**
+ * Create a scaling matrix to scale by the specified amount in each direction.
+ * 
+ * @param scaleX scale factor in x dimension
+ * @param scaleY scale factor in y dimension
+ * @param scaleZ scale factor in z dimension
+ * @return Matrix3D
+ */
+function createScaleMatrix(scaleX:Float, scaleY:Float, scaleZ:Float):Matrix3D
+{
+	var scaleMatrix = new Matrix3D();
+	scaleMatrix.appendScale(scaleX, scaleY, scaleZ);
+	return scaleMatrix;
+}
+
+/**
+ * Create a translation matrix to translate to the specified coordinates.
+ * 
+ * @param x translation in x direction
+ * @param y translation in y direction
+ * @param z translation in z direction
+ * @return Matrix3D
+ */
+function createTranslationMatrix(transX:Float, transY:Float, transZ:Float):Matrix3D
+{
+	var translationMatrix = new Matrix3D();
+	translationMatrix.appendTranslation(transX, transY, transZ);
+	return translationMatrix;
+}
+
+/**
+ * Create a lookat matrix for a specified camera position, target and up vector.
+ *
+ * @param cameraPos camera position vector in world coordinates
+ * @param target target the camera is "looking at"
+ * @param up the camera up vector
+ * @return Matrix3D
+ */
+function createLookAtMatrix(cameraPos:Vector3D, target:Vector3D, up:Vector3D):Matrix3D
+{
+	var cameraDir = cameraPos.subtract(target);
+	cameraDir.normalize();
+	var cameraRight = up.crossProduct(cameraDir);
+	cameraRight.normalize();
+	var cameraUp = cameraDir.crossProduct(cameraRight);
+	var cameraMat = new Matrix3D();
+
+	cameraMat.copyRawDataFrom(Vector.ofArray([
+		cameraRight.x, cameraUp.x, cameraDir.x, 0,
+		cameraRight.y, cameraUp.y, cameraDir.y, 0,
+		cameraRight.z, cameraUp.z, cameraDir.z, 0,
+		            0,          0,           0, 1
+	]));
+	var cameraPosMat = new Matrix3D();
+	cameraPosMat.copyRawDataFrom(Vector.ofArray([
+		           1,            0,            0, 0,
+		           0,            1,            0, 0,
+		           0,            0,            1, 0,
+		-cameraPos.x, -cameraPos.y, -cameraPos.z, 1
+	]));
+	cameraPosMat.append(cameraMat); // This is the LookAt matrix
+
+	return cameraPosMat;
+}
+
+/**
+ * Create an orthographic projection matrix for the specified frustum
+ * 
+ * @param left left extent of the near plane of the frustum
+ * @param right right extent of the near plane of the frustum
+ * @param top top extent of the near plane of the frustum
+ * @param bottom bottom extent of the near plane of the frustum
+ * @param near distance to the near plane of the frustum
+ * @param far distance to the far plane of the frustum
+ * @return Matrix3D
+ */
+function computeOrthoProjection(left:Float, right:Float, top:Float, bottom:Float, near:Float, far:Float):Matrix3D
+{
+	var rc = new Matrix3D();
+	rc.copyRawDataFrom(Vector.ofArray([
+		2.0 / (right - left),
+		0.0,
+		0.0,
+		0.0,
+		0.0,
+		2.0 / (top - bottom),
+		0.0,
+		0.0,
+		0.0,
+		0.0,
+		-2.0 / (far - near),
+		0.0,
+		-(right + left) / (right - left),
+		-(top + bottom) / (top - bottom),
+		-(far + near) / (far - near),
+		1.0
+	]));
+	return rc;
+}
+
+/**
+ * Create a perspective projection matrix for the specified frustum.
+ * Note, for OpenGL near and far are both positive despite all coordinates being on the negative z-axis. This
+ * is OpenGL convention.
+ * 
+ * @param left left extent of the near plane of the frustum
+ * @param right right extent of the near plane of the frustum
+ * @param top top extent of the near plane of the frustum
+ * @param bottom bottom extent of the near plane of the frustum
+ * @param near distance to the near plane of the frustum
+ * @param far distance to the far plane of the frustum
+ * @return Matrix3D
+ */
+function computePerspectiveProjection(left:Float, right:Float, top:Float, bottom:Float, near:Float, far:Float):Matrix3D
+{
+	var rc = new Matrix3D();
+	rc.copyRawDataFrom(Vector.ofArray([
+		    2.0 * near / (right - left),                             0.0,                            0.0, 0.0,
+		                            0.0,     2.0 * near / (top - bottom),                            0.0, 0.0,
+		(right + left) / (right - left), (top + bottom) / (top - bottom),   -(far + near) / (far - near),  -1,
+		                            0.0,                             0.0, -2 * far * near / (far - near), 0.0
+	]));
+	return rc;
+}
