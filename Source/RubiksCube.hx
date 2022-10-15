@@ -15,27 +15,87 @@ import lime.math.RGBA;
 import Cube.ColorSpec;
 import openfl.utils.Assets;
 
+/**
+ * Component cube positional data.
+ * FIXME This duplicates the same named elements of CubeData. Please fix
+ */
 typedef CubeDataPos =
 {
+	/**
+	 * Unique id for this cube
+	 */
 	var id:String;
+
+	/**
+	 * The x position, 0-based, for this cube. Position is defined in units of cubes.
+	 */
 	var x:Int;
+
+	/**
+	 * The y position, 0-based, for this cube. Position is defined in units of cubes.
+	 */
 	var y:Int;
+
+	/**
+	 * The z position, 0-based, for this cube. Position is defined in units of cubes.
+	 */
 	var z:Int;
 }
 
+/**
+ * Component cube data and current transformation matrices.
+ */
 typedef CubeData =
 {
+	/**
+	 * Unique id for this cube
+	 */
 	var id:String;
+
+	/**
+	 * The x position, 0-based, for this cube. Position is defined in units of cubes.
+	 */
 	var x:Int;
+
+	/**
+	 * The y position, 0-based, for this cube. Position is defined in units of cubes.
+	 */
 	var y:Int;
+
+	/**
+	 * The z position, 0-based, for this cube. Position is defined in units of cubes.
+	 */
 	var z:Int;
+
+	/**
+	 * Reference to the Cube object for this component unit cube.
+	 */
 	var cube:Cube;
+
+	/**
+	 * The scale matrix for this component cube. This makes the cube the right size for this Rubik's cube.
+	 */
 	var scaleMatrix:Matrix3D;
+
+	/**
+	 * The rotation matrix for this component cube. Usually this is an identity matrix - no rotation.
+	 */
 	var rotationMatrix:Matrix3D;
+
+	/**
+	 * The translation matrix for this component cube. This places the component at the right place in the Rubik's cube.
+	 */
 	var translationMatrix:Matrix3D;
+
+	/**
+	 * The model matrix for this component cube. This is the multiplication of scale, rotation and translation matrices.
+	 */
 	var modelMatrix:Matrix3D;
 }
 
+/**
+ * Axis defines an enum for each axis, X, Y and Z and provides the corresponding vector.
+ */
 enum abstract Axis(Int)
 {
 	var X = 0;
@@ -43,6 +103,9 @@ enum abstract Axis(Int)
 	var Z = 2;
 	static final vectors = [0 => new Vector3D(1, 0, 0), 1 => new Vector3D(0, 1, 0), 2 => new Vector3D(0, 0, 1)];
 
+	/**
+	 * Get the vector representing this axis.
+	 */
 	@:to
 	public function toVector()
 	{
@@ -50,11 +113,23 @@ enum abstract Axis(Int)
 	}
 }
 
+/**
+ * Operations that may be performed on the cube. It is expected that any operation may take many
+ * update cycles to complete.
+ */
 enum Operation
 {
+	/**
+	 * Rotate a slice by the specified angle. The slice is defined by the axis it rotates around, 
+	 * and the number of cube units along that axis. This in a 3x3 cube slice (Axis X, ordinal 1) is
+	 * the slice that projects from the middle of the front face of the cube to the middle of the back.
+	 */
 	RotateSlice(axis:Axis, ordinal:Int, angle:Float);
 }
 
+/**
+ * A class defining a Rubik's cube of a specific number of cubes side length, and size per component cube.
+ */
 class RubiksCube
 {
 	static final RED:RGBA = 0xff0000ff;
@@ -63,6 +138,7 @@ class RubiksCube
 	static final ORANGE:RGBA = 0xF59B42FF;
 	static final YELLOW:RGBA = 0xFFFF00ff;
 	static final WHITE:RGBA = 0xffffffff;
+	static final BLACK:RGBA = 0x000000ff;
 
 	final ROW_LEN = 3;
 	final SIDE:Float;
@@ -111,7 +187,27 @@ class RubiksCube
 		_faceTexture = _context.createRectangleTexture(faceImageData.width, faceImageData.height, BGRA, false);
 		_faceTexture.uploadFromBitmapData(faceImageData);
 
-		_cubes = new Map<String, CubeData>();
+		_cubes = createCubes(context);
+
+		// Initialize operation data
+		_operation = null;
+		_incAngle = 0;
+		_accAngle = 0;
+		_inProgress = false;
+		_affectedCubes = new Array<String>();
+
+		// Create GLSL program object
+		createGLSLProgram();
+	}
+
+	/**
+	 * Create the required number of cubes with correct colors and positioning data.
+	 * @param context the Context3D object to which this cube will be rendered
+	 * @return Map<String, CubeData>
+	 */
+	function createCubes(context:Context3D):Map<String, CubeData>
+	{
+		var cubes = new Map<String, CubeData>();
 		for (i in 0...ROW_LEN)
 		{ // X front face - left -> right
 			for (j in 0...ROW_LEN)
@@ -123,14 +219,7 @@ class RubiksCube
 					{
 						continue;
 					}
-					var cs:ColorSpec = {
-						front: RED,
-						back: ORANGE,
-						top: WHITE,
-						bottom: YELLOW,
-						left: GREEN,
-						right: BLUE
-					};
+					var cs = createColorSpec(i, j, k, ROW_LEN);
 					var c = new Cube(cs, _faceTexture, context);
 					var scaleMatrix = createScaleMatrix(SIDE, SIDE, SIDE);
 					var rotationMatrix = new Matrix3D();
@@ -151,32 +240,69 @@ class RubiksCube
 						translationMatrix: translationMatrix,
 						modelMatrix: modelMatrix
 					};
-					_cubes[cd.id] = cd;
+					cubes[cd.id] = cd;
 				}
 			}
 		}
-
-		// Initialize operation data
-		_operation = null;
-		_incAngle = 0;
-		_accAngle = 0;
-		_inProgress = false;
-		_affectedCubes = new Array<String>();
-
-		// Create GLSL program object
-		createGLSLProgram();
+		return cubes;
 	}
 
-	// function createScaleMatrix(scaleX:Float, scaleY:Float, scaleZ:Float):Matrix3D {
-	//     var scaleMatrix = new Matrix3D();
-	//     scaleMatrix.appendScale(scaleX, scaleY, scaleZ);
-	//     return scaleMatrix;
-	// }
-	// function createTranslationMatrix(transX:Float, transY:Float, transZ:Float):Matrix3D {
-	//     var translationMatrix = new Matrix3D();
-	//     translationMatrix.appendTranslation(transX, transY, transZ);
-	//     return translationMatrix;
-	// }
+	/**
+	 * Comppute a color specification for a cube in the specified location.
+	 * For now all cubes are assumed to have the same orientation.
+	 * 
+	 * @param x x coordinate 0-sideLen-1
+	 * @param y y coordinate 0-sideLen-1
+	 * @param z z coordinate 0-sideLen-1
+	 * @param sideLen the number of component cubes per side
+	 * @return ColorSpec
+	 */
+	function createColorSpec(x:Int, y:Int, z:Int, sideLen:Int):ColorSpec
+	{
+		final COLORS:ColorSpec = {
+			front: RED,
+			back: ORANGE,
+			top: WHITE,
+			bottom: YELLOW,
+			left: GREEN,
+			right: BLUE
+		};
+
+		var rv:ColorSpec = {
+			front: BLACK,
+			back: BLACK,
+			top: BLACK,
+			bottom: BLACK,
+			left: BLACK,
+			right: BLACK
+		};
+
+		if (x == 0)
+		{
+			rv.left = COLORS.left;
+		}
+		if (x == sideLen - 1)
+		{
+			rv.right = COLORS.right;
+		}
+		if (y == 0)
+		{
+			rv.bottom = COLORS.bottom;
+		}
+		if (y == sideLen - 1)
+		{
+			rv.top = COLORS.top;
+		}
+		if (z == 0)
+		{
+			rv.back = COLORS.back;
+		}
+		if (z == sideLen - 1)
+		{
+			rv.front = COLORS.front;
+		}
+		return rv;
+	}
 
 	function createGLSLProgram():Void
 	{
@@ -764,8 +890,13 @@ class RubiksCube
 		}
 	}
 
+	/**
+	 * Debug routine to dump vertices under the specified transformation
+	 * @param mat the transformation matrix to apply to the points
+	 */
 	public function dumpTransformVertices(mat:Matrix3D):Void
 	{
+		// Currently uses a fixed list of interesting points
 		for (i => v in [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]])
 		{
 			var vector = new Vector3D();

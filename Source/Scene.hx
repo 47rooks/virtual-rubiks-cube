@@ -69,6 +69,10 @@ class Scene extends Sprite
 		operNum = 0;
 	}
 
+	/**
+	 * Handle key press events
+	 * @param event 
+	 */
 	function keyHandler(event:KeyboardEvent):Void
 	{
 		trace('key=${event.keyCode}');

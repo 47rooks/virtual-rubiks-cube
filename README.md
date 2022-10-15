@@ -5,11 +5,9 @@ This is an OpenFL based Rubik's cube simulation. This is mostly an experiment in
 # To Do
 
    * First
-     * pass color information from RubiksCube to Cube for each face - use black for all internal faces
-     * document code
+     * document code - in progress
      * add CPU processing for matrix operations for debug and printing
      * add bounding box calculations
-     * find the center of RubiksCube under transformation
    * Second
      * check on the y-axis flip issue
         * is this happening here ?
