@@ -171,6 +171,15 @@ class RubiksCube
 	// Scene reference
 	var _scene:Scene;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param context the OpenFL Context3D object to render to
+	 * @param x x position to place cube at
+	 * @param y y position to place cube at
+	 * @param z z position to place cube at
+	 * @param scene the owning Scene object, for event dispatch
+	 */
 	public function new(context:Context3D, x:Int, y:Int, z:Int, scene:Scene)
 	{
 		SIDE = 64; // FIXME this may need to be a constructor parameter
@@ -202,6 +211,7 @@ class RubiksCube
 
 	/**
 	 * Create the required number of cubes with correct colors and positioning data.
+	 * 
 	 * @param context the Context3D object to which this cube will be rendered
 	 * @return Map<String, CubeData>
 	 */
@@ -389,7 +399,7 @@ class RubiksCube
 							// FIXME assumes 90 rotation
 						}
 						// Set new location value
-						updateLocations(angle, axis);
+						updateLocations(axis, angle);
 
 						_incAngle = 0;
 						_accAngle = 0;
@@ -411,6 +421,13 @@ class RubiksCube
 		}
 	}
 
+	/**
+	 * Compare two integer value.
+	 * 
+	 * @param a first value to compare
+	 * @param b second value to compare
+	 * @return Int -1 if a < b, 0 if they are equal and 1 if b > b
+	 */
 	function comp(a:Int, b:Int):Int
 	{
 		if (a < b)
@@ -427,7 +444,12 @@ class RubiksCube
 		}
 	}
 
-	function updateLocations(angle:Float, axis:Axis):Void
+	/**
+	 * Given an angle or rotation and the Axis compute the new locations for each component cube
+	 * @param axis the axis the slice rotates about
+	 * @param angle angle rotated - currently the assumption is that this is either +90 or -90
+	 */
+	function updateLocations(axis:Axis, angle:Float):Void
 	{
 		// sort the cubes
 		var sortedCubes = new Array<CubeData>();
@@ -814,15 +836,13 @@ class RubiksCube
 		dumpSlice(sortedCubes);
 	}
 
-	function dumpSlice(slice:Array<CubeData>):Void
-	{
-		trace('slice:');
-		for (c in slice)
-		{
-			trace('${c.id}:(${c.x}, ${c.y}, ${c.z})');
-		}
-	}
-
+	/**
+	 * Create a list of component cube ids given a slice identified by Axis and ordinal
+	 * 
+	 * @param axis the Axis
+	 * @param ordinal the coordinate on the Axis that defines the slice
+	 * @return Array<String>
+	 */
 	function getSliceCubes(axis:Axis, ordinal:Int):Array<String>
 	{
 		var rv = new Array<String>();
@@ -850,7 +870,11 @@ class RubiksCube
 		return rv;
 	}
 
-	// public function render(projectionMatrix:Matrix3D, programMatrixUniform, programVertexAttribute, programTextureAttribute, programColorAttribute):Void {
+	/**
+	 * Render the Rubik's cube' current state.
+	 * 
+	 * @param projectionMatrix projection matrix to apply
+	 */
 	public function render(projectionMatrix:Matrix3D):Void
 	{
 		_context.setProgram(_program);
@@ -870,14 +894,8 @@ class RubiksCube
 				fullProjection.append(_rotMatrix);
 			}
 
-			// Whole cube model matrix
-			// This should be rendered by the scene
-			// FIXME - create a scene object
+			// Whole cube model matrix - currently a no-op.
 			var modelMatrix = new Matrix3D();
-			// modelMatrix.appendRotation(35, new Vector3D(1,0,0));
-			// modelMatrix.appendRotation(35, new Vector3D(0,1,0));
-			// modelMatrix.appendRotation(35, new Vector3D(0,0,1));
-			// modelMatrix.appendTranslation(_x, _y, _z);
 			fullProjection.append(modelMatrix);
 
 			fullProjection.append(projectionMatrix);
@@ -891,7 +909,22 @@ class RubiksCube
 	}
 
 	/**
+	 * Debug routine to dump the cube position data.
+	 * 
+	 * @param slice the cube slice to dump.
+	 */
+	function dumpSlice(slice:Array<CubeData>):Void
+	{
+		trace('slice:');
+		for (c in slice)
+		{
+			trace('${c.id}:(${c.x}, ${c.y}, ${c.z})');
+		}
+	}
+
+	/**
 	 * Debug routine to dump vertices under the specified transformation
+	 *
 	 * @param mat the transformation matrix to apply to the points
 	 */
 	public function dumpTransformVertices(mat:Matrix3D):Void

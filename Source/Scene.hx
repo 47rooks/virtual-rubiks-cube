@@ -1,5 +1,6 @@
 package;
 
+import MatrixUtils.computeOrthoProjection;
 import MatrixUtils.createLookAtMatrix;
 import MatrixUtils.computePerspectiveProjection;
 import openfl.display.Bitmap;
@@ -39,7 +40,8 @@ class Scene extends Sprite
 		super();
 
 		// Initialize key fields
-		_cameraPos = new Vector3D(500, 500, 500);
+		// _cameraPos = new Vector3D(500, 500, 500);
+		_cameraPos = new Vector3D(0, 0, 500);
 		_target = new Vector3D(0, 0, 0);
 		_worldUp = new Vector3D(0, 1, 0);
 
@@ -52,9 +54,10 @@ class Scene extends Sprite
 
 		var context = stage.context3D;
 		// computeOrthoProjection();
-		// projectionTransform = computeOrthoProjection(-300.0, 300.0, 300.0, -300.0, 750.0, 1002.0);
-		projectionTransform = computePerspectiveProjection(-320, 320, 240, -240, 600, 1200.0);
+		// projectionTransform = computeOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
+		projectionTransform = computePerspectiveProjection(-320, 320, 240, -240, 300, 1200.0);
 		_rubiksCube = new RubiksCube(context, Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this);
+		// _rubiksCube = new RubiksCube(context, Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), 0, this);
 		// _rubiksCube = new RubiksCube(context, 300, Math.ceil(stage.stageHeight / 2), 400, this);
 		// addChild(new Bitmap(_bg));
 
@@ -71,7 +74,8 @@ class Scene extends Sprite
 
 	/**
 	 * Handle key press events
-	 * @param event 
+	 * 
+	 * @param event keyboard event
 	 */
 	function keyHandler(event:KeyboardEvent):Void
 	{
@@ -89,16 +93,25 @@ class Scene extends Sprite
 		else if (event.keyCode == Keyboard.P)
 		{
 			// Dump matrix transformation of cube vertices
-			_rubiksCube.dumpTransformVertices(createLookAtMatrix(_cameraPos, _target, _worldUp));
+			var m = createLookAtMatrix(_cameraPos, _target, _worldUp);
+			m.append(projectionTransform);
+			_rubiksCube.dumpTransformVertices(m);
 		}
 	}
 
+	/**
+	 * Update the current state.
+	 * 
+	 * @param elapsed elapsed time since last call.
+	 */
 	public function update(elapsed:Float):Void
 	{
-		_rubiksCube.update(0.016);
+		_rubiksCube.update(elapsed);
 	}
 
-	/* Render the current state */
+	/**
+	 * Render the scene for this frame. Assumes that `update` has already been called.
+	 */
 	public function render():Void
 	{
 		var context = stage.context3D;
@@ -108,12 +121,10 @@ class Scene extends Sprite
 
 		context.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
 
-		// Render scene
-		// FIXME call render on the scene
+		// Render scene - iterate all objects and render them
 		var lookAtMat = createLookAtMatrix(_cameraPos, _target, _worldUp);
 		lookAtMat.append(projectionTransform);
 		_rubiksCube.render(lookAtMat);
-		// _rubiksCube.render(projectionTransform);
 
 		// ------ finish iteration
 		context.present();
