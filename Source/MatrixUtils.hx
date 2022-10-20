@@ -84,7 +84,7 @@ function createLookAtMatrix(cameraPos:Vector3D, target:Vector3D, up:Vector3D):Ma
  * @param far distance to the far plane of the frustum
  * @return Matrix3D
  */
-function computeOrthoProjection(left:Float, right:Float, top:Float, bottom:Float, near:Float, far:Float):Matrix3D
+function createOrthoProjection(left:Float, right:Float, top:Float, bottom:Float, near:Float, far:Float):Matrix3D
 {
 	var rc = new Matrix3D();
 	rc.copyRawDataFrom(Vector.ofArray([
@@ -121,14 +121,41 @@ function computeOrthoProjection(left:Float, right:Float, top:Float, bottom:Float
  * @param far distance to the far plane of the frustum
  * @return Matrix3D
  */
-function computePerspectiveProjection(left:Float, right:Float, top:Float, bottom:Float, near:Float, far:Float):Matrix3D
+overload extern inline function createPerspectiveProjection(left:Float, right:Float, top:Float, bottom:Float, near:Float, far:Float):Matrix3D
 {
-	var rc = new Matrix3D();
-	rc.copyRawDataFrom(Vector.ofArray([
+	var rv = new Matrix3D();
+	rv.copyRawDataFrom(Vector.ofArray([
 		    2.0 * near / (right - left),                             0.0,                            0.0, 0.0,
 		                            0.0,     2.0 * near / (top - bottom),                            0.0, 0.0,
 		(right + left) / (right - left), (top + bottom) / (top - bottom),   -(far + near) / (far - near),  -1,
 		                            0.0,                             0.0, -2 * far * near / (far - near), 0.0
 	]));
-	return rc;
+	return rv;
+}
+
+/**
+ * Create a perspective projection matrix based on FOV, aspect ratio and near and far planes.
+ * @param fov field of view in degrees
+ * @param aspectRatio aspect ratio of camera
+ * @param zNear distance from camera to near plane
+ * @param zFar distance to far plane
+ * @return Matrix3D
+ */
+overload extern inline function createPerspectiveProjection(fov:Float, aspectRatio:Float, zNear:Float, zFar:Float):Matrix3D
+{
+	var top = Math.tan(radians(fov)) * zNear;
+	var bottom = -top;
+	var right = top * aspectRatio;
+	var left = -right;
+	return createPerspectiveProjection(left, right, top, bottom, zNear, zFar);
+}
+
+/**
+ * Convert an angle in degrees to radians.
+ * @param deg degrees to convert
+ * @return Float radians value
+ */
+function radians(deg:Float):Float
+{
+	return deg * Math.PI / 180;
 }
