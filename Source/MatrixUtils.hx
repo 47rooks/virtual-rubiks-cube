@@ -4,9 +4,9 @@
 
 package;
 
-import openfl.geom.Vector3D;
 import openfl.Vector;
 import openfl.geom.Matrix3D;
+import openfl.geom.Vector3D;
 
 /**
  * Create a scaling matrix to scale by the specified amount in each direction.
