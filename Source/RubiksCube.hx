@@ -1,18 +1,16 @@
 package;
 
-import MatrixUtils.createTranslationMatrix;
-import MatrixUtils.createScaleMatrix;
-import openfl.geom.Matrix;
-import openfl.events.Event;
-import openfl.display3D.Program3D;
-import haxe.ds.Map;
-import openfl.geom.Vector3D;
-import openfl.display3D.Context3DProgramType;
-import openfl.geom.Matrix3D;
-import openfl.display3D.Context3D;
-import openfl.display3D.textures.RectangleTexture;
-import lime.math.RGBA;
 import Cube.ColorSpec;
+import MatrixUtils.createScaleMatrix;
+import MatrixUtils.createTranslationMatrix;
+import haxe.ds.Map;
+import lime.math.RGBA;
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProgramType;
+import openfl.display3D.Program3D;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.geom.Matrix3D;
+import openfl.geom.Vector3D;
 import openfl.utils.Assets;
 
 /**

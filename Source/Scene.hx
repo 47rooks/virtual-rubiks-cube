@@ -1,32 +1,23 @@
 package;
 
 import Camera.CameraMovement;
-import MatrixUtils.radians;
-import openfl.events.MouseEvent;
-import openfl.ui.Mouse;
-import lime.ui.GamepadButton;
-import openfl.ui.GameInputControl;
-import openfl.events.EventType;
-import openfl.events.GameInputEvent;
-import openfl.ui.GameInputDevice;
-import openfl.ui.GameInput;
-import openfl.Lib;
-import MatrixUtils.createOrthoProjection;
-import MatrixUtils.createLookAtMatrix;
 import MatrixUtils.createPerspectiveProjection;
-import openfl.display.Bitmap;
-import openfl.Assets;
-import openfl.display.BitmapData;
-import openfl.geom.Vector3D;
-import openfl.ui.Keyboard;
-import openfl.events.KeyboardEvent;
-import RubiksCube.Operation;
-import openfl.events.Event;
-import openfl.Vector;
 import RubiksCube.Axis;
-import openfl.display3D.Context3DCompareMode;
-import openfl.geom.Matrix3D;
+import RubiksCube.Operation;
+import openfl.display.BitmapData;
 import openfl.display.Sprite;
+import openfl.display3D.Context3DCompareMode;
+import openfl.events.Event;
+import openfl.events.GameInputEvent;
+import openfl.events.KeyboardEvent;
+import openfl.events.MouseEvent;
+import openfl.geom.Matrix3D;
+import openfl.geom.Vector3D;
+import openfl.ui.GameInput;
+import openfl.ui.GameInputControl;
+import openfl.ui.GameInputDevice;
+import openfl.ui.Keyboard;
+import openfl.ui.Mouse;
 
 class Scene extends Sprite
 {
@@ -174,6 +165,10 @@ class Scene extends Sprite
 		context.present();
 	}
 
+	/**
+	 * Handler to progress to the next operation in the list.
+	 * @param event the completion event.
+	 */
 	function nextOperation(event:OperationCompleteEvent):Void
 	{
 		trace('operation completed');
@@ -279,6 +274,10 @@ class Scene extends Sprite
 		}
 	}
 
+	/**
+	 * Handle mouse movement events.
+	 * @param e 
+	 */
 	function mouseOnMove(e:MouseEvent):Void
 	{
 		if (_firstMove)
@@ -293,6 +292,10 @@ class Scene extends Sprite
 		_mouseY = e.localY;
 	}
 
+	/**
+	 * Handle mouse wheel movement
+	 * @param e 
+	 */
 	function mouseOnWheel(e:MouseEvent):Void
 	{
 		_camera.zoom(e.delta);
