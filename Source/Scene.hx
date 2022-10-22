@@ -1,5 +1,6 @@
 package;
 
+import Camera.CameraMovement;
 import MatrixUtils.radians;
 import openfl.events.MouseEvent;
 import openfl.ui.Mouse;
@@ -31,7 +32,7 @@ class Scene extends Sprite
 {
 	private var projectionTransform:Matrix3D;
 
-	private var _cumTime:Float;
+	private var _deltaTime:Float;
 
 	var _rubiksCube:RubiksCube;
 
@@ -40,16 +41,8 @@ class Scene extends Sprite
 
 	var _bg:BitmapData;
 
-	// Camera and world vectors
-	var _cameraPos:Vector3D;
-	var _target:Vector3D;
-	var _cameraFront:Vector3D;
-	var _worldUp:Vector3D;
-	var _cameraSpeed = 5;
-	var _cameraAngle = 0;
-	var _cameraFOV = 45.0; // Field of View in degrees
-	var _yaw:Float;
-	var _pitch:Float;
+	// Camera
+	var _camera:Camera;
 
 	// Gamepad input
 	var _gameInput:GameInput;
@@ -58,24 +51,16 @@ class Scene extends Sprite
 	// Mouse coordinates
 	var _mouseX:Float;
 	var _mouseY:Float;
-	final SENSITIVITY = 0.5;
 	var _firstMove = true;
 
-	public function new():Void
+	public function new()
 	{
 		super();
 
 		// Initialize key fields
-		_cumTime = 0;
+		_deltaTime = 0;
 
-		// _cameraPos = new Vector3D(270, 270, 270);
-		// _cameraPos = new Vector3D(0, 500, 500);
-		_cameraPos = new Vector3D(0, 0, 500);
-		_cameraFront = new Vector3D(0, 0, -1);
-		_target = new Vector3D(0, 0, 0);
-		_worldUp = new Vector3D(0, 1, 0);
-		_yaw = -90.0;
-		_pitch = 0;
+		_camera = new Camera(new Vector3D(0, 0, 500), new Vector3D(0, 1, 0));
 
 		// Setup input
 		_gameInput = new GameInput();
@@ -92,7 +77,8 @@ class Scene extends Sprite
 		// computeOrthoProjection();
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
 		// projectionTransform = createPerspectiveProjection(-320, 320, 240, -240, 300, 800.0);
-		projectionTransform = createPerspectiveProjection(_cameraFOV, 640 / 480, 100, 1000);
+		// projectionTransform = createPerspectiveProjection(_cameraFOV, 640 / 480, 100, 1000);
+		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
 		_rubiksCube = new RubiksCube(context, Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this);
 		// _rubiksCube = new RubiksCube(context, Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), 0, this);
@@ -100,7 +86,7 @@ class Scene extends Sprite
 		// addChild(new Bitmap(_bg));
 
 		// Add completion event listener
-		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, next_operation);
+		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
 
 		// Add key listener to start example rotations
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
@@ -111,12 +97,12 @@ class Scene extends Sprite
 
 		// Setup mouse
 		Mouse.hide();
-		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouse_onMove);
-		stage.addEventListener(MouseEvent.MOUSE_WHEEL, mouse_onWheel);
+		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
+		stage.addEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
 
 		// Add gamepad support
-		_gameInput.addEventListener(GameInputEvent.DEVICE_ADDED, gameInput_onDeviceAdded);
-		_gameInput.addEventListener(GameInputEvent.DEVICE_REMOVED, gameInput_onDeviceRemoved);
+		_gameInput.addEventListener(GameInputEvent.DEVICE_ADDED, gameInputOnDeviceAdded);
+		_gameInput.addEventListener(GameInputEvent.DEVICE_REMOVED, gameInputOnDeviceRemoved);
 	}
 
 	/**
@@ -129,33 +115,13 @@ class Scene extends Sprite
 		switch (event.keyCode)
 		{
 			case Keyboard.W:
-				var tgt = _cameraFront.clone();
-				tgt.scaleBy(_cameraSpeed);
-				_cameraPos = _cameraPos.add(tgt);
+				_camera.move(CameraMovement.FORWARD, _deltaTime);
 			case Keyboard.S:
-				var tgt = _cameraFront.clone();
-				tgt.scaleBy(_cameraSpeed);
-				_cameraPos = _cameraPos.subtract(tgt);
+				_camera.move(CameraMovement.BACKWARD, _deltaTime);
 			case Keyboard.A:
-				var m = _cameraFront.crossProduct(_worldUp);
-				m.normalize();
-				m.scaleBy(_cameraSpeed);
-				_cameraPos = _cameraPos.subtract(m);
+				_camera.move(CameraMovement.LEFT, _deltaTime);
 			case Keyboard.D:
-				var m = _cameraFront.crossProduct(_worldUp);
-				m.normalize();
-				m.scaleBy(_cameraSpeed);
-				_cameraPos = _cameraPos.add(m);
-			// case Keyboard.Z:
-			// 	_cameraAngle++;
-			// 	var l = _cameraPos.length;
-			// 	_cameraPos.x = l * Math.sin(_cameraAngle / Math.PI * 0.1);
-			// 	_cameraPos.z = l * Math.cos(_cameraAngle / Math.PI * 0.1);
-			// case Keyboard.C:
-			// 	_cameraAngle--;
-			// 	var l = _cameraPos.length;
-			// 	_cameraPos.x = l * Math.sin(_cameraAngle / Math.PI * 0.1);
-			// 	_cameraPos.z = l * Math.cos(_cameraAngle / Math.PI * 0.1);
+				_camera.move(CameraMovement.RIGHT, _deltaTime);
 			case Keyboard.R:
 				// Perform rotation operation on a slice.
 				operations = new Array<Operation>();
@@ -164,11 +130,11 @@ class Scene extends Sprite
 				operations.push(Operation.RotateSlice(Axis.Z, 1, 90));
 				_rubiksCube.doOperation(operations[0]);
 				operNum = 0;
-			case Keyboard.P:
-				// Dump matrix transformation of cube vertices
-				var m = createLookAtMatrix(_cameraPos, _cameraPos.add(_cameraFront), _worldUp);
-				m.append(projectionTransform);
-				_rubiksCube.dumpTransformVertices(m);
+			// case Keyboard.P:
+			// 	// Dump matrix transformation of cube vertices
+			// 	var m = createLookAtMatrix(_cameraPos, _cameraPos.add(_cameraFront), _worldUp);
+			// 	m.append(projectionTransform);
+			// 	_rubiksCube.dumpTransformVertices(m);
 			default:
 		}
 	}
@@ -180,16 +146,9 @@ class Scene extends Sprite
 	 */
 	public function update(elapsed:Float):Void
 	{
-		_cumTime += elapsed;
+		_deltaTime = elapsed / 1000.0;
 
 		_rubiksCube.update(elapsed);
-
-		// update camera position
-		// _cameraPos.x = 500 * Math.sin(_cumTime * 0.001);
-		// _cameraPos.z = 500 * Math.cos(_cumTime * 0.001);
-
-		// process gamepad input if any
-		// gameInput_APressed();
 	}
 
 	/**
@@ -205,7 +164,8 @@ class Scene extends Sprite
 		context.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
 
 		// Render scene - iterate all objects and render them
-		var lookAtMat = createLookAtMatrix(_cameraPos, _cameraPos.add(_cameraFront), _worldUp);
+		// var lookAtMat = createLookAtMatrix(_cameraPos, _cameraPos.add(_cameraFront), _worldUp);
+		var lookAtMat = _camera.getViewMatrix();
 		// var lookAtMat = createLookAtMatrix(_cameraPos, _target, _worldUp);
 		lookAtMat.append(projectionTransform);
 		_rubiksCube.render(lookAtMat);
@@ -214,7 +174,7 @@ class Scene extends Sprite
 		context.present();
 	}
 
-	function next_operation(event:OperationCompleteEvent):Void
+	function nextOperation(event:OperationCompleteEvent):Void
 	{
 		trace('operation completed');
 		if (operNum < operations.length - 1)
@@ -232,14 +192,14 @@ class Scene extends Sprite
 	 * 
 	 * @param event the triggering event
 	 */
-	function gameInput_onDeviceAdded(event:GameInputEvent):Void
+	function gameInputOnDeviceAdded(event:GameInputEvent):Void
 	{
 		var device = event.device;
 		trace('adding device = ${device.id}');
 		for (cId in 0...device.numControls)
 		{
 			var ctl = device.getControlAt(cId);
-			ctl.addEventListener(Event.CHANGE, gameInput_onChange);
+			ctl.addEventListener(Event.CHANGE, gameInputOnChange);
 			trace('ctl=${ctl.id}');
 		}
 
@@ -252,7 +212,7 @@ class Scene extends Sprite
 	 * 
 	 * @param event 
 	 */
-	private function gameInput_onDeviceRemoved(event:GameInputEvent):Void
+	private function gameInputOnDeviceRemoved(event:GameInputEvent):Void
 	{
 		var device = event.device;
 		device.enabled = false;
@@ -263,7 +223,7 @@ class Scene extends Sprite
 	 * Process gamepad input
 	 * @param e event container the changes in the control
 	 */
-	function gameInput_onChange(e:Event):Void
+	function gameInputOnChange(e:Event):Void
 	{
 		trace('evt target=${e.target}');
 		var gic = cast(e.target, GameInputControl);
@@ -319,7 +279,7 @@ class Scene extends Sprite
 		}
 	}
 
-	function mouse_onMove(e:MouseEvent):Void
+	function mouseOnMove(e:MouseEvent):Void
 	{
 		if (_firstMove)
 		{
@@ -328,45 +288,14 @@ class Scene extends Sprite
 			_firstMove = false;
 		}
 
-		var deltaX = (e.localX - _mouseX) * SENSITIVITY;
-		var deltaY = (_mouseY - e.localY) * SENSITIVITY;
-		trace('mouse is at (${e.localX}, ${e.localY})');
-		trace('delta = (${deltaX}, ${deltaY})');
+		_camera.lookAround(e.localX - _mouseX, _mouseY - e.localY);
 		_mouseX = e.localX;
 		_mouseY = e.localY;
-
-		_yaw += deltaX;
-		_pitch += deltaY;
-
-		if (_pitch > 89)
-		{
-			_pitch = 89;
-		}
-		if (_pitch < -89)
-		{
-			_pitch = -89;
-		}
-
-		var direction = new Vector3D();
-		direction.x = Math.cos(radians(_yaw)) * Math.cos(radians(_pitch));
-		direction.y = Math.sin(radians(_pitch));
-		direction.z = Math.sin(radians(_yaw)) * Math.cos(radians(_pitch));
-		direction.normalize();
-		_cameraFront = direction;
-		trace('_cameraFront=${_cameraFront}');
 	}
 
-	function mouse_onWheel(e:MouseEvent):Void
+	function mouseOnWheel(e:MouseEvent):Void
 	{
-		_cameraFOV -= e.delta;
-		if (_cameraFOV < 1.0)
-		{
-			_cameraFOV = 1.0;
-		}
-		if (_cameraFOV > 45)
-		{
-			_cameraFOV = 45;
-		}
-		projectionTransform = createPerspectiveProjection(_cameraFOV, 640 / 480, 100, 1000);
+		_camera.zoom(e.delta);
+		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 	}
 }
