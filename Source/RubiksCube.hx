@@ -96,9 +96,9 @@ typedef CubeData =
  */
 enum abstract Axis(Int)
 {
-	var X = 0;
-	var Y = 1;
-	var Z = 2;
+	final X = 0;
+	final Y = 1;
+	final Z = 2;
 	static final vectors = [0 => new Vector3D(1, 0, 0), 1 => new Vector3D(0, 1, 0), 2 => new Vector3D(0, 0, 1)];
 
 	/**

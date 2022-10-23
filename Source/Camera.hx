@@ -20,6 +20,14 @@ enum CameraMovement
 	RIGHT;
 }
 
+enum CameraLookTo
+{
+	RIGHT;
+	LEFT;
+	UP;
+	DOWN;
+}
+
 /**
  * The Camera class defines a view of the world from a point in the world (the position) and supports
  * moving, looking around and zooming in and out.
@@ -104,10 +112,49 @@ class Camera
 	 * @param xOffset offset from the current x direction, in arbitrary units
 	 * @param yOffset offset from the current y direction, in arbitrary units
 	 */
-	public function lookAround(xOffset:Float, yOffset:Float):Void
+	overload extern inline public function lookAround(xOffset:Float, yOffset:Float):Void
 	{
 		var deltaX = xOffset * LOOK_AROUND_SENSITIVTY;
 		var deltaY = yOffset * LOOK_AROUND_SENSITIVTY;
+
+		_yaw += deltaX;
+		_pitch += deltaY;
+
+		if (_pitch > 89)
+		{
+			_pitch = 89;
+		}
+		if (_pitch < -89)
+		{
+			_pitch = -89;
+		}
+
+		var direction = new Vector3D();
+		direction.x = Math.cos(radians(_yaw)) * Math.cos(radians(_pitch));
+		direction.y = Math.sin(radians(_pitch));
+		direction.z = Math.sin(radians(_yaw)) * Math.cos(radians(_pitch));
+		direction.normalize();
+		_cameraFront = direction;
+	}
+
+	// FIXME
+	// This function is an attempt to get mouse-like function out of the gamepad. It almost works but needs
+	// work. Ideally we want something like the Flixel Action support.
+	overload extern inline public function lookAround(lookTo:CameraLookTo, delta:Float):Void
+	{
+		var deltaX = 0.0;
+		var deltaY = 0.0;
+		switch (lookTo)
+		{
+			case RIGHT:
+				deltaX += delta * 10;
+			case LEFT:
+				deltaX -= delta * 10;
+			case UP:
+				deltaY += delta * 10;
+			case DOWN:
+				deltaY -= delta * 10;
+		}
 
 		_yaw += deltaX;
 		_pitch += deltaY;
