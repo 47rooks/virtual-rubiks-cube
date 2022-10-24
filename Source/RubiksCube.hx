@@ -961,6 +961,11 @@ class RubiksCube
 		}
 	}
 
+	/**
+	 * Rotate the Rubik's cube in space.
+	 * @param xOffset x axis offset from current value
+	 * @param yOffset y axis offset from current value
+	 */
 	public function rotate(xOffset:Float, yOffset:Float):Void
 	{
 		var deltaX = xOffset * ROTATION_SENSITIVTY;
