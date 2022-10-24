@@ -142,6 +142,8 @@ class RubiksCube
 	final SIDE:Float;
 	final START_OFFSET:Float;
 
+	final ROTATION_SENSITIVTY = 0.5;
+
 	// GL interface variables
 	private var _context:Context3D;
 	private var _faceTexture:RectangleTexture;
@@ -165,6 +167,11 @@ class RubiksCube
 	var _accAngle:Float;
 	var _rotMatrix:Null<Matrix3D>;
 	var _affectedCubes:Array<String>;
+
+	// Vectors and Matrices
+	var _cubeRotation:Matrix3D;
+	var _yaw:Float;
+	var _pitch:Float;
 
 	// Scene reference
 	var _scene:Scene;
@@ -202,6 +209,11 @@ class RubiksCube
 		_accAngle = 0;
 		_inProgress = false;
 		_affectedCubes = new Array<String>();
+
+		// Initialize vectors and matrices
+		_yaw = -90;
+		_pitch = 0;
+		_cubeRotation = new Matrix3D();
 
 		// Create GLSL program object
 		createGLSLProgram();
@@ -894,6 +906,7 @@ class RubiksCube
 
 			// Whole cube model matrix - currently a no-op.
 			var modelMatrix = new Matrix3D();
+			modelMatrix.append(_cubeRotation);
 			fullProjection.append(modelMatrix);
 
 			fullProjection.append(projectionMatrix);
@@ -946,5 +959,28 @@ class RubiksCube
 			var res = cMat.transformVector(vector);
 			trace('v(${v[0]}, ${v[1]}, ${v[2]})=(${res.x}, ${res.y}, ${res.z}, ${res.w})');
 		}
+	}
+
+	public function rotate(xOffset:Float, yOffset:Float):Void
+	{
+		var deltaX = xOffset * ROTATION_SENSITIVTY;
+		var deltaY = yOffset * ROTATION_SENSITIVTY;
+
+		_yaw += deltaX;
+		_pitch += deltaY;
+
+		if (_pitch > 89)
+		{
+			_pitch = 89;
+		}
+		if (_pitch < -89)
+		{
+			_pitch = -89;
+		}
+
+		var rotation = new Matrix3D();
+		rotation.appendRotation(_yaw, new Vector3D(0, 1, 0));
+		rotation.appendRotation(_pitch, new Vector3D(1, 0, 0));
+		_cubeRotation = rotation;
 	}
 }

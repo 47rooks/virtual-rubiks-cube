@@ -103,10 +103,13 @@ class Scene extends Sprite
 	var operations:Array<Operation>;
 	var operNum:Int;
 	var _bg:BitmapData;
+
 	// Camera
 	var _camera:Camera;
+
 	// Control target - which object is controlled by the inputs
 	var _controlTarget:ControlTarget;
+
 	// Gamepad input
 	var _gameInput:GameInput;
 	var _gamepads:Array<GameInputDevice>;
@@ -114,6 +117,11 @@ class Scene extends Sprite
 	var _gamepadRightStickY:Float;
 	var _gamepadFirstMoveRightStickX = true;
 	var _gamepadFirstMoveRightStickY = true;
+
+	var _gamepadLookAtX:Float;
+	var _gamepadLookAtY:Float;
+	var _gamepadLookAtFirstMove:Bool = true;
+
 	// Mouse coordinates
 	var _mouseX:Float;
 	var _mouseY:Float;
@@ -239,6 +247,15 @@ class Scene extends Sprite
 	{
 		switch (event.keyCode)
 		{
+			case Keyboard.M:
+				if (_controlTarget == CAMERA)
+				{
+					_controlTarget = RUBIKS_CUBE;
+				}
+				else
+				{
+					_controlTarget = CAMERA;
+				}
 			case Keyboard.W:
 				_camera.move(CameraMovement.FORWARD, _deltaTime);
 			case Keyboard.S:
@@ -277,7 +294,13 @@ class Scene extends Sprite
 			_firstMove = false;
 		}
 
-		_camera.lookAround(e.localX - _mouseX, _mouseY - e.localY);
+		switch (_controlTarget)
+		{
+			case CAMERA:
+				_camera.lookAround(e.localX - _mouseX, _mouseY - e.localY);
+			case RUBIKS_CUBE:
+				_rubiksCube.rotate(e.localX - _mouseX, _mouseY - e.localY);
+		}
 		_mouseX = e.localX;
 		_mouseY = e.localY;
 	}
@@ -422,16 +445,21 @@ class Scene extends Sprite
 			var xVal = horizCtl.value * stage.window.width / (horizCtl.maxValue - horizCtl.minValue);
 			var vertCtl = gp.getControlAt(RIGHT_STICK_VERTICAL.toIndex());
 			var yVal = vertCtl.value * stage.window.height / (vertCtl.maxValue - vertCtl.minValue);
-			if (_firstMove)
+			if (_gamepadLookAtFirstMove)
 			{
-				_mouseX = xVal;
-				_mouseY = yVal;
-				_firstMove = false;
+				_gamepadLookAtX = xVal;
+				_gamepadLookAtY = yVal;
+				_gamepadLookAtFirstMove = false;
 			}
 
-			_camera.lookAround(xVal - _mouseX, _mouseY - yVal);
-			_mouseX = xVal;
-			_mouseY = yVal;
+			var deltaX = xVal - _gamepadLookAtX;
+			var deltaY = _gamepadLookAtY - yVal;
+			if (deltaX != 0 || deltaY != 0)
+			{
+				_camera.lookAround(deltaX, deltaY);
+				_gamepadLookAtX = xVal;
+				_gamepadLookAtY = yVal;
+			}
 		}
 	}
 }
