@@ -2,6 +2,7 @@ package;
 
 import Camera.CameraLookTo;
 import Camera.CameraMovement;
+import Color.WHITE;
 import MatrixUtils.createPerspectiveProjection;
 import RubiksCube.Axis;
 import RubiksCube.Operation;
@@ -104,6 +105,10 @@ class Scene extends Sprite
 	var operNum:Int;
 	var _bg:BitmapData;
 
+	// Lights
+	var _light:Light;
+	final LIGHT_COLOR = WHITE;
+
 	// Camera
 	var _camera:Camera;
 
@@ -149,6 +154,8 @@ class Scene extends Sprite
 		// _bg = Assets.getBitmapData('assets/openfl.png');
 
 		var context = stage.context3D;
+		context.configureBackBuffer(stage.stageWidth, stage.stageHeight, 1, true);
+
 		// computeOrthoProjection();
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
 		// projectionTransform = createPerspectiveProjection(-320, 320, 240, -240, 300, 800.0);
@@ -159,6 +166,9 @@ class Scene extends Sprite
 		// _rubiksCube = new RubiksCube(context, Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), 0, this);
 		// _rubiksCube = new RubiksCube(context, 300, Math.ceil(stage.stageHeight / 2), 400, this);
 		// addChild(new Bitmap(_bg));
+
+		// Add lights
+		_light = new Light(context, 200, 200, 200, LIGHT_COLOR);
 
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
@@ -215,7 +225,10 @@ class Scene extends Sprite
 		var lookAtMat = _camera.getViewMatrix();
 		// var lookAtMat = createLookAtMatrix(_cameraPos, _target, _worldUp);
 		lookAtMat.append(projectionTransform);
-		_rubiksCube.render(lookAtMat);
+
+		// Render the scene objects
+		_rubiksCube.render(lookAtMat, LIGHT_COLOR);
+		_light.render(lookAtMat);
 
 		// ------ finish iteration
 		context.present();

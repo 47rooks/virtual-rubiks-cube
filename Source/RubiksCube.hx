@@ -1,5 +1,12 @@
 package;
 
+import Color.BLACK;
+import Color.BLUE;
+import Color.GREEN;
+import Color.ORANGE;
+import Color.RED;
+import Color.WHITE;
+import Color.YELLOW;
 import Cube.ColorSpec;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
@@ -130,14 +137,6 @@ enum Operation
  */
 class RubiksCube
 {
-	static final RED:RGBA = 0xff0000ff;
-	static final GREEN:RGBA = 0x00ff00ff;
-	static final BLUE:RGBA = 0x0000ffff;
-	static final ORANGE:RGBA = 0xF59B42FF;
-	static final YELLOW:RGBA = 0xFFFF00ff;
-	static final WHITE:RGBA = 0xffffffff;
-	static final BLACK:RGBA = 0x000000ff;
-
 	final ROW_LEN = 3;
 	final SIDE:Float;
 	final START_OFFSET:Float;
@@ -152,6 +151,7 @@ class RubiksCube
 	private var _programTextureAttribute:Int;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
+	private var _programLightColorUniform:Int;
 
 	// Cube data
 	var _x:Int;
@@ -348,14 +348,22 @@ class RubiksCube
 		"varying vec2 vTexCoord;
             varying vec4 vColor;
             uniform sampler2D uImage0;
+            // uniform vec4 uLight;
             
             void main(void)
             {
+                /* Lighting */
+                float ambientStrength = 0.2;
+                // vec3 lightColor = uLight.rgb / 0xff;
+                // lightColor = vec4(255.0, 255.0, 255.0, 255.0) / 0xff;
+                // vec3 ambient =  lightColor.rgb * vec3(ambientStrength);
                 vec4 tColor = texture2D(uImage0, vTexCoord);
                 vec3 cColor = tColor.rgb * vColor.rgb;
-                if (tColor.a == 0) {
+                if (tColor.a == 0.0) {
                     cColor = vColor.rgb;
                 }
+                // vec3 litColor = cColor * ambient;   // Apply ambient lighting
+
                 gl_FragColor = vec4(cColor, vColor.a);
             }";
 
@@ -367,6 +375,9 @@ class RubiksCube
 		_programTextureAttribute = _program.getAttributeIndex("aTexCoord");
 		_programColorAttribute = _program.getAttributeIndex("aColor");
 		_programMatrixUniform = _program.getConstantIndex("uMatrix");
+		_programLightColorUniform = _program.getConstantIndex('uLight');
+
+		trace('Light: aPosition=${_programVertexAttribute}, aTexCoord=${_programTextureAttribute}, aColor=${_programColorAttribute}, uMatrix=${_programMatrixUniform}, uLight=${_programLightColorUniform}');
 	}
 
 	public function doOperation(operation:Operation):Void
@@ -885,7 +896,7 @@ class RubiksCube
 	 * 
 	 * @param projectionMatrix projection matrix to apply
 	 */
-	public function render(projectionMatrix:Matrix3D):Void
+	public function render(projectionMatrix:Matrix3D, lightColor:RGBA):Void
 	{
 		_context.setProgram(_program);
 		_context.setTextureAt(0, _faceTexture);
@@ -912,6 +923,12 @@ class RubiksCube
 			fullProjection.append(projectionMatrix);
 
 			_context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, _programMatrixUniform, fullProjection, false);
+			// _context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, _programLightColorUniform,
+			// 	new Vector<Float>(4, false, [lightColor.r, lightColor.g, lightColor.b, lightColor.a]), 1);
+			// var sVars:Vector<Float> = Vector.ofArray([255.0, 255.0, 255.0, 255.0]);
+			// _context.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, _programLightColorUniform, sVars);
+			// var s:ByteArray = ByteArray.fromBytes(Bytes.ofString('FFFFFFFF'));
+			// _context.setProgramConstantsFromByteArray(Context3DProgramType.FRAGMENT, _programLightColorUniform, s, 0);
 			_context.setVertexBufferAt(_programVertexAttribute, c.cube.bitmapVertexBuffer, 0, FLOAT_3);
 			_context.setVertexBufferAt(_programTextureAttribute, c.cube.bitmapVertexBuffer, 3, FLOAT_2);
 			_context.setVertexBufferAt(_programColorAttribute, c.cube.bitmapVertexBuffer, 5, FLOAT_4);

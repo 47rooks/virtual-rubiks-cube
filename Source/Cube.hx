@@ -261,7 +261,7 @@ class Cube
 		]);
 
 		bitmapVertexBuffer = context.createVertexBuffer(24, 9);
-		bitmapVertexBuffer.uploadFromVector(vertexData, 0, 216);
+		bitmapVertexBuffer.uploadFromVector(vertexData, 0, 24); // was 216
 
 		// Index for each cube face using the the vertex data above
 		var indexData = new Vector<UInt>([
