@@ -240,7 +240,8 @@ class RubiksCube
 						continue;
 					}
 					var cs = createColorSpec(i, j, k, ROW_LEN);
-					var c = new Cube(cs, _faceTexture, context);
+					// var c = new Cube(cs, _faceTexture, context);
+					var c:Cube = new Cube(cs, _faceTexture);
 					var scaleMatrix = createScaleMatrix(SIDE, SIDE, SIDE);
 					var rotationMatrix = new Matrix3D();
 					rotationMatrix.identity();

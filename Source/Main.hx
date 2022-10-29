@@ -1,8 +1,11 @@
 package;
 
+import lime.graphics.WebGLRenderContext;
 import openfl.Lib;
+import openfl.display.OpenGLRenderer;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.events.RenderEvent;
 
 class Main extends Sprite
 {
@@ -14,28 +17,23 @@ class Main extends Sprite
 	{
 		super();
 
-		var context = stage.context3D;
+		/// AGAL
+		// var context = stage.context3D;
 
-		if (context == null)
-		{
-			trace("Stage does not have a compatible 3D context available");
-			return;
-		}
+		// if (context == null)
+		// {
+		// 	trace("Stage does not have a compatible 3D context available");
+		// 	return;
+		// }
 
 		_scene = new Scene();
 
 		// Add event handlers
 		stage.addEventListener(Event.RESIZE, stage_onResize);
-		stage.addEventListener(Event.RENDER, stage_onRender);
+		stage.addEventListener(RenderEvent.RENDER_OPENGL, stage_onRender); // FIXME rename cbk
 		stage.addEventListener(Event.ENTER_FRAME, stage_onEnterFrame);
 
 		addChild(_scene);
-	}
-
-	/* Render the current state */
-	function render():Void
-	{
-		_scene.render();
 	}
 
 	function resize(width:Int, height:Int):Void
@@ -45,9 +43,12 @@ class Main extends Sprite
 
 	// Event Handlers
 
-	function stage_onRender(event:Event):Void
+	function stage_onRender(event:RenderEvent):Void
 	{
-		render();
+		var renderer:OpenGLRenderer = cast event.renderer;
+		renderer.setShader(null);
+		var gl:WebGLRenderContext = renderer.gl;
+		_scene.render(gl);
 	}
 
 	function stage_onResize(event:Event):Void
