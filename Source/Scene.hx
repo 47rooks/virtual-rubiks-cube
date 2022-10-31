@@ -149,13 +149,11 @@ class Scene extends Sprite
 		addEventListener(Event.ADDED_TO_STAGE, addedToStage);
 	}
 
+	@:access(lime.ui.Window.__attributes)
 	function addedToStage(e:Event):Void
 	{
 		// _bg = Assets.getBitmapData('assets/openfl.png');
-
-		// AGAL
-		// var context = stage.context3D;
-		// context.configureBackBuffer(stage.stageWidth, stage.stageHeight, 1, true);
+		trace('window depth=${stage.window.__attributes.context.depth}');
 
 		// computeOrthoProjection();
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
@@ -163,16 +161,10 @@ class Scene extends Sprite
 		// projectionTransform = createPerspectiveProjection(_cameraFOV, 640 / 480, 100, 1000);
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
-		// AGAL
-		// _rubiksCube = new RubiksCube(context, Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this);
 		// GL  comment for now
-		// _rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this);
-		// _rubiksCube = new RubiksCube(context, Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), 0, this);
-		// _rubiksCube = new RubiksCube(context, 300, Math.ceil(stage.stageHeight / 2), 400, this);
-		// addChild(new Bitmap(_bg));
+		_rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this);
 
 		// Add lights
-		// FIXME temporarily disable
 		_light = new Light(200, 200, 200, LIGHT_COLOR);
 
 		// Add completion event listener
@@ -210,49 +202,23 @@ class Scene extends Sprite
 			pollGamepad(gp);
 		}
 
-		// _rubiksCube.update(elapsed);
+		_rubiksCube.update(elapsed);
 	}
-
-	// AGAL
-	// /**
-	//  * Render the scene for this frame. Assumes that `update` has already been called.
-	//  */
-	// public function render(gl:WebGLRenderContext):Void
-	// {
-	// 	var context = stage.context3D;
-	// 	context.clear();
-	// 	context.setDepthTest(true, Context3DCompareMode.LESS);
-	// 	context.setBlendFactors(ONE, ONE_MINUS_SOURCE_ALPHA);
-	// 	// Render scene - iterate all objects and render them
-	// 	// var lookAtMat = createLookAtMatrix(_cameraPos, _cameraPos.add(_cameraFront), _worldUp);
-	// 	var lookAtMat = _camera.getViewMatrix();
-	// 	// var lookAtMat = createLookAtMatrix(_cameraPos, _target, _worldUp);
-	// 	lookAtMat.append(projectionTransform);
-	// 	// Render the scene objects
-	// 	_rubiksCube.render(lookAtMat, LIGHT_COLOR);
-	// 	_light.render(lookAtMat);
-	// 	// ------ finish iteration
-	// 	context.present();
-	// }
 
 	public function render(gl:WebGLRenderContext):Void
 	{
-		// glInitialize(gl);
-		// if (glRubiksCubeProgram == null)
-		// {
-		// 	return;
-		// }
-		// Render scene - iterate all objects and render them
-		// var lookAtMat = createLookAtMatrix(_cameraPos, _cameraPos.add(_cameraFront), _worldUp);
-
-		// Clear the screen for this cycle
+		// Clear the screen and prepare for this frame
 		gl.clearColor(0, 0, 0, 1);
-		gl.enable(gl.DEPTH_TEST);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		gl.depthFunc(gl.LESS);
+		gl.depthMask(true);
+		gl.enable(gl.DEPTH_TEST);
 
+		// Render the objects for this frame
 		var lookAtMat = _camera.getViewMatrix();
-		// var lookAtMat = createLookAtMatrix(_cameraPos, _target, _worldUp);
 		lookAtMat.append(projectionTransform);
+
+		_rubiksCube.render(gl, lookAtMat, LIGHT_COLOR);
 		_light.render(gl, lookAtMat);
 	}
 

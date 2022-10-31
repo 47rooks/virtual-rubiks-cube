@@ -10,8 +10,6 @@ import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
 import lime.utils.Int32Array;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix3D;
 
 class Light
@@ -23,7 +21,7 @@ class Light
 	var _y:Int;
 	var _z:Int;
 
-	var _color:RGBA;
+	private var _color:RGBA;
 
 	// Model data
 	var vertexData:Float32Array;
@@ -37,9 +35,6 @@ class Light
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
 	private var _glInitialized = false;
-
-	public var _bitmapIndexBuffer:IndexBuffer3D;
-	public var _bitmapVertexBuffer:VertexBuffer3D;
 
 	var _modelMatrix:Matrix3D;
 
@@ -241,9 +236,12 @@ class Light
 			12, 13,          14,
 			18, 19, 16, // Bottom
 			16, 17,          18,
-			21, 20,    23, // Top
-			21, 23,          22
+			23, 20,    21, // Top
+			22, 23,          21
 		]);
+		_glIndexBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
 
 		_modelMatrix = new Matrix3D();
 		_modelMatrix.append(createScaleMatrix(LIGHT_SIZE, LIGHT_SIZE, LIGHT_SIZE));
@@ -329,7 +327,11 @@ class Light
 
 		// Get references to GLSL attributes
 		_programVertexAttribute = gl.getAttribLocation(_glProgram, "aPosition");
+		gl.enableVertexAttribArray(_programVertexAttribute);
+
 		_programColorAttribute = gl.getAttribLocation(_glProgram, "aColor");
+		gl.enableVertexAttribArray(_programColorAttribute);
+
 		_programMatrixUniform = gl.getUniformLocation(_glProgram, "uMatrix");
 
 		trace('Light: aPosition=${_programVertexAttribute}, aColor=${_programColorAttribute}, uMatrix=${_programMatrixUniform}');
@@ -378,14 +380,9 @@ class Light
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
 		gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, 28, 0);
-		gl.enableVertexAttribArray(0);
 		gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, 28, 12);
-		gl.enableVertexAttribArray(1);
 
-		_glIndexBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
-
 		gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_INT, 0);
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
