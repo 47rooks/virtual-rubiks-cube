@@ -908,7 +908,7 @@ class RubiksCube
 				void main(void)
 				{
 					/* Create ambient lighting */
-					float ambientStrength = 1.;
+					float ambientStrength = 0.1;
 					vec3 lightColor = uLight.rgb / 0xff;
 					vec3 ambient =  lightColor.rgb * vec3(ambientStrength);
 
