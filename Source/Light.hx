@@ -2,10 +2,11 @@ package;
 
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
+import MatrixUtils.matrix3DToFloat32Array;
+import OpenGLUtils.glCreateProgram;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
@@ -34,19 +35,19 @@ class Light
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
-	private var _glInitialized = false;
 
 	var _modelMatrix:Matrix3D;
 
-	public function new(x:Int, y:Int, z:Int, color:RGBA)
+	public function new(x:Int, y:Int, z:Int, color:RGBA, gl:WebGLRenderContext)
 	{
 		_x = x;
 		_y = y;
 		_z = z;
 		_color = color;
+		initializeGl(gl);
 	}
 
-	function setupData(gl:WebGLRenderContext):Void
+	function initializeGl(gl:WebGLRenderContext):Void
 	{
 		vertexData = new Float32Array([ // X, Y, Z     R, G, B, A
 			side / 2, // BTR   BACK
@@ -251,21 +252,6 @@ class Light
 		createGLSLProgram(gl);
 	}
 
-	function glCreateShader(gl:WebGLRenderContext, source:String, type:Int):GLShader
-	{
-		var shader = gl.createShader(type);
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
-
-		if (gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0)
-		{
-			trace(gl.getShaderInfoLog(shader));
-			return null;
-		}
-
-		return shader;
-	}
-
 	function createGLSLProgram(gl:WebGLRenderContext):Void
 	{
 		var vertexSource = "attribute vec3 aPosition;
@@ -289,31 +275,6 @@ class Light
                 gl_FragColor = vColor;
             }";
 
-		var vs = glCreateShader(gl, vertexSource, gl.VERTEX_SHADER);
-		var fs = glCreateShader(gl, fragmentSource, gl.FRAGMENT_SHADER);
-
-		if (vs == null || fs == null)
-		{
-			return;
-		}
-
-		var program = gl.createProgram();
-		gl.attachShader(program, vs);
-		gl.attachShader(program, fs);
-
-		gl.deleteShader(vs);
-		gl.deleteShader(fs);
-
-		gl.linkProgram(program);
-
-		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0)
-		{
-			trace(gl.getProgramInfoLog(program));
-			trace("VALIDATE_STATUS: " + gl.getProgramParameter(program, gl.VALIDATE_STATUS));
-			trace("ERROR: " + gl.getError());
-			return;
-		}
-
 		// Delete old program - do I need this ?
 		if (_glProgram != null)
 		{
@@ -323,7 +284,11 @@ class Light
 			gl.deleteProgram(_glProgram);
 		}
 
-		_glProgram = program;
+		_glProgram = glCreateProgram(gl, vertexSource, fragmentSource);
+		if (_glProgram == null)
+		{
+			return;
+		}
 
 		// Get references to GLSL attributes
 		_programVertexAttribute = gl.getAttribLocation(_glProgram, "aPosition");
@@ -337,15 +302,6 @@ class Light
 		trace('Light: aPosition=${_programVertexAttribute}, aColor=${_programColorAttribute}, uMatrix=${_programMatrixUniform}');
 	}
 
-	function initializeGl(gl:WebGLRenderContext):Void
-	{
-		if (!_glInitialized)
-		{
-			setupData(gl);
-			_glInitialized = true;
-		}
-	}
-
 	/**
 	 * Render the light's current state.
 	 * 
@@ -353,8 +309,6 @@ class Light
 	 */
 	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D):Void
 	{
-		initializeGl(gl);
-
 		if (_glProgram == null)
 		{
 			return;
@@ -367,16 +321,9 @@ class Light
 
 		fullProjection.append(projectionMatrix);
 
-		var fPArray = new Array<Float>();
-		for (v in fullProjection.rawData)
-		{
-			fPArray.push(v);
-		}
-		var fP = new Float32Array(fPArray);
-
 		gl.useProgram(_glProgram);
 
-		gl.uniformMatrix4fv(_programMatrixUniform, false, fP);
+		gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(fullProjection));
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
 		gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, 28, 0);

@@ -4,6 +4,7 @@
 
 package;
 
+import lime.utils.Float32Array;
 import openfl.Vector;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
@@ -158,4 +159,19 @@ overload extern inline function createPerspectiveProjection(fov:Float, aspectRat
 function radians(deg:Float):Float
 {
 	return deg * Math.PI / 180;
+}
+
+/**
+ * Convert an openfl.geom.Matrix3D to a lime.utils.Float32Array
+ * @param m Matrix3D to convert
+ * @return Float32Array
+ */
+function matrix3DToFloat32Array(m:Matrix3D):Float32Array
+{
+	var fPArray = new Array<Float>();
+	for (v in m.rawData)
+	{
+		fPArray.push(v);
+	}
+	return new Float32Array(fPArray);
 }

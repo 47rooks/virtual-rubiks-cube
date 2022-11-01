@@ -152,8 +152,8 @@ class Scene extends Sprite
 	@:access(lime.ui.Window.__attributes)
 	function addedToStage(e:Event):Void
 	{
-		// _bg = Assets.getBitmapData('assets/openfl.png');
-		trace('window depth=${stage.window.__attributes.context.depth}');
+		var gl = stage.window.context.webgl;
+		trace('window gl context=${gl}');
 
 		// computeOrthoProjection();
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
@@ -162,10 +162,10 @@ class Scene extends Sprite
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
 		// GL  comment for now
-		_rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this);
+		_rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this, gl);
 
 		// Add lights
-		_light = new Light(200, 200, 200, LIGHT_COLOR);
+		_light = new Light(200, 200, 200, LIGHT_COLOR, gl);
 
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);

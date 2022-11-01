@@ -10,11 +10,11 @@ import Color.YELLOW;
 import Cube.ColorSpec;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
-import haxe.ds.Map;
+import MatrixUtils.matrix3DToFloat32Array;
+import OpenGLUtils.glCreateProgram;
 import lime.graphics.Image;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
@@ -158,7 +158,6 @@ class RubiksCube
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
 	private var _programLightColorUniform:GLUniformLocation;
-	private var _glInitialized = false;
 
 	// Cube face texture image
 	var _faceImageData:Image;
@@ -194,7 +193,7 @@ class RubiksCube
 	 * @param z z position to place cube at
 	 * @param scene the owning Scene object, for event dispatch
 	 */
-	public function new(x:Int, y:Int, z:Int, scene:Scene)
+	public function new(x:Int, y:Int, z:Int, scene:Scene, gl:WebGLRenderContext)
 	{
 		SIDE = 64; // FIXME this may need to be a constructor parameter
 		START_OFFSET = -(ROW_LEN * SIDE) / 2 + SIDE / 2;
@@ -209,7 +208,7 @@ class RubiksCube
 		// _faceTexture = _context.createRectangleTexture(_faceImageData.width, _faceImageData.height, BGRA, false);
 		// _faceTexture.uploadFromBitmapData(_faceImageData);
 
-		_cubes = createCubes();
+		_cubes = createCubes(gl);
 
 		// Initialize operation data
 		_operation = null;
@@ -222,15 +221,17 @@ class RubiksCube
 		_yaw = -90;
 		_pitch = 0;
 		_cubeRotation = new Matrix3D();
+
+		initializeGl(gl);
 	}
 
 	/**
 	 * Create the required number of cubes with correct colors and positioning data.
 	 * 
-	 * @param context the Context3D object to which this cube will be rendered
+	 * @param gl the GL render context to use
 	 * @return Map<String, CubeData>
 	 */
-	function createCubes():Map<String, CubeData>
+	function createCubes(gl:WebGLRenderContext):Map<String, CubeData>
 	{
 		var cubes = new Map<String, CubeData>();
 		for (i in 0...ROW_LEN)
@@ -245,7 +246,7 @@ class RubiksCube
 						continue;
 					}
 					var cs = createColorSpec(i, j, k, ROW_LEN);
-					var c:Cube = new Cube(cs);
+					var c:Cube = new Cube(cs, gl);
 					var scaleMatrix = createScaleMatrix(SIDE, SIDE, SIDE);
 					var rotationMatrix = new Matrix3D();
 					rotationMatrix.identity();
@@ -842,18 +843,12 @@ class RubiksCube
 	}
 
 	/**
-	 * Render the Rubik's cube' current state.
+	 * Initialize GL variables, shaders and program.
 	 * 
-	 * @param projectionMatrix projection matrix to apply
+	 * @param gl the GL render context
 	 */
-	function setupData(gl:WebGLRenderContext):Void
+	function initializeGl(gl:WebGLRenderContext):Void
 	{
-		// _glProgramTextureAttribute = gl.getAttribLocation(_glProgram, "aTexCoord");
-		// gl.enableVertexAttribArray(_glProgramTextureAttribute);
-
-		// var imageUniform = gl.getUniformLocation(_glProgram, "uImage0");
-		// gl.uniform1i(imageUniform, 0);
-
 		_glTexture = gl.createTexture();
 		gl.bindTexture(gl.TEXTURE_2D, _glTexture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _faceImageData.buffer.width, _faceImageData.buffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, _faceImageData.data);
@@ -864,21 +859,6 @@ class RubiksCube
 
 		// Create GLSL program object
 		createGLSLProgram(gl);
-	}
-
-	function glCreateShader(gl:WebGLRenderContext, source:String, type:Int):GLShader
-	{
-		var shader = gl.createShader(type);
-		gl.shaderSource(shader, source);
-		gl.compileShader(shader);
-
-		if (gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0)
-		{
-			trace(gl.getShaderInfoLog(shader));
-			return null;
-		}
-
-		return shader;
 	}
 
 	function createGLSLProgram(gl:WebGLRenderContext):Void
@@ -925,41 +905,11 @@ class RubiksCube
 					gl_FragColor = vec4(litColor, 1.0);
 				}";
 
-		var vs = glCreateShader(gl, vertexSource, gl.VERTEX_SHADER);
-		var fs = glCreateShader(gl, fragmentSource, gl.FRAGMENT_SHADER);
-
-		if (vs == null || fs == null)
+		_glProgram = glCreateProgram(gl, vertexSource, fragmentSource);
+		if (_glProgram == null)
 		{
 			return;
 		}
-
-		var program = gl.createProgram();
-		gl.attachShader(program, vs);
-		gl.attachShader(program, fs);
-
-		gl.deleteShader(vs);
-		gl.deleteShader(fs);
-
-		gl.linkProgram(program);
-
-		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0)
-		{
-			trace(gl.getProgramInfoLog(program));
-			trace("VALIDATE_STATUS: " + gl.getProgramParameter(program, gl.VALIDATE_STATUS));
-			trace("ERROR: " + gl.getError());
-			return;
-		}
-
-		// Delete old program - do I need this ?
-		if (_glProgram != null)
-		{
-			if (_programVertexAttribute > -1)
-				gl.disableVertexAttribArray(_programVertexAttribute);
-			gl.disableVertexAttribArray(_programVertexAttribute);
-			gl.deleteProgram(_glProgram);
-		}
-
-		_glProgram = program;
 
 		// Get references to GLSL attributes
 		_programVertexAttribute = gl.getAttribLocation(_glProgram, "aPosition");
@@ -978,19 +928,8 @@ class RubiksCube
 		trace('Light: aPosition=${_programVertexAttribute}, aTexCoord=${_programTextureAttribute}, aColor=${_programColorAttribute}, uMatrix=${_programMatrixUniform}, uLight=${_programLightColorUniform}');
 	}
 
-	function initializeGl(gl:WebGLRenderContext):Void
-	{
-		if (!_glInitialized)
-		{
-			setupData(gl);
-			_glInitialized = true;
-		}
-	}
-
 	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, lightColor:RGBA):Void
 	{
-		initializeGl(gl);
-
 		if (_glProgram == null)
 		{
 			return;
@@ -1018,18 +957,8 @@ class RubiksCube
 
 			fullProjection.append(projectionMatrix);
 
-			// Initialize cube data structures for GL
-			c.cube.render(gl);
-
-			// Convert matrix to Float32Array
-			// FIXME this isn't where it should be. Refactor it into the MatrixUtils.
-			var fPArray = new Array<Float>();
-			for (v in fullProjection.rawData)
-			{
-				fPArray.push(v);
-			}
-			var fP = new Float32Array(fPArray);
-			gl.uniformMatrix4fv(_programMatrixUniform, false, fP);
+			// Convert matrix to Float32Array and push in shader uniform
+			gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(fullProjection));
 			gl.uniform1i(_programImageUniform, 0);
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 			gl.uniform3fv(_programLightColorUniform, lightColorArr, 0);
