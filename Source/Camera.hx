@@ -38,7 +38,8 @@ class Camera
 	final MOVE_SPEED = 500;
 
 	// Camera and world vectors
-	var _cameraPos:Vector3D;
+	public var cameraPos(default, null):Vector3D;
+
 	var _cameraFront:Vector3D;
 	var _cameraRight:Vector3D;
 	var _worldUp:Vector3D;
@@ -60,7 +61,7 @@ class Camera
 	 */
 	public function new(pos:Vector3D, cameraUp:Vector3D, yaw:Float = -90.0, pitch:Float = 0.0)
 	{
-		_cameraPos = pos;
+		cameraPos = pos;
 		_worldUp = cameraUp;
 		_cameraFront = new Vector3D(0, 0, -1);
 		_yaw = yaw;
@@ -73,7 +74,7 @@ class Camera
 	 */
 	public function getViewMatrix():Matrix3D
 	{
-		return createLookAtMatrix(_cameraPos, _cameraPos.add(_cameraFront), _worldUp);
+		return createLookAtMatrix(cameraPos, cameraPos.add(_cameraFront), _worldUp);
 	}
 
 	/**
@@ -89,21 +90,21 @@ class Camera
 			case FORWARD:
 				var tgt = _cameraFront.clone();
 				tgt.scaleBy(speed);
-				_cameraPos = _cameraPos.add(tgt);
+				cameraPos = cameraPos.add(tgt);
 			case BACKWARD:
 				var tgt = _cameraFront.clone();
 				tgt.scaleBy(speed);
-				_cameraPos = _cameraPos.subtract(tgt);
+				cameraPos = cameraPos.subtract(tgt);
 			case RIGHT:
 				var m = _cameraFront.crossProduct(_worldUp);
 				m.normalize();
 				m.scaleBy(speed);
-				_cameraPos = _cameraPos.subtract(m);
+				cameraPos = cameraPos.subtract(m);
 			case LEFT:
 				var m = _cameraFront.crossProduct(_worldUp);
 				m.normalize();
 				m.scaleBy(speed);
-				_cameraPos = _cameraPos.add(m);
+				cameraPos = cameraPos.add(m);
 		}
 	}
 

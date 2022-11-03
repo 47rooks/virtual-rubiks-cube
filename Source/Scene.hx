@@ -4,10 +4,12 @@ import Camera.CameraLookTo;
 import Camera.CameraMovement;
 import Color.WHITE;
 import MatrixUtils.createPerspectiveProjection;
+import MatrixUtils.vector3DToFloat32Array;
 import RubiksCube.Axis;
 import RubiksCube.Operation;
 import haxe.ValueException;
 import lime.graphics.WebGLRenderContext;
+import lime.utils.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -108,6 +110,7 @@ class Scene extends Sprite
 	// Lights
 	var _light:Light;
 	final LIGHT_COLOR = WHITE;
+	final _lightPosition:Float32Array;
 
 	// Camera
 	var _camera:Camera;
@@ -146,6 +149,7 @@ class Scene extends Sprite
 		_gameInput = new GameInput();
 		_gamepads = new Array<GameInputDevice>();
 
+		_lightPosition = new Float32Array([200.0, 200.0, 200.0]);
 		addEventListener(Event.ADDED_TO_STAGE, addedToStage);
 	}
 
@@ -165,7 +169,7 @@ class Scene extends Sprite
 		_rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this, gl);
 
 		// Add lights
-		_light = new Light(200, 200, 200, LIGHT_COLOR, gl);
+		_light = new Light(_lightPosition, LIGHT_COLOR, gl);
 
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
@@ -218,7 +222,7 @@ class Scene extends Sprite
 		var lookAtMat = _camera.getViewMatrix();
 		lookAtMat.append(projectionTransform);
 
-		_rubiksCube.render(gl, lookAtMat, LIGHT_COLOR);
+		_rubiksCube.render(gl, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos));
 		_light.render(gl, lookAtMat);
 	}
 

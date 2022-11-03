@@ -18,9 +18,9 @@ class Light
 	final LIGHT_SIZE = 20.0;
 	final side = 1.0;
 
-	var _x:Int;
-	var _y:Int;
-	var _z:Int;
+	var _x:Float;
+	var _y:Float;
+	var _z:Float;
 
 	private var _color:RGBA;
 
@@ -38,11 +38,12 @@ class Light
 
 	var _modelMatrix:Matrix3D;
 
-	public function new(x:Int, y:Int, z:Int, color:RGBA, gl:WebGLRenderContext)
+	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext)
 	{
-		_x = x;
-		_y = y;
-		_z = z;
+		_x = position[0];
+		_y = position[1];
+		_z = position[2];
+
 		_color = color;
 		initializeGl(gl);
 	}

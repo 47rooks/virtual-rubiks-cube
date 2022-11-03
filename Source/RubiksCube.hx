@@ -154,10 +154,14 @@ class RubiksCube
 	private var _glTexture:GLTexture;
 	private var _programImageUniform:GLUniformLocation;
 	private var _programMatrixUniform:GLUniformLocation;
+	private var _programModelMatrixUniform:GLUniformLocation;
 	private var _programTextureAttribute:Int;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
+	private var _programNormalAttribute:Int;
 	private var _programLightColorUniform:GLUniformLocation;
+	private var _programLightPositionUniform:GLUniformLocation;
+	private var _programViewerPositionUniform:GLUniformLocation;
 
 	// Cube face texture image
 	var _faceImageData:Image;
@@ -870,12 +874,25 @@ class RubiksCube
 			attribute vec4 aColor;
 			varying vec4 vColor;
 	
+			attribute vec3 aNormal;
+			varying vec3 vNormal;
+			
+			varying vec3 vFragPos;
+
 			uniform mat4 uMatrix;
+			uniform mat4 uModel;
 			
 			void main(void) {
 				vTexCoord = aTexCoord;
 				vColor = aColor / vec4(0xff);
+
+				// Transform normals to world space to handle cube transformations.
+				// Proper normal matrix not required as we only uniform scale
+				// the cubes. If we did non-uniform we would need a normal matrix.
+				vNormal = (uModel * vec4(aNormal, 0.0)).xyz;
+				
 				gl_Position = uMatrix * aPosition;
+				vFragPos = (uModel * aPosition).xyz;
 			}";
 
 		var fragmentSource = #if !desktop "precision mediump float;" + #end
@@ -883,11 +900,17 @@ class RubiksCube
 		"varying vec2 vTexCoord;
 				varying vec4 vColor;
 				uniform sampler2D uImage0;
-				uniform vec3 uLight;
-				
+
+				uniform vec3 uLightPos;   // Light position
+				uniform vec3 uLight;      // Light color
+				varying vec3 vNormal;     // Object normals
+				varying vec3 vFragPos;    // World position of fragment
+
+				uniform vec3 uViewerPos;   // Camera position
+
 				void main(void)
 				{
-					/* Create ambient lighting */
+					/* Compute ambient lighting */
 					float ambientStrength = 0.1;
 					vec3 lightColor = uLight.rgb / 0xff;
 					vec3 ambient =  lightColor.rgb * vec3(ambientStrength);
@@ -899,8 +922,20 @@ class RubiksCube
 						cColor = vColor.rgb;
 					}
 					
-					/* Apply ambient lighting */
-					vec3 litColor = cColor * ambient;
+					/* Compute diffuse lighting */
+					vec3 norm = normalize(vNormal);
+					vec3 lightDirection = normalize(uLightPos - vFragPos);
+					float diffuse = max(dot(norm, lightDirection), 0.0);
+
+					/* Compute specular lighting */
+					float specularStrength = 0.75;
+					vec3 viewerDir = normalize(uViewerPos.xyz - vFragPos);
+					vec3 reflectDir = reflect(-lightDirection, norm);
+					float spec = pow(max(dot(viewerDir, reflectDir), 0.0), 32);
+					vec3 specular = specularStrength * spec * lightColor;
+
+					/* Apply ambient and diffuse lighting */
+					vec3 litColor = cColor * (ambientStrength + diffuse + specular);
 					
 					gl_FragColor = vec4(litColor, 1.0);
 				}";
@@ -921,14 +956,20 @@ class RubiksCube
 		_programColorAttribute = gl.getAttribLocation(_glProgram, "aColor");
 		gl.enableVertexAttribArray(_programColorAttribute);
 
+		_programNormalAttribute = gl.getAttribLocation(_glProgram, "aNormal");
+		gl.enableVertexAttribArray(_programNormalAttribute);
+
 		_programMatrixUniform = gl.getUniformLocation(_glProgram, "uMatrix");
+		_programModelMatrixUniform = gl.getUniformLocation(_glProgram, "uModel");
 		_programImageUniform = gl.getUniformLocation(_glProgram, "uImage0");
 		_programLightColorUniform = gl.getUniformLocation(_glProgram, "uLight");
+		_programLightPositionUniform = gl.getUniformLocation(_glProgram, "uLightPos");
+		_programViewerPositionUniform = gl.getUniformLocation(_glProgram, "uViewerPos");
 
 		trace('Light: aPosition=${_programVertexAttribute}, aTexCoord=${_programTextureAttribute}, aColor=${_programColorAttribute}, uMatrix=${_programMatrixUniform}, uLight=${_programLightColorUniform}');
 	}
 
-	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, lightColor:RGBA):Void
+	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array, cameraPosition:Float32Array):Void
 	{
 		if (_glProgram == null)
 		{
@@ -955,20 +996,27 @@ class RubiksCube
 			modelMatrix.append(_cubeRotation);
 			fullProjection.append(modelMatrix);
 
-			fullProjection.append(projectionMatrix);
-
 			// Convert matrix to Float32Array and push in shader uniform
+			// Pass in model matrix - no projection
+			gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(fullProjection));
+
+			// Add projection and pass in to shader
+			fullProjection.append(projectionMatrix);
 			gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(fullProjection));
 			gl.uniform1i(_programImageUniform, 0);
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 			gl.uniform3fv(_programLightColorUniform, lightColorArr, 0);
+			gl.uniform3fv(_programLightPositionUniform, lightPosition, 0);
+			gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
 			gl.bindTexture(gl.TEXTURE_2D, _glTexture);
 
 			// Apply GL calls to submit the cubbe data to the GPU
+			var stride = Float32Array.BYTES_PER_ELEMENT * 12;
 			gl.bindBuffer(gl.ARRAY_BUFFER, c.cube._glVertexBuffer);
-			gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, 36, 0);
-			gl.vertexAttribPointer(_programTextureAttribute, 2, gl.FLOAT, false, 36, 3 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, 36, 5 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, stride, 0);
+			gl.vertexAttribPointer(_programTextureAttribute, 2, gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, stride, 5 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer(_programNormalAttribute, 3, gl.FLOAT, false, stride, 9 * Float32Array.BYTES_PER_ELEMENT);
 
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, c.cube._glIndexBuffer);
 			gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_INT, 0);

@@ -175,3 +175,13 @@ function matrix3DToFloat32Array(m:Matrix3D):Float32Array
 	}
 	return new Float32Array(fPArray);
 }
+
+/**
+ * Convert a Vector3D to a Float32Array.
+ * @param v the Vector3D to convert
+ * @return Float32Array
+ */
+function vector3DToFloat32Array(v:Vector3D):Float32Array
+{
+	return new Float32Array([v.x, v.y, v.z, v.w]);
+}
