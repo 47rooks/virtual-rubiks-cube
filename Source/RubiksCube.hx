@@ -912,7 +912,7 @@ class RubiksCube
 				{
 					/* Compute ambient lighting */
 					float ambientStrength = 0.1;
-					vec3 lightColor = uLight.rgb / 0xff;
+					vec3 lightColor = uLight.rgb / 255.0;
 					vec3 ambient =  lightColor.rgb * vec3(ambientStrength);
 
 					/* Apply texture */
@@ -931,7 +931,7 @@ class RubiksCube
 					float specularStrength = 0.75;
 					vec3 viewerDir = normalize(uViewerPos.xyz - vFragPos);
 					vec3 reflectDir = reflect(-lightDirection, norm);
-					float spec = pow(max(dot(viewerDir, reflectDir), 0.0), 32);
+					float spec = pow(max(dot(viewerDir, reflectDir), 0.0), 32.0);
 					vec3 specular = specularStrength * spec * lightColor;
 
 					/* Apply ambient and diffuse lighting */

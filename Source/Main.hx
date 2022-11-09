@@ -1,7 +1,9 @@
 package;
 
 import lime.graphics.WebGLRenderContext;
+import openfl.Assets;
 import openfl.Lib;
+import openfl.display.Bitmap;
 import openfl.display.OpenGLRenderer;
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -12,6 +14,8 @@ class Main extends Sprite
 	private var cacheTime:Int;
 
 	var _scene:Scene;
+
+	var added = false;
 
 	public function new()
 	{
@@ -49,6 +53,17 @@ class Main extends Sprite
 		renderer.setShader(null);
 		var gl:WebGLRenderContext = renderer.gl;
 		_scene.render(gl);
+
+		// if (!added)
+		// {
+		// 	var image = Assets.getBitmapData("assets/openfl.png");
+
+		// 	var bitmap = new Bitmap(image);
+		// 	bitmap.x = 20;
+		// 	bitmap.y = 20;
+		// 	addChild(bitmap);
+		// 	added = true;
+		// }
 	}
 
 	function stage_onResize(event:Event):Void

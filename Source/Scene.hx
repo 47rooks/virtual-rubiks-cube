@@ -10,7 +10,6 @@ import RubiksCube.Operation;
 import haxe.ValueException;
 import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
-import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.GameInputEvent;
@@ -105,8 +104,8 @@ class Scene extends Sprite
 	var _rubiksCube:RubiksCube;
 	var operations:Array<Operation>;
 	var operNum:Int;
-	var _bg:BitmapData;
 
+	// var _bg:BitmapData;
 	// Lights
 	var _light:Light;
 	final LIGHT_COLOR = WHITE;
