@@ -5,12 +5,14 @@ import MatrixUtils.createTranslationMatrix;
 import MatrixUtils.matrix3DToFloat32Array;
 import OpenGLUtils.glCreateProgram;
 import lime.graphics.WebGLRenderContext;
-import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
-import lime.utils.Int32Array;
+import openfl.Vector;
+import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix3D;
 
 class Light
@@ -25,32 +27,32 @@ class Light
 	private var _color:RGBA;
 
 	// Model data
-	var vertexData:Float32Array;
-	var indexData:Int32Array;
+	var vertexData:Vector<Float>;
+	var indexData:Vector<UInt>;
 
 	// GL interface variables
 	private var _glProgram:GLProgram;
-	private var _glVertexBuffer:GLBuffer;
-	private var _glIndexBuffer:GLBuffer;
+	private var _glVertexBuffer:VertexBuffer3D;
+	private var _glIndexBuffer:IndexBuffer3D;
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
 
 	var _modelMatrix:Matrix3D;
 
-	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext)
+	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext, context:Context3D)
 	{
 		_x = position[0];
 		_y = position[1];
 		_z = position[2];
 
 		_color = color;
-		initializeGl(gl);
+		initializeGl(gl, context);
 	}
 
-	function initializeGl(gl:WebGLRenderContext):Void
+	function initializeGl(gl:WebGLRenderContext, context:Context3D):Void
 	{
-		vertexData = new Float32Array([ // X, Y, Z     R, G, B, A
+		vertexData = new Vector<Float>([ // X, Y, Z     R, G, B, A
 			side / 2, // BTR   BACK
 			side / 2,
 			-side / 2,
@@ -220,14 +222,16 @@ class Light
 			_color.b,
 			_color.a,
 		]);
-		_glVertexBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+		// _glVertexBuffer = gl.createBuffer();
+		// gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
+		// gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+		_glVertexBuffer = context.createVertexBuffer(24, 7);
+		_glVertexBuffer.uploadFromVector(vertexData, 0, 168);
 
 		// Index for each cube face using the the vertex data above
 		// Cross check indexes with De Vries and make sure that we have the same points
 		// ocurring in the same order.
-		indexData = new Int32Array([
+		indexData = new Vector<UInt>([
 			 0,  3,    2, // Back
 			 2,  1,           0,
 			 9, 11,  10, // Front
@@ -241,9 +245,11 @@ class Light
 			23, 20,    21, // Top
 			22, 23,          21
 		]);
-		_glIndexBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		// _glIndexBuffer = gl.createBuffer();
+		// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
+		// gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		_glIndexBuffer = context.createIndexBuffer(36);
+		_glIndexBuffer.uploadFromVector(indexData, 0, 36);
 
 		_modelMatrix = new Matrix3D();
 		_modelMatrix.append(createScaleMatrix(LIGHT_SIZE, LIGHT_SIZE, LIGHT_SIZE));
@@ -308,7 +314,7 @@ class Light
 	 * 
 	 * @param projectionMatrix projection matrix to apply
 	 */
-	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D):Void
+	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D):Void
 	{
 		if (_glProgram == null)
 		{
@@ -326,13 +332,17 @@ class Light
 
 		gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(fullProjection));
 
-		gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
-		gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, 28, 0);
-		gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, 28, 12);
+		// gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
+		// gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, 28, 0);
+		// gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, 28, 12);
+		context.setVertexBufferAt(_programVertexAttribute, _glVertexBuffer, 0, FLOAT_3);
+		context.setVertexBufferAt(_programColorAttribute, _glVertexBuffer, 3, FLOAT_4);
 
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
-		gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_INT, 0);
-		gl.bindBuffer(gl.ARRAY_BUFFER, null);
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+		// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
+
+		// gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_INT, 0);
+		context.drawTriangles(_glIndexBuffer);
+		// gl.bindBuffer(gl.ARRAY_BUFFER, null);
+		// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 	}
 }

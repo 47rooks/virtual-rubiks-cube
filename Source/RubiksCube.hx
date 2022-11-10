@@ -20,6 +20,7 @@ import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
 import lime.utils.Assets;
 import lime.utils.Float32Array;
+import openfl.display3D.Context3D;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
@@ -197,7 +198,7 @@ class RubiksCube
 	 * @param z z position to place cube at
 	 * @param scene the owning Scene object, for event dispatch
 	 */
-	public function new(x:Int, y:Int, z:Int, scene:Scene, gl:WebGLRenderContext)
+	public function new(x:Int, y:Int, z:Int, scene:Scene, gl:WebGLRenderContext, context:Context3D)
 	{
 		SIDE = 64; // FIXME this may need to be a constructor parameter
 		START_OFFSET = -(ROW_LEN * SIDE) / 2 + SIDE / 2;
@@ -212,7 +213,7 @@ class RubiksCube
 		// _faceTexture = _context.createRectangleTexture(_faceImageData.width, _faceImageData.height, BGRA, false);
 		// _faceTexture.uploadFromBitmapData(_faceImageData);
 
-		_cubes = createCubes(gl);
+		_cubes = createCubes(context);
 
 		// Initialize operation data
 		_operation = null;
@@ -226,7 +227,7 @@ class RubiksCube
 		_pitch = 0;
 		_cubeRotation = new Matrix3D();
 
-		initializeGl(gl);
+		initializeGl(gl, context);
 	}
 
 	/**
@@ -235,7 +236,7 @@ class RubiksCube
 	 * @param gl the GL render context to use
 	 * @return Map<String, CubeData>
 	 */
-	function createCubes(gl:WebGLRenderContext):Map<String, CubeData>
+	function createCubes(context:Context3D):Map<String, CubeData>
 	{
 		var cubes = new Map<String, CubeData>();
 		for (i in 0...ROW_LEN)
@@ -250,7 +251,7 @@ class RubiksCube
 						continue;
 					}
 					var cs = createColorSpec(i, j, k, ROW_LEN);
-					var c:Cube = new Cube(cs, gl);
+					var c:Cube = new Cube(cs, context);
 					var scaleMatrix = createScaleMatrix(SIDE, SIDE, SIDE);
 					var rotationMatrix = new Matrix3D();
 					rotationMatrix.identity();
@@ -851,7 +852,7 @@ class RubiksCube
 	 * 
 	 * @param gl the GL render context
 	 */
-	function initializeGl(gl:WebGLRenderContext):Void
+	function initializeGl(gl:WebGLRenderContext, context:Context3D):Void
 	{
 		_glTexture = gl.createTexture();
 		gl.bindTexture(gl.TEXTURE_2D, _glTexture);
@@ -969,7 +970,8 @@ class RubiksCube
 		trace('Light: aPosition=${_programVertexAttribute}, aTexCoord=${_programTextureAttribute}, aColor=${_programColorAttribute}, uMatrix=${_programMatrixUniform}, uLight=${_programLightColorUniform}');
 	}
 
-	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array, cameraPosition:Float32Array):Void
+	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
+			cameraPosition:Float32Array):Void
 	{
 		if (_glProgram == null)
 		{
@@ -1011,15 +1013,20 @@ class RubiksCube
 			gl.bindTexture(gl.TEXTURE_2D, _glTexture);
 
 			// Apply GL calls to submit the cubbe data to the GPU
-			var stride = Float32Array.BYTES_PER_ELEMENT * 12;
-			gl.bindBuffer(gl.ARRAY_BUFFER, c.cube._glVertexBuffer);
-			gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, stride, 0);
-			gl.vertexAttribPointer(_programTextureAttribute, 2, gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, stride, 5 * Float32Array.BYTES_PER_ELEMENT);
-			gl.vertexAttribPointer(_programNormalAttribute, 3, gl.FLOAT, false, stride, 9 * Float32Array.BYTES_PER_ELEMENT);
+			// var stride = Float32Array.BYTES_PER_ELEMENT * 12;
+			// gl.bindBuffer(gl.ARRAY_BUFFER, c.cube._glVertexBuffer);
+			// gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, stride, 0);
+			// gl.vertexAttribPointer(_programTextureAttribute, 2, gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
+			// gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, stride, 5 * Float32Array.BYTES_PER_ELEMENT);
+			// gl.vertexAttribPointer(_programNormalAttribute, 3, gl.FLOAT, false, stride, 9 * Float32Array.BYTES_PER_ELEMENT);
+			context.setVertexBufferAt(_programVertexAttribute, c.cube._glVertexBuffer, 0, FLOAT_3);
+			context.setVertexBufferAt(_programTextureAttribute, c.cube._glVertexBuffer, 3, FLOAT_2);
+			context.setVertexBufferAt(_programColorAttribute, c.cube._glVertexBuffer, 5, FLOAT_4);
+			context.setVertexBufferAt(_programNormalAttribute, c.cube._glVertexBuffer, 9, FLOAT_3);
 
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, c.cube._glIndexBuffer);
-			gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_INT, 0);
+			context.drawTriangles(c.cube._glIndexBuffer);
+			// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, c.cube._glIndexBuffer);
+			// gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_INT, 0);
 		}
 	}
 

@@ -1,11 +1,11 @@
 package;
 
-import lime.graphics.WebGLRenderContext;
-import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
-import lime.utils.Float32Array;
-import lime.utils.Int32Array;
+import openfl.Vector;
+import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 
 typedef ColorSpec =
 {
@@ -23,12 +23,12 @@ typedef ColorSpec =
 class Cube
 {
 	// Model data
-	public var vertexData:Float32Array;
-	public var indexData:Int32Array;
+	public var vertexData:Vector<Float>;
+	public var indexData:Vector<UInt>;
 
 	// GL interface variables
-	public var _glVertexBuffer:GLBuffer;
-	public var _glIndexBuffer:GLBuffer;
+	public var _glVertexBuffer:VertexBuffer3D;
+	public var _glIndexBuffer:IndexBuffer3D;
 
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programVertexAttribute:Int;
@@ -37,7 +37,7 @@ class Cube
 
 	private var _color:ColorSpec;
 
-	public function new(color:ColorSpec, gl:WebGLRenderContext)
+	public function new(color:ColorSpec, context:Context3D)
 	{
 		// Load shaders from files
 		// var vertex = Assets.getText("assets/cube.vert");
@@ -45,14 +45,14 @@ class Cube
 		// Create vertex data, including position, texture mapping and colour values.
 
 		_color = color;
-		initializeGl(gl);
+		initializeGl(context);
 	}
 
-	function initializeGl(gl:WebGLRenderContext):Void
+	function initializeGl(context:Context3D):Void
 	{
 		final side = 1.0;
 
-		var v:Array<Float> = [ // X, Y, Z                        U, V   R, G, B, A
+		var v = [ // X, Y, Z                        U, V   R, G, B, A
 			side / 2.0,
 			side / 2,
 			-side / 2,
@@ -342,13 +342,16 @@ class Cube
 			1.0,
 			0.0
 		];
-		vertexData = new Float32Array(v);
-		_glVertexBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+		vertexData = new Vector<Float>(v);
+		// _glVertexBuffer = gl.createBuffer();
+		// gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
+		// gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+		_glVertexBuffer = context.createVertexBuffer(24, 12, STATIC_DRAW);
+		_glVertexBuffer.uploadFromVector(vertexData, 0, 288);
 
 		// Index for each cube face using the the vertex data above
-		indexData = new Int32Array([
+
+		indexData = new Vector<UInt>([
 			 2,  3,    0, // Back
 			 0,  1,           2,
 			10, 11,   9, // Front
@@ -362,8 +365,10 @@ class Cube
 			21, 20,    23, // Top
 			21, 23,          22
 		]);
-		_glIndexBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		// _glIndexBuffer = gl.createBuffer();
+		// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
+		// gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		_glIndexBuffer = context.createIndexBuffer(36, STATIC_DRAW);
+		_glIndexBuffer.uploadFromVector(indexData, 0, 36);
 	}
 }

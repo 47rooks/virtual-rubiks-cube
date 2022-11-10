@@ -11,6 +11,7 @@ import haxe.ValueException;
 import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
 import openfl.display.Sprite;
+import openfl.display3D.Context3D;
 import openfl.events.Event;
 import openfl.events.GameInputEvent;
 import openfl.events.KeyboardEvent;
@@ -105,6 +106,10 @@ class Scene extends Sprite
 	var operations:Array<Operation>;
 	var operNum:Int;
 
+	// Graphics Contexts
+	var _gl:WebGLRenderContext;
+	var _context:Context3D;
+
 	// var _bg:BitmapData;
 	// Lights
 	var _light:Light;
@@ -152,11 +157,11 @@ class Scene extends Sprite
 		addEventListener(Event.ADDED_TO_STAGE, addedToStage);
 	}
 
-	@:access(lime.ui.Window.__attributes)
 	function addedToStage(e:Event):Void
 	{
-		var gl = stage.window.context.webgl;
-		trace('window gl context=${gl}');
+		_gl = stage.window.context.webgl;
+		trace('window _gl context=${_gl}');
+		_context = stage.context3D;
 
 		// computeOrthoProjection();
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
@@ -165,10 +170,10 @@ class Scene extends Sprite
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
 		// GL  comment for now
-		_rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this, gl);
+		_rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this, _gl, _context);
 
 		// Add lights
-		_light = new Light(_lightPosition, LIGHT_COLOR, gl);
+		_light = new Light(_lightPosition, LIGHT_COLOR, _gl, _context);
 
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
@@ -208,21 +213,21 @@ class Scene extends Sprite
 		_rubiksCube.update(elapsed);
 	}
 
-	public function render(gl:WebGLRenderContext):Void
+	public function render():Void
 	{
 		// Clear the screen and prepare for this frame
-		gl.clearColor(0, 0, 0, 1);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		gl.depthFunc(gl.LESS);
-		gl.depthMask(true);
-		gl.enable(gl.DEPTH_TEST);
+		_gl.clearColor(0, 0, 0, 1);
+		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
+		_gl.depthFunc(_gl.LESS);
+		_gl.depthMask(true);
+		_gl.enable(_gl.DEPTH_TEST);
 
 		// Render the objects for this frame
 		var lookAtMat = _camera.getViewMatrix();
 		lookAtMat.append(projectionTransform);
 
-		_rubiksCube.render(gl, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos));
-		_light.render(gl, lookAtMat);
+		_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos));
+		_light.render(_gl, _context, lookAtMat);
 	}
 
 	/**

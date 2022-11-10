@@ -46,24 +46,24 @@ class Main extends Sprite
 	}
 
 	// Event Handlers
-
+	// FIXME This could be driven from the scene level - should it be ?
 	function stage_onRender(event:RenderEvent):Void
 	{
 		var renderer:OpenGLRenderer = cast event.renderer;
 		renderer.setShader(null);
 		var gl:WebGLRenderContext = renderer.gl;
-		_scene.render(gl);
+		_scene.render();
 
-		// if (!added)
-		// {
-		// 	var image = Assets.getBitmapData("assets/openfl.png");
+		if (!added)
+		{
+			var image = Assets.getBitmapData("assets/openfl.png");
 
-		// 	var bitmap = new Bitmap(image);
-		// 	bitmap.x = 20;
-		// 	bitmap.y = 20;
-		// 	addChild(bitmap);
-		// 	added = true;
-		// }
+			var bitmap = new Bitmap(image);
+			bitmap.x = 20;
+			bitmap.y = 20;
+			addChild(bitmap);
+			added = true;
+		}
 	}
 
 	function stage_onResize(event:Event):Void
