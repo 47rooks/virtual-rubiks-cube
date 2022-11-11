@@ -12,14 +12,14 @@ import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import MatrixUtils.matrix3DToFloat32Array;
 import OpenGLUtils.glCreateProgram;
-import lime.graphics.Image;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
-import lime.utils.Assets;
 import lime.utils.Float32Array;
+import openfl.Assets;
+import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
@@ -149,7 +149,6 @@ class RubiksCube
 	final ROTATION_SENSITIVTY = 0.5;
 
 	// GL interface variables
-	private var _faceTexture:RectangleTexture;
 	private var _glProgram:GLProgram;
 	private var _glProgramTextureAttribute:Int;
 	private var _glTexture:GLTexture;
@@ -163,9 +162,14 @@ class RubiksCube
 	private var _programLightColorUniform:GLUniformLocation;
 	private var _programLightPositionUniform:GLUniformLocation;
 	private var _programViewerPositionUniform:GLUniformLocation;
+	private var _programAmbientStrengthUniform:GLUniformLocation;
+	private var _programDiffuseStrengthUniform:GLUniformLocation;
+	private var _programSpecularStrengthUniform:GLUniformLocation;
+	private var _programSpecularIntensityUniform:GLUniformLocation;
 
 	// Cube face texture image
-	var _faceImageData:Image;
+	var _faceImageData:BitmapData;
+	private var _faceTexture:RectangleTexture;
 
 	// Cube data
 	var _x:Int;
@@ -209,9 +213,9 @@ class RubiksCube
 		_scene = scene;
 
 		// Load texture
-		_faceImageData = Assets.getImage("assets/openfl.png");
-		// _faceTexture = _context.createRectangleTexture(_faceImageData.width, _faceImageData.height, BGRA, false);
-		// _faceTexture.uploadFromBitmapData(_faceImageData);
+		_faceImageData = Assets.getBitmapData("assets/openfl.png");
+		_faceTexture = context.createRectangleTexture(_faceImageData.width, _faceImageData.height, BGRA, false);
+		_faceTexture.uploadFromBitmapData(_faceImageData);
 
 		_cubes = createCubes(context);
 
@@ -854,13 +858,13 @@ class RubiksCube
 	 */
 	function initializeGl(gl:WebGLRenderContext, context:Context3D):Void
 	{
-		_glTexture = gl.createTexture();
-		gl.bindTexture(gl.TEXTURE_2D, _glTexture);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _faceImageData.buffer.width, _faceImageData.buffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, _faceImageData.data);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		// _glTexture = gl.createTexture();
+		// gl.bindTexture(gl.TEXTURE_2D, _glTexture);
+		// gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _faceImageData.buffer.width, _faceImageData.buffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, _faceImageData.data);
+		// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+		// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-		gl.vertexAttribPointer(_glProgramTextureAttribute, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		// gl.vertexAttribPointer(_glProgramTextureAttribute, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 
 		// Create GLSL program object
 		createGLSLProgram(gl);
@@ -907,14 +911,19 @@ class RubiksCube
 				varying vec3 vNormal;     // Object normals
 				varying vec3 vFragPos;    // World position of fragment
 
+				uniform float uAmbientStrength;
+				uniform float uDiffuseStrength;
+				uniform float uSpecularStrength;
+				uniform float uSpecularIntensity;
+				
 				uniform vec3 uViewerPos;   // Camera position
 
 				void main(void)
 				{
 					/* Compute ambient lighting */
-					float ambientStrength = 0.1;
+					// float ambientStrength = 0.1;
 					vec3 lightColor = uLight.rgb / 255.0;
-					vec3 ambient =  lightColor.rgb * vec3(ambientStrength);
+					vec3 ambient =  lightColor.rgb * vec3(uAmbientStrength);
 
 					/* Apply texture */
 					vec4 tColor = texture2D(uImage0, vTexCoord);
@@ -926,17 +935,17 @@ class RubiksCube
 					/* Compute diffuse lighting */
 					vec3 norm = normalize(vNormal);
 					vec3 lightDirection = normalize(uLightPos - vFragPos);
-					float diffuse = max(dot(norm, lightDirection), 0.0);
+					float diffuse = max(dot(norm, lightDirection), 0.0) * uDiffuseStrength;
 
 					/* Compute specular lighting */
-					float specularStrength = 0.75;
+					// float specularStrength = 0.75;
 					vec3 viewerDir = normalize(uViewerPos.xyz - vFragPos);
 					vec3 reflectDir = reflect(-lightDirection, norm);
-					float spec = pow(max(dot(viewerDir, reflectDir), 0.0), 32.0);
-					vec3 specular = specularStrength * spec * lightColor;
+					float spec = pow(max(dot(viewerDir, reflectDir), 0.0), pow(2.0, uSpecularIntensity));
+					vec3 specular = uSpecularStrength * spec * lightColor;
 
 					/* Apply ambient and diffuse lighting */
-					vec3 litColor = cColor * (ambientStrength + diffuse + specular);
+					vec3 litColor = cColor * (uAmbientStrength + diffuse + specular);
 					
 					gl_FragColor = vec4(litColor, 1.0);
 				}";
@@ -966,12 +975,16 @@ class RubiksCube
 		_programLightColorUniform = gl.getUniformLocation(_glProgram, "uLight");
 		_programLightPositionUniform = gl.getUniformLocation(_glProgram, "uLightPos");
 		_programViewerPositionUniform = gl.getUniformLocation(_glProgram, "uViewerPos");
+		_programAmbientStrengthUniform = gl.getUniformLocation(_glProgram, "uAmbientStrength");
+		_programDiffuseStrengthUniform = gl.getUniformLocation(_glProgram, "uDiffuseStrength");
+		_programSpecularStrengthUniform = gl.getUniformLocation(_glProgram, "uSpecularStrength");
+		_programSpecularIntensityUniform = gl.getUniformLocation(_glProgram, "uSpecularIntensity");
 
 		trace('Light: aPosition=${_programVertexAttribute}, aTexCoord=${_programTextureAttribute}, aColor=${_programColorAttribute}, uMatrix=${_programMatrixUniform}, uLight=${_programLightColorUniform}');
 	}
 
 	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
-			cameraPosition:Float32Array):Void
+			cameraPosition:Float32Array, ui:UI):Void
 	{
 		if (_glProgram == null)
 		{
@@ -1010,7 +1023,13 @@ class RubiksCube
 			gl.uniform3fv(_programLightColorUniform, lightColorArr, 0);
 			gl.uniform3fv(_programLightPositionUniform, lightPosition, 0);
 			gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
-			gl.bindTexture(gl.TEXTURE_2D, _glTexture);
+			gl.uniform1f(_programAmbientStrengthUniform, ui.ambientS);
+			gl.uniform1f(_programDiffuseStrengthUniform, ui.diffuseS);
+			gl.uniform1f(_programSpecularStrengthUniform, ui.specularS);
+			gl.uniform1f(_programSpecularIntensityUniform, ui.specularI);
+
+			// gl.bindTexture(gl.TEXTURE_2D, _glTexture);
+			context.setTextureAt(0, _faceTexture);
 
 			// Apply GL calls to submit the cubbe data to the GPU
 			// var stride = Float32Array.BYTES_PER_ELEMENT * 12;

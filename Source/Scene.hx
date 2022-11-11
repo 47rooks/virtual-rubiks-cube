@@ -121,6 +121,7 @@ class Scene extends Sprite
 
 	// Control target - which object is controlled by the inputs
 	var _controlTarget:ControlTarget;
+	var _controlsEnabled:Bool;
 
 	// Gamepad input
 	var _gameInput:GameInput;
@@ -152,6 +153,8 @@ class Scene extends Sprite
 		_controlTarget = CAMERA;
 		_gameInput = new GameInput();
 		_gamepads = new Array<GameInputDevice>();
+
+		_controlsEnabled = true;
 
 		_lightPosition = new Float32Array([200.0, 200.0, 200.0]);
 		addEventListener(Event.ADDED_TO_STAGE, addedToStage);
@@ -213,7 +216,7 @@ class Scene extends Sprite
 		_rubiksCube.update(elapsed);
 	}
 
-	public function render():Void
+	public function render(ui:UI):Void
 	{
 		// Clear the screen and prepare for this frame
 		_gl.clearColor(0, 0, 0, 1);
@@ -226,8 +229,13 @@ class Scene extends Sprite
 		var lookAtMat = _camera.getViewMatrix();
 		lookAtMat.append(projectionTransform);
 
-		_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos));
+		_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
 		_light.render(_gl, _context, lookAtMat);
+
+		// Set depthFunc to always pass so that the 2D stage rendering follows render order
+		// If you don't do this the UI will render badly, missing bits like text which is
+		// probably behind the buttons it's on and such like.
+		_gl.depthFunc(_gl.ALWAYS);
 	}
 
 	/**
@@ -248,12 +256,25 @@ class Scene extends Sprite
 	}
 
 	/**
+	 * Toggle controls, enabling them if they are disabled and disabling them if enabled.
+	 */
+	public function toggleControls():Void
+	{
+		_controlsEnabled = !_controlsEnabled;
+	}
+
+	/**
 	 * Handle key press events
 	 * 
 	 * @param event keyboard event
 	 */
 	function keyHandler(event:KeyboardEvent):Void
 	{
+		if (!_controlsEnabled)
+		{
+			return;
+		}
+
 		switch (event.keyCode)
 		{
 			case Keyboard.M:
@@ -296,6 +317,11 @@ class Scene extends Sprite
 	 */
 	function mouseOnMove(e:MouseEvent):Void
 	{
+		if (!_controlsEnabled)
+		{
+			return;
+		}
+
 		if (_firstMove)
 		{
 			_mouseX = e.localX;
@@ -320,6 +346,11 @@ class Scene extends Sprite
 	 */
 	function mouseOnWheel(e:MouseEvent):Void
 	{
+		if (!_controlsEnabled)
+		{
+			return;
+		}
+
 		_camera.zoom(e.delta);
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 	}
@@ -446,6 +477,11 @@ class Scene extends Sprite
 	 */
 	function pollGamepad(gp:GameInputDevice):Void
 	{
+		if (!_controlsEnabled)
+		{
+			return;
+		}
+
 		// Poll gamepad right stick for look around
 		if (gp != null)
 		{

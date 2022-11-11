@@ -1,0 +1,66 @@
+<vbox width="100%" style="padding: 5px;">
+    <style>
+        Button {
+            color:red;
+            horizontalAlign: right;
+        }
+        Label {
+            color: black;
+        }
+        .sectionHeading text {
+            font-size: 14;
+            font-weight:bold;
+        }
+        Label.parameterTitle {
+            font-size: 12;
+        }
+        .controlBox {
+            border: 2px solid black;
+            border-radius: 5px;
+            padding: 5px;
+        }
+    </style>
+    <hbox styleName="controlBox" horizontalAlign="right">
+        <vbox id="lightingControls" styleName="controlBox" style="background-color: #ffffff;">
+            <vbox horizontalAlign="right">
+                <label text="Lighting" styleName="sectionHeading"></label>
+                <label text="Ambient strength" styleName="parameterTitle"></label>
+                <vbox>
+                    <label text="${ambientStrength.pos}" horizontalAlign="center"></label>
+                    <hbox>
+                        <label text="${ambientStrength.min}" verticalAlign="center" width="20" />
+                        <slider id="ambientStrength" min="0.0" max="1.0" pos="0.1" precision="2"></slider>
+                        <label text="${ambientStrength.max}" verticalAlign="center" width="20" />
+                    </hbox>
+                </vbox>
+                <label text="Diffuse strength" styleName="parameterTitle"></label>
+                <vbox>
+                    <label text="${diffuseStrength.pos}" horizontalAlign="center"></label>
+                    <hbox>
+                        <label text="${diffuseStrength.min}" verticalAlign="center" width="20" />
+                        <slider id="diffuseStrength" min="0.0" max="1.0" pos="1.0" precision="2"></slider>
+                        <label text="${diffuseStrength.max}" verticalAlign="center" width="20" />
+                    </hbox>
+                </vbox>
+                <label text="Specular strength" styleName="parameterTitle"></label>
+                <vbox>
+                    <label text="${specularStrength.pos}" horizontalAlign="center"></label>
+                    <hbox>
+                        <label text="${specularStrength.min}" verticalAlign="center" width="20" />
+                        <slider id="specularStrength" min="0.0" max="1.0" pos="0.75" precision="2"></slider>
+                        <label text="${specularStrength.max}" verticalAlign="center" width="20" />
+                    </hbox>
+                </vbox>
+                <label text="Specular intensity" styleName="parameterTitle"></label>
+                <vbox>
+                    <label text="${specularIntensity.pos}" horizontalAlign="center"></label>
+                    <hbox>
+                        <label text="${specularIntensity.min}" verticalAlign="center" width="20" />
+                        <slider id="specularIntensity" min="1.0" max="9.0" step="1.0" pos="5.0"></slider>
+                        <label text="${specularIntensity.max}" verticalAlign="center" width="20" />
+                    </hbox>
+                </vbox>
+            </vbox>
+        </vbox>
+    </hbox>
+</vbox>
