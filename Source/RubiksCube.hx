@@ -858,14 +858,6 @@ class RubiksCube
 	 */
 	function initializeGl(gl:WebGLRenderContext, context:Context3D):Void
 	{
-		// _glTexture = gl.createTexture();
-		// gl.bindTexture(gl.TEXTURE_2D, _glTexture);
-		// gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, _faceImageData.buffer.width, _faceImageData.buffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, _faceImageData.data);
-		// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-		// gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-		// gl.vertexAttribPointer(_glProgramTextureAttribute, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-
 		// Create GLSL program object
 		createGLSLProgram(gl);
 	}
@@ -1028,24 +1020,15 @@ class RubiksCube
 			gl.uniform1f(_programSpecularStrengthUniform, ui.specularS);
 			gl.uniform1f(_programSpecularIntensityUniform, ui.specularI);
 
-			// gl.bindTexture(gl.TEXTURE_2D, _glTexture);
 			context.setTextureAt(0, _faceTexture);
 
 			// Apply GL calls to submit the cubbe data to the GPU
-			// var stride = Float32Array.BYTES_PER_ELEMENT * 12;
-			// gl.bindBuffer(gl.ARRAY_BUFFER, c.cube._glVertexBuffer);
-			// gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, stride, 0);
-			// gl.vertexAttribPointer(_programTextureAttribute, 2, gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
-			// gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, stride, 5 * Float32Array.BYTES_PER_ELEMENT);
-			// gl.vertexAttribPointer(_programNormalAttribute, 3, gl.FLOAT, false, stride, 9 * Float32Array.BYTES_PER_ELEMENT);
 			context.setVertexBufferAt(_programVertexAttribute, c.cube._glVertexBuffer, 0, FLOAT_3);
 			context.setVertexBufferAt(_programTextureAttribute, c.cube._glVertexBuffer, 3, FLOAT_2);
 			context.setVertexBufferAt(_programColorAttribute, c.cube._glVertexBuffer, 5, FLOAT_4);
 			context.setVertexBufferAt(_programNormalAttribute, c.cube._glVertexBuffer, 9, FLOAT_3);
 
 			context.drawTriangles(c.cube._glIndexBuffer);
-			// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, c.cube._glIndexBuffer);
-			// gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_INT, 0);
 		}
 	}
 

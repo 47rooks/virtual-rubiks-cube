@@ -24,6 +24,6 @@ This is an OpenFL based Rubik's cube simulation. This is mostly an experiment in
 
 # Developer Notes
 
-This program uses two graphics context objects, the `stage.context3D`, a Context3D object which is used to render the vertex buffer and to call drawTriangles() with the index buffer specifying which vertices to draw. The second context is the GL renderer context and this is used to gain more control of the GL rendering. It is used for uploading textures, setting uniforms, and controlling depth testing and all other GL features.
+This program uses two graphics context objects, the `stage.context3D`, a Context3D object which is used to render the vertex buffer, uploading textures, and to call drawTriangles() with the index buffer specifying which vertices to draw. The second context is the GL renderer context and this is used to gain more control of the GL rendering. It is used for setting uniforms, and controlling depth testing and all other GL features.
 
  Both contexts ultimately render through the GL renderer I believe. The reason this is done is that if the GL render context alone is used and you add other `DisplayObjects` to the stage you get access violations from the `stage.context3D`. So in order to use both a 2D sprite layer and a 3D layer you must at least draw through the `Context3D`. I do not know why this works nor why you get access violations if you do not do this.
