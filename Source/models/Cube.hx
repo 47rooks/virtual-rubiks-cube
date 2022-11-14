@@ -1,4 +1,4 @@
-package;
+package models;
 
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
@@ -33,22 +33,16 @@ class Cube
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
-	private var _glInitialized = false;
 
 	private var _color:ColorSpec;
 
 	public function new(color:ColorSpec, context:Context3D)
 	{
-		// Load shaders from files
-		// var vertex = Assets.getText("assets/cube.vert");
-		// var fragment = Assets.getText("assets/cube.frag");
-		// Create vertex data, including position, texture mapping and colour values.
-
 		_color = color;
-		initializeGl(context);
+		initializeBuffers(context);
 	}
 
-	function initializeGl(context:Context3D):Void
+	function initializeBuffers(context:Context3D):Void
 	{
 		final side = 1.0;
 
@@ -60,7 +54,7 @@ class Cube
 			0,
 			_color.back.r,
 			_color.back.g,
-			_color.back.g,
+			_color.back.b,
 			_color.back.a,
 			0.0,
 			0.0,
@@ -72,7 +66,7 @@ class Cube
 			0,
 			_color.back.r,
 			_color.back.g,
-			_color.back.g,
+			_color.back.b,
 			_color.back.a,
 			0.0,
 			0.0,
@@ -84,7 +78,7 @@ class Cube
 			1,
 			_color.back.r,
 			_color.back.g,
-			_color.back.g,
+			_color.back.b,
 			_color.back.a,
 			0.0,
 			0.0,
@@ -96,7 +90,7 @@ class Cube
 			1,
 			_color.back.r,
 			_color.back.g,
-			_color.back.g,
+			_color.back.b,
 			_color.back.a,
 			0.0,
 			0.0,
@@ -343,9 +337,7 @@ class Cube
 			0.0
 		];
 		vertexData = new Vector<Float>(v);
-		// _glVertexBuffer = gl.createBuffer();
-		// gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
-		// gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+
 		_glVertexBuffer = context.createVertexBuffer(24, 12, STATIC_DRAW);
 		_glVertexBuffer.uploadFromVector(vertexData, 0, 288);
 
@@ -365,9 +357,7 @@ class Cube
 			21, 20,    23, // Top
 			21, 23,          22
 		]);
-		// _glIndexBuffer = gl.createBuffer();
-		// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
-		// gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+
 		_glIndexBuffer = context.createIndexBuffer(36, STATIC_DRAW);
 		_glIndexBuffer.uploadFromVector(indexData, 0, 36);
 	}

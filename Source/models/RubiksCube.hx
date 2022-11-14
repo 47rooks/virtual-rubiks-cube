@@ -1,4 +1,4 @@
-package;
+package models;
 
 import Color.BLACK;
 import Color.BLUE;
@@ -7,17 +7,15 @@ import Color.ORANGE;
 import Color.RED;
 import Color.WHITE;
 import Color.YELLOW;
-import Cube.ColorSpec;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
-import MatrixUtils.matrix3DToFloat32Array;
-import OpenGLUtils.glCreateProgram;
+import gl.PhongMaterialsProgram;
+import gl.Program;
+import gl.SimpleCubeProgram;
 import lime.graphics.WebGLRenderContext;
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLTexture;
-import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
+import models.Cube.ColorSpec;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
@@ -148,24 +146,11 @@ class RubiksCube
 
 	final ROTATION_SENSITIVTY = 0.5;
 
-	// GL interface variables
-	private var _glProgram:GLProgram;
-	private var _glProgramTextureAttribute:Int;
-	private var _glTexture:GLTexture;
-	private var _programImageUniform:GLUniformLocation;
-	private var _programMatrixUniform:GLUniformLocation;
-	private var _programModelMatrixUniform:GLUniformLocation;
-	private var _programTextureAttribute:Int;
-	private var _programVertexAttribute:Int;
-	private var _programColorAttribute:Int;
-	private var _programNormalAttribute:Int;
-	private var _programLightColorUniform:GLUniformLocation;
-	private var _programLightPositionUniform:GLUniformLocation;
-	private var _programViewerPositionUniform:GLUniformLocation;
-	private var _programAmbientStrengthUniform:GLUniformLocation;
-	private var _programDiffuseStrengthUniform:GLUniformLocation;
-	private var _programSpecularStrengthUniform:GLUniformLocation;
-	private var _programSpecularIntensityUniform:GLUniformLocation;
+	// GLSL Program definitions
+	final GLSL_PROG_SIMPLE = "progSimpleCubeLit";
+	final GLSL_PROG_MATERIALS = "progCubeWithMaterials";
+
+	final GLSL_PROGRAMS:Map<String, Program>;
 
 	// Cube face texture image
 	var _faceImageData:BitmapData;
@@ -231,7 +216,11 @@ class RubiksCube
 		_pitch = 0;
 		_cubeRotation = new Matrix3D();
 
-		initializeGl(gl, context);
+		// Define programs - this would be a initialized at load from other constants but Haxe won't allow it.
+		GLSL_PROGRAMS = [
+			GLSL_PROG_SIMPLE => new SimpleCubeProgram(gl, context),
+			GLSL_PROG_MATERIALS => new PhongMaterialsProgram(gl, context)
+		];
 	}
 
 	/**
@@ -851,184 +840,39 @@ class RubiksCube
 		return rv;
 	}
 
-	/**
-	 * Initialize GL variables, shaders and program.
-	 * 
-	 * @param gl the GL render context
-	 */
-	function initializeGl(gl:WebGLRenderContext, context:Context3D):Void
-	{
-		// Create GLSL program object
-		createGLSLProgram(gl);
-	}
-
-	function createGLSLProgram(gl:WebGLRenderContext):Void
-	{
-		var vertexSource = "attribute vec4 aPosition;
-			attribute vec2 aTexCoord;
-			varying vec2 vTexCoord;
-			
-			attribute vec4 aColor;
-			varying vec4 vColor;
-	
-			attribute vec3 aNormal;
-			varying vec3 vNormal;
-			
-			varying vec3 vFragPos;
-
-			uniform mat4 uMatrix;
-			uniform mat4 uModel;
-			
-			void main(void) {
-				vTexCoord = aTexCoord;
-				vColor = aColor / vec4(0xff);
-
-				// Transform normals to world space to handle cube transformations.
-				// Proper normal matrix not required as we only uniform scale
-				// the cubes. If we did non-uniform we would need a normal matrix.
-				vNormal = (uModel * vec4(aNormal, 0.0)).xyz;
-				
-				gl_Position = uMatrix * aPosition;
-				vFragPos = (uModel * aPosition).xyz;
-			}";
-
-		var fragmentSource = #if !desktop "precision mediump float;" + #end
-
-		"varying vec2 vTexCoord;
-				varying vec4 vColor;
-				uniform sampler2D uImage0;
-
-				uniform vec3 uLightPos;   // Light position
-				uniform vec3 uLight;      // Light color
-				varying vec3 vNormal;     // Object normals
-				varying vec3 vFragPos;    // World position of fragment
-
-				uniform float uAmbientStrength;
-				uniform float uDiffuseStrength;
-				uniform float uSpecularStrength;
-				uniform float uSpecularIntensity;
-				
-				uniform vec3 uViewerPos;   // Camera position
-
-				void main(void)
-				{
-					/* Compute ambient lighting */
-					// float ambientStrength = 0.1;
-					vec3 lightColor = uLight.rgb / 255.0;
-					vec3 ambient =  lightColor.rgb * vec3(uAmbientStrength);
-
-					/* Apply texture */
-					vec4 tColor = texture2D(uImage0, vTexCoord);
-					vec3 cColor = tColor.rgb * vColor.rgb;
-					if (tColor.a == 0.0) {
-						cColor = vColor.rgb;
-					}
-					
-					/* Compute diffuse lighting */
-					vec3 norm = normalize(vNormal);
-					vec3 lightDirection = normalize(uLightPos - vFragPos);
-					float diffuse = max(dot(norm, lightDirection), 0.0) * uDiffuseStrength;
-
-					/* Compute specular lighting */
-					// float specularStrength = 0.75;
-					vec3 viewerDir = normalize(uViewerPos.xyz - vFragPos);
-					vec3 reflectDir = reflect(-lightDirection, norm);
-					float spec = pow(max(dot(viewerDir, reflectDir), 0.0), pow(2.0, uSpecularIntensity));
-					vec3 specular = uSpecularStrength * spec * lightColor;
-
-					/* Apply ambient and diffuse lighting */
-					vec3 litColor = cColor * (uAmbientStrength + diffuse + specular);
-					
-					gl_FragColor = vec4(litColor, 1.0);
-				}";
-
-		_glProgram = glCreateProgram(gl, vertexSource, fragmentSource);
-		if (_glProgram == null)
-		{
-			return;
-		}
-
-		// Get references to GLSL attributes
-		_programVertexAttribute = gl.getAttribLocation(_glProgram, "aPosition");
-		gl.enableVertexAttribArray(_programVertexAttribute);
-
-		_programTextureAttribute = gl.getAttribLocation(_glProgram, "aTexCoord");
-		gl.enableVertexAttribArray(_programTextureAttribute);
-
-		_programColorAttribute = gl.getAttribLocation(_glProgram, "aColor");
-		gl.enableVertexAttribArray(_programColorAttribute);
-
-		_programNormalAttribute = gl.getAttribLocation(_glProgram, "aNormal");
-		gl.enableVertexAttribArray(_programNormalAttribute);
-
-		_programMatrixUniform = gl.getUniformLocation(_glProgram, "uMatrix");
-		_programModelMatrixUniform = gl.getUniformLocation(_glProgram, "uModel");
-		_programImageUniform = gl.getUniformLocation(_glProgram, "uImage0");
-		_programLightColorUniform = gl.getUniformLocation(_glProgram, "uLight");
-		_programLightPositionUniform = gl.getUniformLocation(_glProgram, "uLightPos");
-		_programViewerPositionUniform = gl.getUniformLocation(_glProgram, "uViewerPos");
-		_programAmbientStrengthUniform = gl.getUniformLocation(_glProgram, "uAmbientStrength");
-		_programDiffuseStrengthUniform = gl.getUniformLocation(_glProgram, "uDiffuseStrength");
-		_programSpecularStrengthUniform = gl.getUniformLocation(_glProgram, "uSpecularStrength");
-		_programSpecularIntensityUniform = gl.getUniformLocation(_glProgram, "uSpecularIntensity");
-
-		trace('Light: aPosition=${_programVertexAttribute}, aTexCoord=${_programTextureAttribute}, aColor=${_programColorAttribute}, uMatrix=${_programMatrixUniform}, uLight=${_programLightColorUniform}');
-	}
-
 	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
 			cameraPosition:Float32Array, ui:UI):Void
 	{
-		if (_glProgram == null)
-		{
-			return;
-		}
-
-		gl.useProgram(_glProgram);
+		var program = cast(GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE), SimpleCubeProgram);
+		program.use();
 
 		for (c in _cubes)
 		{
 			// Create model/view/projection matrix from components
-			var fullProjection = new Matrix3D();
-			fullProjection.identity();
-			fullProjection.append(c.modelMatrix);
+			var fullModel = new Matrix3D();
+			fullModel.identity();
+			fullModel.append(c.modelMatrix);
 
 			// If this is a currently moving cube at the rotation matrix
 			if (_affectedCubes.contains(c.id) && _rotMatrix != null)
 			{
-				fullProjection.append(_rotMatrix);
+				fullModel.append(_rotMatrix);
 			}
 
 			// Whole cube model matrix - currently a no-op.
 			var modelMatrix = new Matrix3D();
 			modelMatrix.append(_cubeRotation);
-			fullProjection.append(modelMatrix);
+			fullModel.append(modelMatrix);
 
-			// Convert matrix to Float32Array and push in shader uniform
-			// Pass in model matrix - no projection
-			gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(fullProjection));
-
-			// Add projection and pass in to shader
+			// create full projection from fullmodel and then append projection
+			var fullProjection = fullModel.clone();
 			fullProjection.append(projectionMatrix);
-			gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(fullProjection));
-			gl.uniform1i(_programImageUniform, 0);
+
+			// Light
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
-			gl.uniform3fv(_programLightColorUniform, lightColorArr, 0);
-			gl.uniform3fv(_programLightPositionUniform, lightPosition, 0);
-			gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
-			gl.uniform1f(_programAmbientStrengthUniform, ui.ambientS);
-			gl.uniform1f(_programDiffuseStrengthUniform, ui.diffuseS);
-			gl.uniform1f(_programSpecularStrengthUniform, ui.specularS);
-			gl.uniform1f(_programSpecularIntensityUniform, ui.specularI);
 
-			context.setTextureAt(0, _faceTexture);
-
-			// Apply GL calls to submit the cubbe data to the GPU
-			context.setVertexBufferAt(_programVertexAttribute, c.cube._glVertexBuffer, 0, FLOAT_3);
-			context.setVertexBufferAt(_programTextureAttribute, c.cube._glVertexBuffer, 3, FLOAT_2);
-			context.setVertexBufferAt(_programColorAttribute, c.cube._glVertexBuffer, 5, FLOAT_4);
-			context.setVertexBufferAt(_programNormalAttribute, c.cube._glVertexBuffer, 9, FLOAT_3);
-
-			context.drawTriangles(c.cube._glIndexBuffer);
+			program.render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition, c.cube._glVertexBuffer, c.cube._glIndexBuffer,
+				_faceTexture, ui);
 		}
 	}
 

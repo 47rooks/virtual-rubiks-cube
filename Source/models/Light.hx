@@ -1,9 +1,9 @@
-package;
+package models;
 
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import MatrixUtils.matrix3DToFloat32Array;
-import OpenGLUtils.glCreateProgram;
+import gl.OpenGLUtils.glCreateProgram;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLUniformLocation;
@@ -15,6 +15,13 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix3D;
 
+/**
+ * A simple light - a white cube.
+ * This is so simple it is done in a single file and
+ * does not have its shaders in files but rather has
+ * them in variables. This may change if we start
+ * setting up more complex lights.
+ */
 class Light
 {
 	final LIGHT_SIZE = 20.0;
@@ -222,9 +229,7 @@ class Light
 			_color.b,
 			_color.a,
 		]);
-		// _glVertexBuffer = gl.createBuffer();
-		// gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
-		// gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+
 		_glVertexBuffer = context.createVertexBuffer(24, 7);
 		_glVertexBuffer.uploadFromVector(vertexData, 0, 168);
 
@@ -245,9 +250,7 @@ class Light
 			23, 20,    21, // Top
 			22, 23,          21
 		]);
-		// _glIndexBuffer = gl.createBuffer();
-		// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
-		// gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+
 		_glIndexBuffer = context.createIndexBuffer(36);
 		_glIndexBuffer.uploadFromVector(indexData, 0, 36);
 
@@ -332,17 +335,9 @@ class Light
 
 		gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(fullProjection));
 
-		// gl.bindBuffer(gl.ARRAY_BUFFER, _glVertexBuffer);
-		// gl.vertexAttribPointer(_programVertexAttribute, 3, gl.FLOAT, false, 28, 0);
-		// gl.vertexAttribPointer(_programColorAttribute, 4, gl.FLOAT, false, 28, 12);
 		context.setVertexBufferAt(_programVertexAttribute, _glVertexBuffer, 0, FLOAT_3);
 		context.setVertexBufferAt(_programColorAttribute, _glVertexBuffer, 3, FLOAT_4);
 
-		// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _glIndexBuffer);
-
-		// gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_INT, 0);
 		context.drawTriangles(_glIndexBuffer);
-		// gl.bindBuffer(gl.ARRAY_BUFFER, null);
-		// gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 	}
 }

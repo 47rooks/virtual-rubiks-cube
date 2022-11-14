@@ -5,11 +5,11 @@ import Camera.CameraMovement;
 import Color.WHITE;
 import MatrixUtils.createPerspectiveProjection;
 import MatrixUtils.vector3DToFloat32Array;
-import RubiksCube.Axis;
-import RubiksCube.Operation;
 import haxe.ValueException;
 import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
+import models.Light;
+import models.RubiksCube;
 import openfl.display.Sprite;
 import openfl.display3D.Context3D;
 import openfl.events.Event;
@@ -219,7 +219,8 @@ class Scene extends Sprite
 	public function render(ui:UI):Void
 	{
 		// Clear the screen and prepare for this frame
-		_gl.clearColor(0, 0, 0, 1);
+		// _gl.clearColor(0, 0, 0, 1);
+		_gl.clearColor(0.53, 0.81, 0.92, 1);
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
 		_gl.depthFunc(_gl.LESS);
 		_gl.depthMask(true);

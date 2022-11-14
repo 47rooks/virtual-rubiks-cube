@@ -5,6 +5,7 @@ import haxe.ui.containers.VBox;
 @:build(haxe.ui.ComponentBuilder.build("assets/ui/ui.xml"))
 class UI extends VBox
 {
+	/* Lighting properties */
 	@:bind(ambientStrength.pos)
 	public var ambientS(default, null):Float = 0.1;
 
@@ -16,6 +17,13 @@ class UI extends VBox
 
 	@:bind(specularIntensity)
 	public var specularI(default, null):Float = 5.0;
+
+	/* Material Properties */
+	@:bind(useTexture.selected)
+	public var textureEnabled(default, null):Bool = true;
+
+	@:bind(useMaterials.selected)
+	public var materialsEnabled(default, null):Bool = true;
 
 	public function new()
 	{

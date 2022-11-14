@@ -2,7 +2,7 @@
  * OpenGLUtils provides a collection of GL helper functions.
  */
 
-package;
+package gl;
 
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLProgram;
