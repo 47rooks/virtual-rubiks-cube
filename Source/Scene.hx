@@ -98,6 +98,14 @@ enum ControlTarget
 	RUBIKS_CUBE;
 }
 
+/**
+ * Scene is the world for this Rubik's cube program. It contains all the world objects and drives
+ * the rendering of all of them. It is created in the normal way of doing most of the work in
+ * the ADDED_TO_STAGE event handler.
+ * 
+ * It does contain some experimental gamepad support but it is by no means complete or fully worked
+ * out.
+ */
 class Scene extends Sprite
 {
 	private var projectionTransform:Matrix3D;
@@ -163,7 +171,6 @@ class Scene extends Sprite
 	function addedToStage(e:Event):Void
 	{
 		_gl = stage.window.context.webgl;
-		trace('window _gl context=${_gl}');
 		_context = stage.context3D;
 
 		// computeOrthoProjection();
@@ -219,8 +226,8 @@ class Scene extends Sprite
 	public function render(ui:UI):Void
 	{
 		// Clear the screen and prepare for this frame
-		_gl.clearColor(0, 0, 0, 1);
-		// _gl.clearColor(0.53, 0.81, 0.92, 1);
+		_gl.clearColor(0, 0, 0, 1); // Clear to black
+		// _gl.clearColor(0.53, 0.81, 0.92, 1); // Clear to sky blue
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
 		_gl.depthFunc(_gl.LESS);
 		_gl.depthMask(true);
@@ -368,7 +375,6 @@ class Scene extends Sprite
 		for (cId in 0...device.numControls)
 		{
 			var ctl = device.getControlAt(cId);
-			trace('cId=${cId}=${ctl.id}');
 			if (cId == 2 || cId == 3)
 				continue;
 			ctl.addEventListener(Event.CHANGE, gameInputOnChange);

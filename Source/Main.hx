@@ -11,6 +11,13 @@ import openfl.events.RenderEvent;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 
+/**
+ * This is the main class which sets up both the 3D scene and the 2D UI objects.
+ * It uses both the OpenFL renderer via the Context3D to manage uploading vertex attributes and textures,
+ * and to make the 3D render draw call. All other GL interactions are done via the WebGL render context
+ * which gives much greater control over GL operations and fully supports GLSL shader programs. This
+ * approach allows support of the 2D HaxeUI and the 3D GL program for the Rubik's cube.
+ */
 class Main extends Sprite
 {
 	private var cacheTime:Int;
