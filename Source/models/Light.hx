@@ -13,11 +13,7 @@ import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix3D;
 
 /**
- * A simple light - a white cube.
- * This is so simple it is done in a single file and
- * does not have its shaders in files but rather has
- * them in variables. This may change if we start
- * setting up more complex lights.
+ * A simple light - a single color cube.
  */
 class Light
 {
@@ -42,6 +38,13 @@ class Light
 
 	final _program:LightProgram;
 
+	/**
+	 * Constructor
+	 * @param position The world position for the light
+	 * @param color The color of the light
+	 * @param gl The WebGL render context
+	 * @param context The OpenFL 3D render context
+	 */
 	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext, context:Context3D)
 	{
 		_x = position[0];
