@@ -843,8 +843,14 @@ class RubiksCube
 	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
 			cameraPosition:Float32Array, ui:UI):Void
 	{
-		var program = cast(GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE), SimpleCubeProgram);
-		program.use();
+		if (ui.useMaterials.selected)
+		{
+			GLSL_PROGRAMS.get(GLSL_PROG_MATERIALS).use();
+		}
+		else
+		{
+			GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE).use();
+		}
 
 		for (c in _cubes)
 		{
@@ -871,8 +877,16 @@ class RubiksCube
 			// Light
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 
-			program.render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition, c.cube._glVertexBuffer, c.cube._glIndexBuffer,
-				_faceTexture, ui);
+			if (ui.useMaterials.selected)
+			{
+				cast(GLSL_PROGRAMS.get(GLSL_PROG_MATERIALS), PhongMaterialsProgram).render(fullModel, fullProjection, lightColorArr, lightPosition,
+					cameraPosition, c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
+			}
+			else
+			{
+				cast(GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE), SimpleCubeProgram).render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition,
+					c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
+			}
 		}
 	}
 

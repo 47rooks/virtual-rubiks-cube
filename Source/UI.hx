@@ -1,11 +1,12 @@
 package;
 
 import haxe.ui.containers.VBox;
+import haxe.ui.util.Color;
 
 @:build(haxe.ui.ComponentBuilder.build("assets/ui/ui.xml"))
 class UI extends VBox
 {
-	/* Lighting properties */
+	/* Simple Lighting properties */
 	@:bind(ambientStrength.pos)
 	public var ambientS(default, null):Float = 0.1;
 
@@ -18,12 +19,37 @@ class UI extends VBox
 	@:bind(specularIntensity)
 	public var specularI(default, null):Float = 5.0;
 
+	/* 3-component Lighting Properties */
+	@:bind(complex.selected)
+	public var componentLightEnabled(default, null):Bool;
+
+	@:bind(lightDiffuse.value)
+	public var lightAmbientColor(default, null):Color;
+
+	@:bind(lightDiffuse.value)
+	public var lightDiffuseColor(default, null):Color;
+
+	@:bind(specular.value)
+	public var lightSpecularColor(default, null):Color;
+
 	/* Material Properties */
 	@:bind(useTexture.selected)
 	public var textureEnabled(default, null):Bool = true;
 
 	@:bind(useMaterials.selected)
-	public var materialsEnabled(default, null):Bool = true;
+	public var materialsEnabled(default, null):Bool = false;
+
+	@:bind(ambient.value)
+	public var ambientColor(default, null):Color;
+
+	@:bind(diffuse.value)
+	public var diffuseColor(default, null):Color;
+
+	@:bind(specular.value)
+	public var specularColor(default, null):Color;
+
+	@:bind(shininess.pos)
+	public var specularShininess(default, null):Float = 5;
 
 	public function new()
 	{

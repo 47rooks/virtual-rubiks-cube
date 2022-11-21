@@ -1,9 +1,15 @@
 package gl;
 
+import MatrixUtils.matrix3DToFloat32Array;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
+import lime.utils.Float32Array;
 import openfl.Assets;
 import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.geom.Matrix3D;
 
 class PhongMaterialsProgram extends Program
 {
@@ -12,20 +18,24 @@ class PhongMaterialsProgram extends Program
 	var _fragmentSource:String;
 
 	// GL variables
-	private var _programImageUniform:GLUniformLocation;
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programModelMatrixUniform:GLUniformLocation;
+	private var _programImageUniform:Int;
 	private var _programTextureAttribute:Int;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
 	private var _programNormalAttribute:Int;
 	private var _programLightColorUniform:GLUniformLocation;
 	private var _programLightPositionUniform:GLUniformLocation;
+	private var _programEnabledLightUniform:GLUniformLocation;
+	private var _programAmbientLightUniform:GLUniformLocation;
+	private var _programDiffuseLightUniform:GLUniformLocation;
+	private var _programSpecularLightUniform:GLUniformLocation;
 	private var _programViewerPositionUniform:GLUniformLocation;
-	private var _programAmbientStrengthUniform:GLUniformLocation;
-	private var _programDiffuseStrengthUniform:GLUniformLocation;
-	private var _programSpecularStrengthUniform:GLUniformLocation;
-	private var _programSpecularIntensityUniform:GLUniformLocation;
+	private var _programAmbientMaterialUniform:GLUniformLocation;
+	private var _programDiffuseMaterialUniform:GLUniformLocation;
+	private var _programSpecularMaterialUniform:GLUniformLocation;
+	private var _programSpecularShininessUniform:GLUniformLocation;
 
 	public function new(gl:WebGLRenderContext, context:Context3D):Void
 	{
@@ -56,20 +66,63 @@ class PhongMaterialsProgram extends Program
 		// Light
 		_programLightColorUniform = _gl.getUniformLocation(_glProgram, "uLight");
 		_programLightPositionUniform = _gl.getUniformLocation(_glProgram, "uLightPos");
+		_programEnabledLightUniform = _gl.getUniformLocation(_glProgram, "u3CompLight.enabled");
+		_programAmbientLightUniform = _gl.getUniformLocation(_glProgram, "u3CompLight.ambient");
+		_programDiffuseLightUniform = _gl.getUniformLocation(_glProgram, "u3CompLight.diffuse");
+		_programSpecularLightUniform = _gl.getUniformLocation(_glProgram, "u3CompLight.specular");
 
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");
 		_programModelMatrixUniform = _gl.getUniformLocation(_glProgram, "uModel");
 
 		// Face texture
-		_programImageUniform = _gl.getUniformLocation(_glProgram, "uImage0");
+		_programImageUniform = 0; // "uImage0" uniform but Context3D just uses ints
 
-		// Phong Lighting
-		_programAmbientStrengthUniform = _gl.getUniformLocation(_glProgram, "uAmbientStrength");
-		_programDiffuseStrengthUniform = _gl.getUniformLocation(_glProgram, "uDiffuseStrength");
-		_programSpecularStrengthUniform = _gl.getUniformLocation(_glProgram, "uSpecularStrength");
-		_programSpecularIntensityUniform = _gl.getUniformLocation(_glProgram, "uSpecularIntensity");
+		// Phong Materials
+		_programAmbientMaterialUniform = _gl.getUniformLocation(_glProgram, "uMaterial.ambient");
+		_programDiffuseMaterialUniform = _gl.getUniformLocation(_glProgram, "uMaterial.diffuse");
+		_programSpecularMaterialUniform = _gl.getUniformLocation(_glProgram, "uMaterial.specular");
+		_programSpecularShininessUniform = _gl.getUniformLocation(_glProgram, "uMaterial.shininess");
 		// Camera position - currently used for specular lighting
 		_programViewerPositionUniform = _gl.getUniformLocation(_glProgram, "uViewerPos");
+	}
+
+	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightPosition:Float32Array, cameraPosition:Float32Array,
+			vbo:VertexBuffer3D, ibo:IndexBuffer3D, texture:RectangleTexture, ui:UI):Void
+	{
+		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
+
+		// Add projection and pass in to shader
+		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
+
+		// Image texture
+		_context.setTextureAt(_programImageUniform, texture);
+
+		// Light
+		_gl.uniform3fv(_programLightColorUniform, lightColor, 0);
+		_gl.uniform3fv(_programLightPositionUniform, lightPosition, 0);
+
+		_gl.uniform1i(_programEnabledLightUniform, ui.componentLightEnabled ? 1 : 0);
+		_gl.uniform3f(_programAmbientLightUniform, ui.lightAmbientColor.r, ui.lightAmbientColor.g, ui.lightAmbientColor.b);
+		_gl.uniform3f(_programDiffuseLightUniform, ui.lightDiffuseColor.r, ui.lightDiffuseColor.g, ui.lightDiffuseColor.b);
+		_gl.uniform3f(_programSpecularLightUniform, ui.lightSpecularColor.r, ui.lightSpecularColor.g, ui.lightSpecularColor.b);
+
+		// Phong materials
+		_gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
+		_gl.uniform3f(_programAmbientMaterialUniform, ui.ambientColor.r, ui.ambientColor.g, ui.ambientColor.b);
+		_gl.uniform3f(_programDiffuseMaterialUniform, ui.diffuseColor.r, ui.diffuseColor.g, ui.diffuseColor.b);
+		_gl.uniform3f(_programSpecularMaterialUniform, ui.specularColor.r, ui.specularColor.g, ui.specularColor.b);
+		_gl.uniform1f(_programSpecularShininessUniform, Math.pow(2, ui.specularShininess));
+
+		// Apply GL calls to submit the cubbe data to the GPU
+		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
+		// if (ui.textureEnabled && !ui.materialsEnabled)
+		{
+			_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
+		}
+		_context.setVertexBufferAt(_programColorAttribute, vbo, 5, FLOAT_4);
+		_context.setVertexBufferAt(_programNormalAttribute, vbo, 9, FLOAT_3);
+
+		_context.drawTriangles(ibo);
 	}
 }

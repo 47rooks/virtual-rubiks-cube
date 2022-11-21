@@ -22,34 +22,48 @@ struct Material {
     vec3 specular;
     float shininess;
 };
-uniform struct uMaterial;
+uniform Material uMaterial;
+
+struct Light {
+    bool enabled;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+uniform Light u3CompLight;
 
 void main(void)
 {
-    /* Compute ambient lighting */
+    /* Compute light color */
     vec3 lightColor = uLight.rgb / 255.0;
-    vec3 ambient =  lightColor.rgb * vec3(uAmbientStrength);
-
-    /* Apply texture */
-    vec4 tColor = texture2D(uImage0, vTexCoord);
-    vec3 cColor = tColor.rgb * vColor.rgb;
-    if (tColor.a == 0.0) {
-        cColor = vColor.rgb;
-    }
+    vec3 ambientLightColor = lightColor;
+    vec3 diffuseLightColor = lightColor;
+    vec3 specularLightColor = lightColor;
     
-    /* Compute diffuse lighting */
+    if (u3CompLight.enabled) {
+        ambientLightColor = u3CompLight.ambient / 255.0;
+        diffuseLightColor = u3CompLight.diffuse / 255.0;
+        specularLightColor = u3CompLight.specular / 255.0;
+    }
+
+    /* Compute ambient material */
+    vec3 ambient =  ambientLightColor * uMaterial.ambient / 255.0;
+
+    /* Compute diffuse material */
     vec3 norm = normalize(vNormal);
     vec3 lightDirection = normalize(uLightPos - vFragPos);
-    float diffuse = max(dot(norm, lightDirection), 0.0) * uDiffuseStrength;
+    float diff = max(dot(norm, lightDirection), 0.0);
+    vec3 diffuse = diffuseLightColor * (diff * uMaterial.diffuse / 255.0);
 
-    /* Compute specular lighting */
+    /* Compute specular material */
     vec3 viewerDir = normalize(uViewerPos.xyz - vFragPos);
     vec3 reflectDir = reflect(-lightDirection, norm);
-    float spec = pow(max(dot(viewerDir, reflectDir), 0.0), pow(2.0, uSpecularIntensity));
-    vec3 specular = uSpecularStrength * spec * lightColor;
+    float spec = pow(max(dot(viewerDir, reflectDir), 0.0), uMaterial.shininess);
+    vec3 specular = uMaterial.specular / 255.0 * spec * specularLightColor;
 
     /* Apply ambient and diffuse lighting */
-    vec3 litColor = cColor * (uAmbientStrength + diffuse + specular);
+    // vec3 litColor = cColor * (uAmbientStrength + diffuse + specular);
+    vec3 litColor = ambient + diffuse + specular;
     
     gl_FragColor = vec4(litColor, 1.0);
 }

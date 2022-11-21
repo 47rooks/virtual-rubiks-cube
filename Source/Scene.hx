@@ -219,8 +219,8 @@ class Scene extends Sprite
 	public function render(ui:UI):Void
 	{
 		// Clear the screen and prepare for this frame
-		// _gl.clearColor(0, 0, 0, 1);
-		_gl.clearColor(0.53, 0.81, 0.92, 1);
+		_gl.clearColor(0, 0, 0, 1);
+		// _gl.clearColor(0.53, 0.81, 0.92, 1);
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
 		_gl.depthFunc(_gl.LESS);
 		_gl.depthMask(true);
@@ -231,7 +231,7 @@ class Scene extends Sprite
 		lookAtMat.append(projectionTransform);
 
 		_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
-		_light.render(_gl, _context, lookAtMat);
+		_light.render(_gl, _context, lookAtMat, ui);
 
 		// Set depthFunc to always pass so that the 2D stage rendering follows render order
 		// If you don't do this the UI will render badly, missing bits like text which is
