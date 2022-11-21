@@ -5,6 +5,7 @@ attribute vec3 aPosition;
 attribute vec4 aColor;
 varying vec4 vColor;
 
+/* Full model-view-projection matrix */
 uniform mat4 uMatrix;
 
 void main(void){

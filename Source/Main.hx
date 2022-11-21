@@ -25,15 +25,6 @@ class Main extends Sprite
 	{
 		super();
 
-		/// AGAL
-		// var context = stage.context3D;
-
-		// if (context == null)
-		// {
-		// 	trace("Stage does not have a compatible 3D context available");
-		// 	return;
-		// }
-
 		_scene = new Scene();
 
 		// Add event handlers

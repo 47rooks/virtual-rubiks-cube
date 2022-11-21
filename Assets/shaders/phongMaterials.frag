@@ -1,3 +1,9 @@
+/* 
+ * Fragment shader supporting:
+ *       Phong lighting
+ *       Materials for the cube faces
+ *       Light colors
+ */
 varying vec2 vTexCoord;
 varying vec4 vColor;
 uniform sampler2D uImage0;
@@ -24,8 +30,9 @@ struct Material {
 };
 uniform Material uMaterial;
 
+// Light colors
 struct Light {
-    bool enabled;
+    bool enabled; // True if 3-component lighting is in use
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
