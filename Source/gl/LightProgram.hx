@@ -9,6 +9,9 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix3D;
 
+/**
+ * GL program class for a simple light.
+ */
 class LightProgram extends Program
 {
 	// GL variables
@@ -20,6 +23,11 @@ class LightProgram extends Program
 	var _vertexSource:String;
 	var _fragmentSource:String;
 
+	/**
+	 * Constructor
+	 * @param gl An WebGL render context
+	 * @param context The OpenFL 3D render context
+	 */
 	public function new(gl:WebGLRenderContext, context:Context3D):Void
 	{
 		var vertexSource = Assets.getText("assets/shaders/light.vert");

@@ -6,6 +6,9 @@ import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLProgram;
 import openfl.display3D.Context3D;
 
+/**
+ * Base GL program class.
+ */
 class Program
 {
 	// Graphics contexts
@@ -15,6 +18,11 @@ class Program
 	// GL variables
 	public var _glProgram:GLProgram;
 
+	/**
+	 * Constructor
+	 * @param gl A WebGL render context
+	 * @param context The OpenFL 3D render context.
+	 */
 	public function new(gl:WebGLRenderContext, context:Context3D)
 	{
 		_gl = gl;

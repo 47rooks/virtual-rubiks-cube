@@ -11,6 +11,9 @@ import openfl.display3D.VertexBuffer3D;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 
+/**
+ * A program class supporting Phong light and materials models.
+ */
 class PhongMaterialsProgram extends Program
 {
 	// Shader source
@@ -18,25 +21,43 @@ class PhongMaterialsProgram extends Program
 	var _fragmentSource:String;
 
 	// GL variables
+	/* Full model-view-projection matrix */
 	private var _programMatrixUniform:GLUniformLocation;
+	/* Model matrix */
 	private var _programModelMatrixUniform:GLUniformLocation;
+	/* Image uniform used for the case where the cube face displays an image */
 	private var _programImageUniform:Int;
-	private var _programTextureAttribute:Int;
+	/* Vertex attributes for vertex coordinates, texture, color and normals. */
 	private var _programVertexAttribute:Int;
+	private var _programTextureAttribute:Int;
 	private var _programColorAttribute:Int;
 	private var _programNormalAttribute:Int;
-	private var _programLightColorUniform:GLUniformLocation;
+
+	// Lighting variables
+	/* Light position */
 	private var _programLightPositionUniform:GLUniformLocation;
+	/* Simple single color light color */
+	private var _programLightColorUniform:GLUniformLocation;
+	/* 3-component light enabled and color variables */
 	private var _programEnabledLightUniform:GLUniformLocation;
 	private var _programAmbientLightUniform:GLUniformLocation;
 	private var _programDiffuseLightUniform:GLUniformLocation;
 	private var _programSpecularLightUniform:GLUniformLocation;
+
+	/* Camera position for light calculations */
 	private var _programViewerPositionUniform:GLUniformLocation;
+
+	/* Material properties */
 	private var _programAmbientMaterialUniform:GLUniformLocation;
 	private var _programDiffuseMaterialUniform:GLUniformLocation;
 	private var _programSpecularMaterialUniform:GLUniformLocation;
 	private var _programSpecularShininessUniform:GLUniformLocation;
 
+	/**
+	 * Constructor
+	 * @param gl A WebGL render context
+	 * @param context An OpenFL 3D render context
+	 */
 	public function new(gl:WebGLRenderContext, context:Context3D):Void
 	{
 		var vertexSource = Assets.getText("assets/shaders/cube.vert");

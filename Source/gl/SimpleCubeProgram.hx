@@ -38,6 +38,11 @@ class SimpleCubeProgram extends Program
 	// Context3D variables
 	private var _programImageUniform:Int;
 
+	/**
+	 * Constructor
+	 * @param gl An WebGL render context
+	 * @param context The OpenFL 3D render context
+	 */
 	public function new(gl:WebGLRenderContext, context:Context3D):Void
 	{
 		var vertexSource = Assets.getText("assets/shaders/cube.vert");
