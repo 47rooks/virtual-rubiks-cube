@@ -4,6 +4,8 @@ import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import gl.LightProgram;
 import lime.graphics.WebGLRenderContext;
+import lime.math.RGBA;
+import lime.utils.Float32Array;
 import openfl.Vector;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
