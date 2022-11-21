@@ -27,13 +27,13 @@ class UI extends VBox
 	@:bind(complex.selected)
 	public var componentLightEnabled(default, null):Bool;
 
-	@:bind(lightDiffuse.value)
+	@:bind(lightAmbient.value)
 	public var lightAmbientColor(default, null):Color;
 
 	@:bind(lightDiffuse.value)
 	public var lightDiffuseColor(default, null):Color;
 
-	@:bind(specular.value)
+	@:bind(lightSpecular.value)
 	public var lightSpecularColor(default, null):Color;
 
 	/* Material Properties */

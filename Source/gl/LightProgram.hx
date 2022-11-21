@@ -18,6 +18,9 @@ class LightProgram extends Program
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
+	// 3-component color
+	private var _program3CompLightColorUniform:GLUniformLocation;
+	private var _program3CompLightEnabledUniform:GLUniformLocation;
 
 	// Shader source
 	var _vertexSource:String;
@@ -55,6 +58,10 @@ class LightProgram extends Program
 
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");
+
+		// Color variables
+		_program3CompLightEnabledUniform = _gl.getUniformLocation(_glProgram, "u3CompLightEnabled");
+		_program3CompLightColorUniform = _gl.getUniformLocation(_glProgram, "uLightColor");
 	}
 
 	/**
@@ -70,7 +77,11 @@ class LightProgram extends Program
 		// Add projection and pass in to shader
 		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
 
-		// Apply GL calls to submit the cubbe data to the GPU
+		// Set light color if selected
+		_gl.uniform1i(_program3CompLightEnabledUniform, ui.componentLightEnabled ? 1 : 0);
+		_gl.uniform3f(_program3CompLightColorUniform, ui.lightAmbientColor.r, ui.lightAmbientColor.g, ui.lightAmbientColor.b);
+
+		// Apply GL calls to submit the cube data to the GPU
 		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
 		_context.setVertexBufferAt(_programColorAttribute, vbo, 4, FLOAT_4);
 

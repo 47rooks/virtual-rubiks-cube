@@ -137,10 +137,7 @@ class PhongMaterialsProgram extends Program
 
 		// Apply GL calls to submit the cubbe data to the GPU
 		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
-		// if (ui.textureEnabled && !ui.materialsEnabled)
-		{
-			_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
-		}
+		_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
 		_context.setVertexBufferAt(_programColorAttribute, vbo, 5, FLOAT_4);
 		_context.setVertexBufferAt(_programNormalAttribute, vbo, 9, FLOAT_3);
 
