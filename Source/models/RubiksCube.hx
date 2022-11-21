@@ -191,7 +191,6 @@ class RubiksCube
 	{
 		SIDE = 64; // FIXME this may need to be a constructor parameter
 		START_OFFSET = -(ROW_LEN * SIDE) / 2 + SIDE / 2;
-		trace('start_offset=${START_OFFSET}, SIDE=${SIDE}');
 		_x = x;
 		_y = y;
 		_z = z;
