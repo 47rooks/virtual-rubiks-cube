@@ -12,53 +12,62 @@ import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 
 /**
- * The basic unit cube GLSL program, using Phong lighting, colours and a single texture.
+ * A program class supporting lighting maps.
  */
-class SimpleCubeProgram extends Program
+class LightMapsProgram extends Program
 {
 	// Shader source
 	var _vertexSource:String;
 	var _fragmentSource:String;
 
 	// GL variables
+	/* Full model-view-projection matrix */
 	private var _programMatrixUniform:GLUniformLocation;
+	/* Model matrix */
 	private var _programModelMatrixUniform:GLUniformLocation;
-	private var _programTextureAttribute:Int;
+	/* Image uniform used for the case where the cube face displays an image */
+	private var _programImageUniform:Int;
+	/* Vertex attributes for vertex coordinates, texture, color and normals. */
 	private var _programVertexAttribute:Int;
+	private var _programTextureAttribute:Int;
 	private var _programColorAttribute:Int;
 	private var _programNormalAttribute:Int;
-	private var _programLightColorUniform:GLUniformLocation;
-	private var _programLightPositionUniform:GLUniformLocation;
-	private var _programViewerPositionUniform:GLUniformLocation;
-	private var _programAmbientStrengthUniform:GLUniformLocation;
-	private var _programDiffuseStrengthUniform:GLUniformLocation;
-	private var _programSpecularStrengthUniform:GLUniformLocation;
-	private var _programSpecularIntensityUniform:GLUniformLocation;
 
-	// Context3D variables
-	private var _programImageUniform:Int;
+	// Lighting variables
+	/* Light position */
+	private var _programLightPositionUniform:GLUniformLocation;
+	/* Simple single color light color */
+	private var _programLightColorUniform:GLUniformLocation;
+	/* 3-component light enabled and color variables */
+	private var _programEnabledLightUniform:GLUniformLocation;
+	private var _programAmbientLightUniform:GLUniformLocation;
+	private var _programDiffuseLightUniform:GLUniformLocation;
+	private var _programSpecularLightUniform:GLUniformLocation;
+
+	/* Camera position for light calculations */
+	private var _programViewerPositionUniform:GLUniformLocation;
+
+	/* Material properties - lighting maps */
+	private var _programDiffuseLightMapUniform:Int; // Diffuse light map
+	private var _programSpecularLightMapUniform:Int; // Specular light map
+	private var _programSpecularShininessUniform:GLUniformLocation; // Shininess
 
 	/**
 	 * Constructor
-	 * @param gl An WebGL render context
-	 * @param context The OpenFL 3D render context
+	 * @param gl A WebGL render context
+	 * @param context An OpenFL 3D render context
 	 */
 	public function new(gl:WebGLRenderContext, context:Context3D):Void
 	{
 		var vertexSource = Assets.getText("assets/shaders/cube.vert");
 		var fragmentSource = #if !desktop "precision mediump float;" + #end
-		Assets.getText("assets/shaders/simplePhong.frag");
+		Assets.getText("assets/shaders/lightMaps.frag");
 
 		super(gl, context);
 		createGLSLProgram(vertexSource, fragmentSource);
 		getShaderVarLocations();
 	}
 
-	/**
-	 * Get all the GLSL variables locations and store
-	 * them in member variables, so they can be bound to
-	 * values during render().
-	 */
 	public function getShaderVarLocations():Void
 	{
 		// Get references to GLSL attributes
@@ -77,63 +86,52 @@ class SimpleCubeProgram extends Program
 		// Light
 		_programLightColorUniform = _gl.getUniformLocation(_glProgram, "uLight");
 		_programLightPositionUniform = _gl.getUniformLocation(_glProgram, "uLightPos");
+		_programEnabledLightUniform = _gl.getUniformLocation(_glProgram, "u3CompLight.enabled");
+		_programAmbientLightUniform = _gl.getUniformLocation(_glProgram, "u3CompLight.ambient");
+		_programDiffuseLightUniform = _gl.getUniformLocation(_glProgram, "u3CompLight.diffuse");
+		_programSpecularLightUniform = _gl.getUniformLocation(_glProgram, "u3CompLight.specular");
 
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");
 		_programModelMatrixUniform = _gl.getUniformLocation(_glProgram, "uModel");
 
-		// Face texture
-		_programImageUniform = 0; // "uImage0" uniform but Context3D just uses ints
+		// Light Maps
+		_programDiffuseLightMapUniform = _gl.getUniformLocation(_glProgram, "uMaterial.diffuse");
+		_programSpecularLightMapUniform = _gl.getUniformLocation(_glProgram, "uMaterial.specular");
+		_programSpecularShininessUniform = _gl.getUniformLocation(_glProgram, "uMaterial.shininess");
 
-		// Phong Lighting
-		_programAmbientStrengthUniform = _gl.getUniformLocation(_glProgram, "uAmbientStrength");
-		_programDiffuseStrengthUniform = _gl.getUniformLocation(_glProgram, "uDiffuseStrength");
-		_programSpecularStrengthUniform = _gl.getUniformLocation(_glProgram, "uSpecularStrength");
-		_programSpecularIntensityUniform = _gl.getUniformLocation(_glProgram, "uSpecularIntensity");
 		// Camera position - currently used for specular lighting
 		_programViewerPositionUniform = _gl.getUniformLocation(_glProgram, "uViewerPos");
 	}
 
-	/**
-	 * Render the cube with the specified parameters.
-	 * @param model the model matrix
-	 * @param projection the final model-view-projection matrix
-	 * @param lightColor the color of the light
-	 * @param lightPosition the world position of the light
-	 * @param cameraPosition the world position of the camera
-	 * @param vbo the vertext buffer
-	 * @param ibo the index buffer for indexed drawing
-	 * @param texture the texture for the faces
-	 * @param ui the properties object from the UI
-	 */
 	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightPosition:Float32Array, cameraPosition:Float32Array,
-			vbo:VertexBuffer3D, ibo:IndexBuffer3D, texture:RectangleTexture, ui:UI):Void
+			vbo:VertexBuffer3D, ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture, ui:UI):Void
 	{
 		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
 
 		// Add projection and pass in to shader
 		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
 
-		// Image texture
-		_context.setTextureAt(_programImageUniform, texture);
-
 		// Light
 		_gl.uniform3fv(_programLightColorUniform, lightColor, 0);
 		_gl.uniform3fv(_programLightPositionUniform, lightPosition, 0);
 
-		// Phong lighting
-		_gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
-		_gl.uniform1f(_programAmbientStrengthUniform, ui.ambientS);
-		_gl.uniform1f(_programDiffuseStrengthUniform, ui.diffuseS);
-		_gl.uniform1f(_programSpecularStrengthUniform, ui.specularS);
-		_gl.uniform1f(_programSpecularIntensityUniform, ui.specularI);
+		_gl.uniform1i(_programEnabledLightUniform, ui.componentLightEnabled ? 1 : 0);
+		_gl.uniform3f(_programAmbientLightUniform, ui.lightAmbientColor.r, ui.lightAmbientColor.g, ui.lightAmbientColor.b);
+		_gl.uniform3f(_programDiffuseLightUniform, ui.lightDiffuseColor.r, ui.lightDiffuseColor.g, ui.lightDiffuseColor.b);
+		_gl.uniform3f(_programSpecularLightUniform, ui.lightSpecularColor.r, ui.lightSpecularColor.g, ui.lightSpecularColor.b);
 
-		// Apply GL calls to submit the cubbe data to the GPU
+		// Lighting maps
+		_gl.uniform1i(_programDiffuseLightMapUniform, 0); // Diffuse lighting map
+		_context.setTextureAt(0, diffuseLightMapTexture);
+		_gl.uniform1i(_programSpecularLightMapUniform, 1); // Specular lighting map
+		_context.setTextureAt(1, specularLightMapTexture);
+		_gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
+		_gl.uniform1f(_programSpecularShininessUniform, Math.pow(2, ui.specularShininess));
+
+		// Apply GL calls to submit the cube data to the GPU
 		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
-		if (ui.textureEnabled)
-		{
-			_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
-		}
+		_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
 		_context.setVertexBufferAt(_programColorAttribute, vbo, 5, FLOAT_4);
 		_context.setVertexBufferAt(_programNormalAttribute, vbo, 9, FLOAT_3);
 

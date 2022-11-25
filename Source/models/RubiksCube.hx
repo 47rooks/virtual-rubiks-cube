@@ -9,6 +9,7 @@ import Color.WHITE;
 import Color.YELLOW;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
+import gl.LightMapsProgram;
 import gl.PhongMaterialsProgram;
 import gl.Program;
 import gl.SimpleCubeProgram;
@@ -149,12 +150,20 @@ class RubiksCube
 	// GLSL Program definitions
 	final GLSL_PROG_SIMPLE = "progSimpleCubeLit";
 	final GLSL_PROG_MATERIALS = "progCubeWithMaterials";
+	final GLSL_PROG_LIGHTMAP = "progCubeLightMaps";
 
 	final GLSL_PROGRAMS:Map<String, Program>;
 
 	// Cube face texture image
 	var _faceImageData:BitmapData;
 	private var _faceTexture:RectangleTexture;
+
+	// Lighting map textures
+	var _diffuseLightMapImageData:BitmapData;
+	private var _diffuseLightMapTexture:RectangleTexture;
+
+	var _specularLightMapImageData:BitmapData;
+	private var _specularLightMapTexture:RectangleTexture;
 
 	// Cube data
 	var _x:Int;
@@ -201,6 +210,14 @@ class RubiksCube
 		_faceTexture = context.createRectangleTexture(_faceImageData.width, _faceImageData.height, BGRA, false);
 		_faceTexture.uploadFromBitmapData(_faceImageData);
 
+		_diffuseLightMapImageData = Assets.getBitmapData("assets/openflMetalDiffuse.png");
+		_diffuseLightMapTexture = context.createRectangleTexture(_diffuseLightMapImageData.width, _diffuseLightMapImageData.height, BGRA, false);
+		_diffuseLightMapTexture.uploadFromBitmapData(_diffuseLightMapImageData);
+
+		_specularLightMapImageData = Assets.getBitmapData("assets/openflMetalSpecular.png");
+		_specularLightMapTexture = context.createRectangleTexture(_specularLightMapImageData.width, _specularLightMapImageData.height, BGRA, false);
+		_specularLightMapTexture.uploadFromBitmapData(_specularLightMapImageData);
+
 		_cubes = createCubes(context);
 
 		// Initialize operation data
@@ -218,7 +235,8 @@ class RubiksCube
 		// Define programs - this would be a initialized at load from other constants but Haxe won't allow it.
 		GLSL_PROGRAMS = [
 			GLSL_PROG_SIMPLE => new SimpleCubeProgram(gl, context),
-			GLSL_PROG_MATERIALS => new PhongMaterialsProgram(gl, context)
+			GLSL_PROG_MATERIALS => new PhongMaterialsProgram(gl, context),
+			GLSL_PROG_LIGHTMAP => new LightMapsProgram(gl, context)
 		];
 	}
 
@@ -842,13 +860,20 @@ class RubiksCube
 	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
 			cameraPosition:Float32Array, ui:UI):Void
 	{
-		if (ui.useMaterials.selected)
+		if (ui.textureEnabled)
 		{
+			// trace('using simple program');
+			GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE).use();
+		}
+		else if (ui.materialsEnabled)
+		{
+			// trace('using materials program');
 			GLSL_PROGRAMS.get(GLSL_PROG_MATERIALS).use();
 		}
 		else
 		{
-			GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE).use();
+			// trace('using lightmap program');
+			GLSL_PROGRAMS.get(GLSL_PROG_LIGHTMAP).use();
 		}
 
 		for (c in _cubes)
@@ -876,15 +901,20 @@ class RubiksCube
 			// Light
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 
-			if (ui.useMaterials.selected)
+			if (ui.textureEnabled)
+			{
+				cast(GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE), SimpleCubeProgram).render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition,
+					c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
+			}
+			else if (ui.materialsEnabled)
 			{
 				cast(GLSL_PROGRAMS.get(GLSL_PROG_MATERIALS), PhongMaterialsProgram).render(fullModel, fullProjection, lightColorArr, lightPosition,
 					cameraPosition, c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
 			}
 			else
 			{
-				cast(GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE), SimpleCubeProgram).render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition,
-					c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
+				cast(GLSL_PROGRAMS.get(GLSL_PROG_LIGHTMAP), LightMapsProgram).render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition,
+					c.cube._glVertexBuffer, c.cube._glIndexBuffer, _diffuseLightMapTexture, _specularLightMapTexture, ui);
 			}
 		}
 	}

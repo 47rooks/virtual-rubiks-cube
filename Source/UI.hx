@@ -41,7 +41,10 @@ class UI extends VBox
 	public var textureEnabled(default, null):Bool = true;
 
 	@:bind(useMaterials.selected)
-	public var materialsEnabled(default, null):Bool = false;
+	public var materialsEnabled(default, null):Bool;
+
+	@:bind(useLightMaps.selected)
+	public var lightMapsEnabled(default, null):Bool;
 
 	@:bind(ambient.value)
 	public var ambientColor(default, null):Color;

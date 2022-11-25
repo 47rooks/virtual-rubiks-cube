@@ -23,99 +23,108 @@
     <hbox styleName="controlBox" horizontalAlign="right" style="background-color: #ffffff;">
         <accordion id="controlAccordion" width="300px" height="900px">
             <vbox id="lightingControls" text="Lighting" styleName="controlBox">
-                <vbox id="simpleLighting" disabled="${!simple.selected}" visible="${simple.selected}">
-                    <label text="Simple Lighting" styleName="parameterTitle"></label>
-                    <label text="Ambient strength" styleName="parameterTitle"></label>
-                    <vbox>
-                        <label text="'${ambientStrength.pos}'" horizontalAlign="center"></label>
-                        <hbox>
-                            <label text="'${ambientStrength.min}'" verticalAlign="center" width="20px" />
-                            <slider id="ambientStrength" min="0.0" max="1.0" pos="0.1" precision="2"></slider>
-                            <label text="'${ambientStrength.max}'" verticalAlign="center" width="20px" />
-                        </hbox>
+                <vbox>
+                    <optionbox id="simple" componentGroup="lightGroup" text="Simple lighting" selected="true" />
+                    <vbox id="simpleLighting" disabled="${!simple.selected}" hidden="${!simple.selected}" width="100%" height="330px">
+                        <frame text="Simple Lighting" styleName="parameterTitle">
+                            <vbox>
+                                <label text="Ambient strength" styleName="parameterTitle"></label>
+                                <vbox>
+                                    <label text="'${ambientStrength.pos}'" horizontalAlign="center"></label>
+                                    <hbox>
+                                        <label text="'${ambientStrength.min}'" verticalAlign="center" width="20px" />
+                                        <slider id="ambientStrength" min="0.0" max="1.0" pos="0.1" precision="2"></slider>
+                                        <label text="'${ambientStrength.max}'" verticalAlign="center" width="20px" />
+                                    </hbox>
+                                </vbox>
+                                <label text="Diffuse strength" styleName="parameterTitle"></label>
+                                <vbox>
+                                    <label text="'${diffuseStrength.pos}'" horizontalAlign="center"></label>
+                                    <hbox>
+                                        <label text="'${diffuseStrength.min}'" verticalAlign="center" width="20px" />
+                                        <slider id="diffuseStrength" min="0.0" max="1.0" pos="1.0" precision="2"></slider>
+                                        <label text="'${diffuseStrength.max}'" verticalAlign="center" width="20px" />
+                                    </hbox>
+                                </vbox>
+                                <label text="Specular strength" styleName="parameterTitle"></label>
+                                <vbox>
+                                    <label text="'${specularStrength.pos}'" horizontalAlign="center"></label>
+                                    <hbox>
+                                        <label text="'${specularStrength.min}'" verticalAlign="center" width="20px" />
+                                        <slider id="specularStrength" min="0.0" max="1.0" pos="0.75" precision="2"></slider>
+                                        <label text="'${specularStrength.max}'" verticalAlign="center" width="20px" />
+                                    </hbox>
+                                </vbox>
+                                <label text="Specular intensity" styleName="parameterTitle"></label>
+                                <vbox>
+                                    <label text="'${specularIntensity.pos}'" horizontalAlign="center"></label>
+                                    <hbox>
+                                        <label text="'${specularIntensity.min}'" verticalAlign="center" width="20px" />
+                                        <slider id="specularIntensity" min="1.0" max="9.0" step="1.0" pos="5.0"></slider>
+                                        <label text="'${specularIntensity.max}'" verticalAlign="center" width="20px" />
+                                    </hbox>
+                                </vbox>
+                            </vbox>
+                        </frame>
                     </vbox>
-                    <label text="Diffuse strength" styleName="parameterTitle"></label>
-                    <vbox>
-                        <label text="'${diffuseStrength.pos}'" horizontalAlign="center"></label>
-                        <hbox>
-                            <label text="'${diffuseStrength.min}'" verticalAlign="center" width="20px" />
-                            <slider id="diffuseStrength" min="0.0" max="1.0" pos="1.0" precision="2"></slider>
-                            <label text="'${diffuseStrength.max}'" verticalAlign="center" width="20px" />
-                        </hbox>
-                    </vbox>
-                    <label text="Specular strength" styleName="parameterTitle"></label>
-                    <vbox>
-                        <label text="'${specularStrength.pos}'" horizontalAlign="center"></label>
-                        <hbox>
-                            <label text="'${specularStrength.min}'" verticalAlign="center" width="20px" />
-                            <slider id="specularStrength" min="0.0" max="1.0" pos="0.75" precision="2"></slider>
-                            <label text="'${specularStrength.max}'" verticalAlign="center" width="20px" />
-                        </hbox>
-                    </vbox>
-                    <label text="Specular intensity" styleName="parameterTitle"></label>
-                    <vbox>
-                        <label text="'${specularIntensity.pos}'" horizontalAlign="center"></label>
-                        <hbox>
-                            <label text="'${specularIntensity.min}'" verticalAlign="center" width="20px" />
-                            <slider id="specularIntensity" min="1.0" max="9.0" step="1.0" pos="5.0"></slider>
-                            <label text="'${specularIntensity.max}'" verticalAlign="center" width="20px" />
-                        </hbox>
+                    <optionbox id="complex" componentGroup="lightGroup" text="Phong (3-component) Light" />
+                    <vbox id="complexLighting" disabled="${!complex.selected}" hidden="${!complex.selected}" width="100%" height="100%">
+                        <frame text="Complex Lighting" styleName="parameterTitle">
+                            <hbox>
+                                <vbox>
+                                    <label text="Ambient" styleName="parameterTitle"></label>
+                                    <color-picker-popup id="lightAmbient" value="0x191919"></color-picker-popup>
+                                </vbox>
+                                <vbox>
+                                    <label text="Diffuse" styleName="parameterTitle"></label>
+                                    <color-picker-popup id="lightDiffuse" value="0x808080"></color-picker-popup>
+                                </vbox>
+                                <vbox>
+                                    <label text="Specular" styleName="parameterTitle"></label>
+                                    <color-picker-popup id="lightSpecular" value="0xffffff"></color-picker-popup>
+                                </vbox>
+                            </hbox>
+                        </frame>
                     </vbox>
                 </vbox>
             </vbox>
             <vbox id="materialControls" text="Materials" styleName="controlBox" style="background-color: #ffffff;">
-                <checkbox id="useTexture" text="Use Simple Texture" selected="true" disabled="${useMaterials.selected}"></checkbox>
-                <checkbox id="useMaterials" text="Use Phong Materials" selected="false"></checkbox>
-                <scrollview height="100%" width="100%" disabled="${!useMaterials.selected}" contentLayoutName="vertical">
-                    <vbox>
-                        <frame text="Face color" styleName="parameterTitle">
+                <vbox width="100%">
+                    <optionbox id="useTexture" componentGroup="matGroup" text="Use Simple Texture" selected="true"></optionbox>
+                    <optionbox id="useMaterials" componentGroup="matGroup" text="Use Phong Materials"></optionbox>
+                    <vbox disabled="${!useMaterials.selected}" hidden="${!useMaterials.selected}" height="175px" width="100%">
+                        <scrollview height="100%" width="100%" contentLayoutName="vertical">
                             <vbox>
-                                <hbox width="100%">
-                                    <vbox height="100%">
-                                        <label text="Ambient" styleName="parameterTitle"></label>
-                                        <color-picker-popup id="ambient" disabled="${!useMaterials.selected}" value="0x00190f"></color-picker-popup>
-                                    </vbox>
+                                <frame text="Face color" styleName="parameterTitle">
                                     <vbox>
-                                        <label text="Diffuse" styleName="parameterTitle"></label>
-                                        <color-picker-popup id="diffuse" disabled="${!useMaterials.selected}" value="0x008181"></color-picker-popup>
+                                        <hbox width="100%">
+                                            <vbox height="100%">
+                                                <label text="Ambient" styleName="parameterTitle"></label>
+                                                <color-picker-popup id="ambient" disabled="${!useMaterials.selected}" value="0x00190f"></color-picker-popup>
+                                            </vbox>
+                                            <vbox>
+                                                <label text="Diffuse" styleName="parameterTitle"></label>
+                                                <color-picker-popup id="diffuse" disabled="${!useMaterials.selected}" value="0x008181"></color-picker-popup>
+                                            </vbox>
+                                            <vbox>
+                                                <label text="Specular" styleName="parameterTitle"></label>
+                                                <color-picker-popup id="specular" disabled="${!useMaterials.selected}" value="0x7f7f7f"></color-picker-popup>
+                                            </vbox>
+                                        </hbox>
+                                        <label text="Shininess" styleName="parameterTitle"></label>
+                                        <label text="'${shininess.pos}'" horizontalAlign="center"></label>
+                                        <hbox>
+                                            <label text="'${shininess.min}'" verticalAlign="center" width="20px" />
+                                            <slider id="shininess" min="1.0" max="9.0" step="1.0" pos="5.0" disabled="${!useMaterials.selected}"></slider>
+                                            <label text="'${shininess.max}'" verticalAlign=" center" width="20px" />
+                                        </hbox>
                                     </vbox>
-                                    <vbox>
-                                        <label text="Specular" styleName="parameterTitle"></label>
-                                        <color-picker-popup id="specular" disabled="${!useMaterials.selected}" value="0x7f7f7f"></color-picker-popup>
-                                    </vbox>
-                                </hbox>
-                                <label text="Shininess" styleName="parameterTitle"></label>
-                                <label text="'${shininess.pos}'" horizontalAlign="center"></label>
-                                <hbox>
-                                    <label text="'${shininess.min}'" verticalAlign="center" width="20px" />
-                                    <slider id="shininess" min="1.0" max="9.0" step="1.0" pos="5.0" disabled="${!useMaterials.selected}"></slider>
-                                    <label text="'${shininess.max}'" verticalAlign=" center" width="20px" />
-                                </hbox>
+                                </frame>
                             </vbox>
-                        </frame>
+                        </scrollview>
                     </vbox>
-                    <vbox>
-                        <optionbox id="simple" text="Simple lighting" selected="true" />
-                        <optionbox id="complex" text="Phong (3-component) Light" />
-                    </vbox>
-                    <vbox id="complexLighting" disabled="${!complex.selected}" visible="${complex.selected}">
-                        <label text="Complex Lighting" styleName="parameterTitle"></label>
-                        <hbox width="100%">
-                            <vbox height="100%">
-                                <label text="Ambient" styleName="parameterTitle"></label>
-                                <color-picker-popup id="lightAmbient" value="0x191919"></color-picker-popup>
-                            </vbox>
-                            <vbox>
-                                <label text="Diffuse" styleName="parameterTitle"></label>
-                                <color-picker-popup id="lightDiffuse" value="0x808080"></color-picker-popup>
-                            </vbox>
-                            <vbox>
-                                <label text="Specular" styleName="parameterTitle"></label>
-                                <color-picker-popup id="lightSpecular" value="0xffffff"></color-picker-popup>
-                            </vbox>
-                        </hbox>
-                    </vbox>
-                </scrollview>
+                    <optionbox id="useLightMaps" componentGroup="matGroup" text="Use Light Maps"></optionbox>
+                </vbox>
             </vbox>
         </accordion>
     </hbox>
