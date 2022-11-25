@@ -13,12 +13,8 @@ The stack used is lime, openfl and haxeui.
      * document code - in progress
      * add CPU processing for matrix operations for debug and printing
      * add bounding box calculations
-   * Second
-     * check on the y-axis flip issue
-        * is this happening here ?
-        * it may be only in ortho-projection but not perspective - not sure
-   * figure out how apparent zoom works - why does the cube get bigger or smaller
    * add game controller support
+     * very rudimentary and slightly clunky support is in place now
    * add camera movement by controller
    * fix -ve angle rotation operations
    * add cube rotation

@@ -173,10 +173,12 @@ class Scene extends Sprite
 		_gl = stage.window.context.webgl;
 		_context = stage.context3D;
 
-		// computeOrthoProjection();
+		// Compute projection matrix
+		// Uncomment the createOrthoProjection() line and comment the next for an orthographic view.
+		// Note that mouse wheel zoom will switch back to perspective projection as it
+		//      recreates the projection matrix and only supports doing so for the
+		//      perspective projection. See mouseOnWheel().
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
-		// projectionTransform = createPerspectiveProjection(-320, 320, 240, -240, 300, 800.0);
-		// projectionTransform = createPerspectiveProjection(_cameraFOV, 640 / 480, 100, 1000);
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
 		// GL  comment for now
