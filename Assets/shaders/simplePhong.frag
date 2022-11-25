@@ -21,12 +21,10 @@ uniform float uSpecularIntensity;
 
 void main(void)
 {
-    /* Compute ambient lighting */
-    // float ambientStrength = 0.1;
+    // Get the light's color
     vec3 lightColor = uLight.rgb / 255.0;
-    vec3 ambient =  lightColor.rgb * vec3(uAmbientStrength);
 
-    /* Apply texture */
+    /* Get the texture color */
     vec4 tColor = texture2D(uImage0, vTexCoord);
     vec3 cColor = tColor.rgb * vColor.rgb;
     if (tColor.a == 0.0) {
@@ -39,13 +37,12 @@ void main(void)
     float diffuse = max(dot(norm, lightDirection), 0.0) * uDiffuseStrength;
 
     /* Compute specular lighting */
-    // float specularStrength = 0.75;
     vec3 viewerDir = normalize(uViewerPos.xyz - vFragPos);
     vec3 reflectDir = reflect(-lightDirection, norm);
     float spec = pow(max(dot(viewerDir, reflectDir), 0.0), pow(2.0, uSpecularIntensity));
     vec3 specular = uSpecularStrength * spec * lightColor;
 
-    /* Apply ambient and diffuse lighting */
+    /* Apply ambient, diffuse and specular lighting components */
     vec3 litColor = cColor * (uAmbientStrength + diffuse + specular);
     
     gl_FragColor = vec4(litColor, 1.0);

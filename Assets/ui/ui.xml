@@ -26,7 +26,7 @@
                 <vbox>
                     <optionbox id="simple" componentGroup="lightGroup" text="Simple lighting" selected="true" />
                     <vbox id="simpleLighting" disabled="${!simple.selected}" hidden="${!simple.selected}" width="100%" height="330px">
-                        <frame text="Simple Lighting" styleName="parameterTitle">
+                        <frame text="Simple Phong Lighting" styleName="parameterTitle">
                             <vbox>
                                 <label text="Ambient strength" styleName="parameterTitle"></label>
                                 <vbox>
@@ -67,7 +67,7 @@
                             </vbox>
                         </frame>
                     </vbox>
-                    <optionbox id="complex" componentGroup="lightGroup" text="Phong (3-component) Light" />
+                    <optionbox id="complex" componentGroup="lightGroup" text="3-component Phong lighting" disabled="${useTexture.selected}" />
                     <vbox id="complexLighting" disabled="${!complex.selected}" hidden="${!complex.selected}" width="100%" height="100%">
                         <frame text="Complex Lighting" styleName="parameterTitle">
                             <hbox>

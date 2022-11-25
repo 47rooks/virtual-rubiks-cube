@@ -1,6 +1,8 @@
 package;
 
+import haxe.ui.components.OptionBox;
 import haxe.ui.containers.VBox;
+import haxe.ui.events.UIEvent;
 import haxe.ui.util.Color;
 
 /**
@@ -67,5 +69,22 @@ class UI extends VBox
 	public function toggleVisibility():Void
 	{
 		visible = !visible;
+	}
+
+	/**
+	 * Update the 'simple' lighting field to true if it is false and the
+	 * useTexture materials option is selected. This is required because
+	 * useTexture material (SimpleCubeProgram) will only support simple
+	 * lighting.
+	 * @param e UIEvent
+	 */
+	@:bind(useTexture, UIEvent.PROPERTY_CHANGE)
+	public function onChangeUseTexture(e:UIEvent):Void
+	{
+		var o = cast(e.target, OptionBox);
+		if (e.data == 'selected' && o.value && !simple.value)
+		{
+			simple.value = true;
+		}
 	}
 }

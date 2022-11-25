@@ -1,6 +1,11 @@
 # Virtual Rubiks Cube
 
-This is an OpenFL based Rubik's cube simulation. This is mostly an experiment in OpenGL and matrix manipulation for 3D graphics.
+The aims of this example are:
+   Produce an OpenFL based Rubik's cube simulation
+   Experiment with OpenGL in OpenFL working through Learn OpenGL - Graphics Programming by Joey de Vries
+   Experiment with 2D and 3D graphics in the one application
+
+The stack used is lime, openfl and haxeui.
 
 # To Do
 
