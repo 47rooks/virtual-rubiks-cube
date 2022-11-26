@@ -68,7 +68,14 @@ class UI extends VBox
 
 	public function toggleVisibility():Void
 	{
-		visible = !visible;
+		if (keepHelp.selected)
+		{
+			controls.visible = !controls.visible;
+		}
+		else
+		{
+			visible = !visible;
+		}
 	}
 
 	/**
