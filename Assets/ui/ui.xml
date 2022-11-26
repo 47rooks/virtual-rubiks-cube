@@ -1,4 +1,4 @@
-<vbox width="100%" style="padding: 5px;">
+<vbox width="100%" height="100%" style="padding: 5px;">
     <style>
         Accordion text {
             color:black;
@@ -14,26 +14,40 @@
         Label.parameterTitle {
             font-size: 12;
         }
-        .controlBox, .helpBox {
+        .controlBox, .helpBox, .hudKeyBox {
             border: 2px solid black;
             border-radius: 5px;
             padding: 5px;
+            background-color: #ffffff;
+        }
+        #introMessage {
+            font-size: 12;
+            text-align: center;
         }
     </style>
-    <grid columns="3" width="100%">
-        <vbox styleName="helpBox" horizontalAlign="left" width="300px" style="background-color: #ffffff;">
-            <frame text="Key and Mouse Mappings">
-                <vbox>
-                    <label text="H - Bring up/Clear this HUD\nR - Run through some cube moves"></label>
-                    <label text="W - Dolly in z-axis\nA - Truck (Strafe) left\nD - Truck (Strafe) right\nS - Dolly out"></label>
-                    <label text="M - Switch the object controlled by the mouse between camera lookat and cube rotation" wordWrap="true" width="100%"></label>
-                    <label text="Mouse scroll wheel - zoom in/out"></label>
+    <hbox width="100%" height="100%">
+        <vbox height="100%">
+            <vbox id="helpContainer" height="100%" width="300px">
+                <vbox id="help" styleName="helpBox" width="100%" style="background-color: #ffffff;">
+                    <frame text="Key and Mouse Mappings">
+                        <vbox>
+                            <label text="H - Bring up/Clear this HUD\nR - Run through some cube moves"></label>
+                            <label text="W - Dolly in z-axis\nA - Truck (Strafe) left\nD - Truck (Strafe) right\nS - Dolly out z-axis"></label>
+                            <label text="M - Switch the object controlled by the mouse between camera lookat and cube rotation" wordWrap="true" width="100%"></label>
+                            <label text="Mouse scroll wheel - zoom in/out"></label>
+                        </vbox>
+                    </frame>
+                    <checkbox id="keepHelp" text="Keep" selected="false"></checkbox>
                 </vbox>
-            </frame>
-            <checkbox id="keepHelp" text="Keep" selected="false"></checkbox>
+            </vbox>
+            <vbox styleName="hudKeyBox">
+                <label id="hudKeyMessage" text="Hit H to bring up HUD"></label>
+            </vbox>
         </vbox>
-        <vbox width="100%"></vbox> <!-- Blank section to force left and right columns apart -->
-        <vbox id="controls" styleName="controlBox" horizontalAlign="right" style="background-color: #ffffff;">
+        <vbox id="centerContent" width="100%">
+            <!-- Blank section to force left and right columns apart -->
+        </vbox>
+        <vbox id="controls" styleName="controlBox" style="background-color: #ffffff;">
             <accordion id="controlAccordion" width="300px" height="900px">
                 <vbox id="lightingControls" text="Lighting" styleName="controlBox">
                     <vbox>
@@ -141,5 +155,5 @@
                 </vbox>
             </accordion>
         </vbox>
-    </grid>
+    </hbox>
 </vbox>

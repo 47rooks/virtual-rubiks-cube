@@ -63,7 +63,9 @@ class UI extends VBox
 	public function new()
 	{
 		super();
-		visible = false;
+		controls.visible = help.visible = false;
+		hudKeyMessage.visible = true;
+		visible = true;
 	}
 
 	public function toggleVisibility():Void
@@ -74,7 +76,8 @@ class UI extends VBox
 		}
 		else
 		{
-			visible = !visible;
+			controls.visible = !controls.visible;
+			help.visible = !help.visible;
 		}
 	}
 
