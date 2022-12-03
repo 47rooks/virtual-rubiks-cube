@@ -12,9 +12,9 @@ import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 
 /**
- * The basic unit cube GLSL program rendering colours and a single texture.
+ * The basic unit cube GLSL program, using Phong lighting, colours and a single texture.
  */
-class SimpleCubeProgram extends Program
+class PhongLightingProgram extends Program
 {
 	// Shader source
 	var _vertexSource:String;
@@ -26,6 +26,14 @@ class SimpleCubeProgram extends Program
 	private var _programTextureAttribute:Int;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
+	private var _programNormalAttribute:Int;
+	private var _programLightColorUniform:GLUniformLocation;
+	private var _programLightPositionUniform:GLUniformLocation;
+	private var _programViewerPositionUniform:GLUniformLocation;
+	private var _programAmbientStrengthUniform:GLUniformLocation;
+	private var _programDiffuseStrengthUniform:GLUniformLocation;
+	private var _programSpecularStrengthUniform:GLUniformLocation;
+	private var _programSpecularIntensityUniform:GLUniformLocation;
 
 	// Context3D variables
 	private var _programImageUniform:Int;
@@ -39,7 +47,7 @@ class SimpleCubeProgram extends Program
 	{
 		var vertexSource = Assets.getText("assets/shaders/cube.vert");
 		var fragmentSource = #if !desktop "precision mediump float;" + #end
-		Assets.getText("assets/shaders/cube.frag");
+		Assets.getText("assets/shaders/simplePhong.frag");
 
 		super(gl, context);
 		createGLSLProgram(vertexSource, fragmentSource);
@@ -63,12 +71,27 @@ class SimpleCubeProgram extends Program
 		_programColorAttribute = _gl.getAttribLocation(_glProgram, "aColor");
 		_gl.enableVertexAttribArray(_programColorAttribute);
 
+		_programNormalAttribute = _gl.getAttribLocation(_glProgram, "aNormal");
+		_gl.enableVertexAttribArray(_programNormalAttribute);
+
+		// Light
+		_programLightColorUniform = _gl.getUniformLocation(_glProgram, "uLight");
+		_programLightPositionUniform = _gl.getUniformLocation(_glProgram, "uLightPos");
+
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");
 		_programModelMatrixUniform = _gl.getUniformLocation(_glProgram, "uModel");
 
 		// Face texture
 		_programImageUniform = 0; // "uImage0" uniform but Context3D just uses ints
+
+		// Phong Lighting
+		_programAmbientStrengthUniform = _gl.getUniformLocation(_glProgram, "uAmbientStrength");
+		_programDiffuseStrengthUniform = _gl.getUniformLocation(_glProgram, "uDiffuseStrength");
+		_programSpecularStrengthUniform = _gl.getUniformLocation(_glProgram, "uSpecularStrength");
+		_programSpecularIntensityUniform = _gl.getUniformLocation(_glProgram, "uSpecularIntensity");
+		// Camera position - currently used for specular lighting
+		_programViewerPositionUniform = _gl.getUniformLocation(_glProgram, "uViewerPos");
 	}
 
 	/**
@@ -94,6 +117,17 @@ class SimpleCubeProgram extends Program
 		// Image texture
 		_context.setTextureAt(_programImageUniform, texture);
 
+		// Light
+		_gl.uniform3fv(_programLightColorUniform, lightColor, 0);
+		_gl.uniform3fv(_programLightPositionUniform, lightPosition, 0);
+
+		// Phong lighting
+		_gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
+		_gl.uniform1f(_programAmbientStrengthUniform, ui.ambientS);
+		_gl.uniform1f(_programDiffuseStrengthUniform, ui.diffuseS);
+		_gl.uniform1f(_programSpecularStrengthUniform, ui.specularS);
+		_gl.uniform1f(_programSpecularIntensityUniform, ui.specularI);
+
 		// Apply GL calls to submit the cubbe data to the GPU
 		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
 		if (ui.textureEnabled)
@@ -101,6 +135,7 @@ class SimpleCubeProgram extends Program
 			_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
 		}
 		_context.setVertexBufferAt(_programColorAttribute, vbo, 5, FLOAT_4);
+		_context.setVertexBufferAt(_programNormalAttribute, vbo, 9, FLOAT_3);
 
 		_context.drawTriangles(ibo);
 	}

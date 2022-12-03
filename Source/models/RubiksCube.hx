@@ -10,6 +10,7 @@ import Color.YELLOW;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import gl.LightMapsProgram;
+import gl.PhongLightingProgram;
 import gl.PhongMaterialsProgram;
 import gl.Program;
 import gl.SimpleCubeProgram;
@@ -149,6 +150,7 @@ class RubiksCube
 
 	// GLSL Program definitions
 	final GLSL_PROG_SIMPLE = "progSimpleCubeLit";
+	final GLSL_PROG_PHONG_LIGHT = "progCubeWithPhongLight";
 	final GLSL_PROG_MATERIALS = "progCubeWithMaterials";
 	final GLSL_PROG_LIGHTMAP = "progCubeLightMaps";
 
@@ -235,6 +237,7 @@ class RubiksCube
 		// Define programs - this would be a initialized at load from other constants but Haxe won't allow it.
 		GLSL_PROGRAMS = [
 			GLSL_PROG_SIMPLE => new SimpleCubeProgram(gl, context),
+			GLSL_PROG_PHONG_LIGHT => new PhongLightingProgram(gl, context),
 			GLSL_PROG_MATERIALS => new PhongMaterialsProgram(gl, context),
 			GLSL_PROG_LIGHTMAP => new LightMapsProgram(gl, context)
 		];
@@ -860,10 +863,15 @@ class RubiksCube
 	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
 			cameraPosition:Float32Array, ui:UI):Void
 	{
-		if (ui.textureEnabled)
+		if (ui.sceneRubiks)
 		{
 			// trace('using simple program');
 			GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE).use();
+		}
+		else if (ui.sceneRubiksWithLight && ui.textureEnabled)
+		{
+			// trace('using phong with light');
+			GLSL_PROGRAMS.get(GLSL_PROG_PHONG_LIGHT).use();
 		}
 		else if (ui.materialsEnabled)
 		{
@@ -889,7 +897,7 @@ class RubiksCube
 				fullModel.append(_rotMatrix);
 			}
 
-			// Whole cube model matrix - currently a no-op.
+			// Whole cube model matrix
 			var modelMatrix = new Matrix3D();
 			modelMatrix.append(_cubeRotation);
 			fullModel.append(modelMatrix);
@@ -901,10 +909,15 @@ class RubiksCube
 			// Light
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 
-			if (ui.textureEnabled)
+			if (ui.sceneRubiks)
 			{
 				cast(GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE), SimpleCubeProgram).render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition,
 					c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
+			}
+			else if (ui.sceneRubiksWithLight && ui.textureEnabled)
+			{
+				cast(GLSL_PROGRAMS.get(GLSL_PROG_PHONG_LIGHT), PhongLightingProgram).render(fullModel, fullProjection, lightColorArr, lightPosition,
+					cameraPosition, c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
 			}
 			else if (ui.materialsEnabled)
 			{

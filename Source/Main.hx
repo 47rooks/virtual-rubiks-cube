@@ -32,7 +32,11 @@ class Main extends Sprite
 	{
 		super();
 
-		_scene = new Scene();
+		// Create UI
+		Toolkit.init();
+		_ui = new UI();
+
+		_scene = new Scene(_ui);
 
 		// Add event handlers
 		stage.addEventListener(Event.RESIZE, stage_onResize);
@@ -45,10 +49,6 @@ class Main extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
 
 		addChild(_scene);
-
-		// Create UI
-		Toolkit.init();
-		_ui = new UI();
 		addChild(_ui);
 
 		_mouseVisible = false;
@@ -81,6 +81,22 @@ class Main extends Sprite
 	}
 
 	// Event Handlers
+
+	function stage_onEnterFrame(event:Event):Void
+	{
+		// Get elapsed time and update the angle
+		var newTime = Lib.getTimer(); // ms
+		var elapsed = newTime - cacheTime; // ms elapsed
+		cacheTime = newTime;
+
+		// update current state
+		_scene.update(elapsed, _ui);
+
+		// Now render - invalidating the stage will cause the render event to fire
+		//  which will trigger the stage_onRender() callback.
+		stage.invalidate();
+	}
+
 	// FIXME This could be driven from the scene level - should it be ?
 	function stage_onRender(event:RenderEvent):Void
 	{
@@ -93,20 +109,5 @@ class Main extends Sprite
 	function stage_onResize(event:Event):Void
 	{
 		resize(stage.stageWidth, stage.stageHeight);
-	}
-
-	function stage_onEnterFrame(event:Event):Void
-	{
-		// Get elapsed time and update the angle
-		var newTime = Lib.getTimer(); // ms
-		var elapsed = newTime - cacheTime; // ms elapsed
-		cacheTime = newTime;
-
-		// update current state
-		_scene.update(elapsed);
-
-		// Now render - invalidating the stage will cause the render event to fire
-		//  which will trigger the stage_onRender() callback.
-		stage.invalidate();
 	}
 }

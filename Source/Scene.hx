@@ -2,16 +2,27 @@ package;
 
 import Camera.CameraLookTo;
 import Camera.CameraMovement;
+import Color.BLUE;
+import Color.GREEN;
+import Color.ORANGE;
+import Color.RED;
 import Color.WHITE;
+import Color.YELLOW;
 import MatrixUtils.createPerspectiveProjection;
+import MatrixUtils.createScaleMatrix;
+import MatrixUtils.createTranslationMatrix;
 import MatrixUtils.vector3DToFloat32Array;
+import gl.SimpleCubeProgram;
 import haxe.ValueException;
 import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
+import models.Cube;
 import models.Light;
 import models.RubiksCube;
+import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.display3D.Context3D;
+import openfl.display3D.textures.RectangleTexture;
 import openfl.events.Event;
 import openfl.events.GameInputEvent;
 import openfl.events.KeyboardEvent;
@@ -98,6 +109,13 @@ enum ControlTarget
 	RUBIKS_CUBE;
 }
 
+enum SceneType
+{
+	RUBIKS;
+	RUBIKS_WITH_LIGHT;
+	CUBE_CLOUD;
+}
+
 /**
  * Scene is the world for this Rubik's cube program. It contains all the world objects and drives
  * the rendering of all of them. It is created in the normal way of doing most of the work in
@@ -110,15 +128,24 @@ class Scene extends Sprite
 {
 	private var projectionTransform:Matrix3D;
 	private var _deltaTime:Float;
+	private var _ui:UI;
+
+	// Objects
+	/* Rubik's cube */
 	var _rubiksCube:RubiksCube;
 	var operations:Array<Operation>;
 	var operNum:Int;
+
+	/* Individual cube positions */
+	var _cubesPositions:Array<Float32Array>;
+	var _cubeModel:Cube;
+	var _cubeProgram:SimpleCubeProgram;
+	var _cubeTexture:RectangleTexture;
 
 	// Graphics Contexts
 	var _gl:WebGLRenderContext;
 	var _context:Context3D;
 
-	// var _bg:BitmapData;
 	// Lights
 	var _light:Light;
 	final LIGHT_COLOR = WHITE;
@@ -148,12 +175,13 @@ class Scene extends Sprite
 	var _mouseY:Float;
 	var _firstMove = true;
 
-	public function new()
+	public function new(ui:UI)
 	{
 		super();
 
 		// Initialize key fields
 		_deltaTime = 0;
+		_ui = ui;
 
 		_camera = new Camera(new Vector3D(0, 0, 500), new Vector3D(0, 1, 0));
 
@@ -207,12 +235,66 @@ class Scene extends Sprite
 		_gameInput.addEventListener(GameInputEvent.DEVICE_REMOVED, gameInputOnDeviceRemoved);
 	}
 
+	private function initializeCubePositions():Void
+	{
+		_cubesPositions = new Array<Float32Array>();
+		_cubesPositions[0] = new Float32Array([0.0, 0.0, 0.0]);
+		_cubesPositions[1] = new Float32Array([2.0, 5.0, -15.0]); // FIXME renders beyond frustum
+		_cubesPositions[2] = new Float32Array([-1.5, -2.2, -2.5]);
+		_cubesPositions[3] = new Float32Array([-3.8, -2.0, -2.5]);
+		_cubesPositions[4] = new Float32Array([2.4, -0.4, -3.5]);
+		_cubesPositions[5] = new Float32Array([-1.7, 3.0, -7.5]);
+		_cubesPositions[6] = new Float32Array([1.3, -2.0, -2.5]);
+		_cubesPositions[7] = new Float32Array([1.5, 2.0, -2.5]);
+		_cubesPositions[8] = new Float32Array([1.5, 0.2, -1.5]);
+		_cubesPositions[9] = new Float32Array([-1.3, 1.0, -1.5]);
+
+		var cs:ColorSpec = {
+			front: RED,
+			back: ORANGE,
+			top: WHITE,
+			bottom: YELLOW,
+			left: GREEN,
+			right: BLUE
+		};
+		_cubeModel = new Cube(cs, _context);
+		_cubeProgram = new SimpleCubeProgram(_gl, _context);
+
+		// Load texture - FIXME note this is duplicate code - same texture is loaded in
+		// RubiksCube.
+		var faceImageData = Assets.getBitmapData("assets/openfl.png");
+		_cubeTexture = _context.createRectangleTexture(faceImageData.width, faceImageData.height, BGRA, false);
+		_cubeTexture.uploadFromBitmapData(faceImageData);
+	}
+
+	/**
+	 * Set the scene objects according to the selected mode.
+	 * For the moment this is a simple hack to return an enum.
+	 * Ultimately we need an interface def (update/render) for
+	 * all scene objects.
+	 * @param ui UI parameters
+	 */
+	private function setScene(ui:UI):SceneType
+	{
+		if (ui.sceneCubeCloud)
+		{
+			return SceneType.CUBE_CLOUD;
+		}
+		else if (ui.sceneRubiksWithLight)
+		{
+			return SceneType.RUBIKS_WITH_LIGHT;
+		}
+
+		return SceneType.RUBIKS;
+	}
+
 	/**
 	 * Update the current state.
 	 * 
 	 * @param elapsed elapsed time since last call.
+	 * @param ui the UI property object
 	 */
-	public function update(elapsed:Float):Void
+	public function update(elapsed:Float, ui:UI):Void
 	{
 		_deltaTime = elapsed / 1000.0;
 
@@ -222,6 +304,35 @@ class Scene extends Sprite
 			pollGamepad(gp);
 		}
 
+		if (ui.mouseTargetsCube)
+		{
+			_controlTarget = RUBIKS_CUBE;
+		}
+		else
+		{
+			_controlTarget = CAMERA;
+		}
+
+		// FIXME Add a configure scene method that sets up the right collection of object
+		// based on the selected scene.
+		switch (setScene(ui))
+		{
+			case RUBIKS:
+				{
+					_rubiksCube.update(elapsed);
+				}
+			case RUBIKS_WITH_LIGHT:
+				{
+					_rubiksCube.update(elapsed);
+				}
+			case CUBE_CLOUD:
+				{
+					if (_cubesPositions == null)
+					{
+						initializeCubePositions();
+					}
+				}
+		}
 		_rubiksCube.update(elapsed);
 	}
 
@@ -239,8 +350,39 @@ class Scene extends Sprite
 		var lookAtMat = _camera.getViewMatrix();
 		lookAtMat.append(projectionTransform);
 
-		_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
-		_light.render(_gl, _context, lookAtMat, ui);
+		switch (setScene(ui))
+		{
+			case RUBIKS:
+				{
+					_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
+				}
+			case RUBIKS_WITH_LIGHT:
+				{
+					_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
+					_light.render(_gl, _context, lookAtMat, ui);
+				}
+			case CUBE_CLOUD:
+				{ // FIXME refactor to some sort of CubeCloud object
+					var lightColorArr = new Float32Array([LIGHT_COLOR.r, LIGHT_COLOR.g, LIGHT_COLOR.b]);
+					var scale = 64;
+					_cubeProgram.use();
+
+					for (i in 0...ui.numOfCubes)
+					{
+						var model = createScaleMatrix(scale, scale, scale);
+						// FIXME mult. by 64 is a hack and kicks one cube beyond the frustum.
+						model.append(createTranslationMatrix(_cubesPositions[i][0] * scale, _cubesPositions[i][1] * scale, _cubesPositions[i][2] * scale));
+						var angle = 20.0 * i;
+						model.appendRotation(angle, new Vector3D(1.0, 0.3, 0.5));
+
+						var fullProjection = model.clone();
+						fullProjection.append(lookAtMat);
+
+						_cubeProgram.render(model, fullProjection, lightColorArr, _lightPosition, vector3DToFloat32Array(_camera.cameraPos),
+							_cubeModel._glVertexBuffer, _cubeModel._glIndexBuffer, _cubeTexture, ui);
+					}
+				}
+		}
 
 		// Set depthFunc to always pass so that the 2D stage rendering follows render order
 		// If you don't do this the UI will render badly, missing bits like text which is
@@ -291,10 +433,12 @@ class Scene extends Sprite
 				if (_controlTarget == CAMERA)
 				{
 					_controlTarget = RUBIKS_CUBE;
+					_ui.mouseTargetsCube = true;
 				}
 				else
 				{
 					_controlTarget = CAMERA;
+					_ui.mouseTargetsCube = false;
 				}
 			case Keyboard.W:
 				_camera.move(CameraMovement.FORWARD, _deltaTime);

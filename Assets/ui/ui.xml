@@ -14,7 +14,7 @@
         Label.parameterTitle {
             font-size: 12;
         }
-        .controlBox, .helpBox, .hudKeyBox {
+        .controlBox, .helpBox, .hudKeyBox, .sceneBox {
             border: 2px solid black;
             border-radius: 5px;
             padding: 5px;
@@ -31,7 +31,7 @@
                 <vbox id="help" styleName="helpBox" width="100%" style="background-color: #ffffff;">
                     <frame text="Key and Mouse Mappings">
                         <vbox>
-                            <label text="H - Bring up/Clear this HUD\nR - Run through some cube moves"></label>
+                            <label text="R - Run through some cube moves"></label>
                             <label text="W - Dolly in z-axis\nA - Truck (Strafe) left\nD - Truck (Strafe) right\nS - Dolly out z-axis"></label>
                             <label text="M - Switch the object controlled by the mouse between camera lookat and cube rotation" wordWrap="true" width="100%"></label>
                             <label text="Mouse scroll wheel - zoom in/out"></label>
@@ -41,14 +41,124 @@
                 </vbox>
             </vbox>
             <vbox styleName="hudKeyBox">
-                <label id="hudKeyMessage" text="Hit H to bring up HUD"></label>
+                <label id="hudKeyMessage" text="Hit H to toggle HUD"></label>
             </vbox>
         </vbox>
         <vbox id="centerContent" width="100%">
             <!-- Blank section to force left and right columns apart -->
         </vbox>
-        <vbox id="controls" styleName="controlBox" style="background-color: #ffffff;">
-            <accordion id="controlAccordion" width="300px" height="900px">
+        <vbox id="controls" styleName="controlBox" height="100%" style="background-color: #ffffff;">
+            <accordion id="controlAccordion" width="300px" height="100%">
+                <vbox id="configurationControls" text="Configuration" styleName="controlBox">
+                    <script>
+                        /* Reset default values for lighting properties. This function deliberately
+                         * does not set selected flags. There is an issue where setting the same
+                         * flag in a single callback pass leads to odd states. So states like "selected"
+                         * are only set in the configuration callback itself.
+                         */
+                        function resetLightingValues() {
+                            ambientStrength.pos = 0.1;
+                            diffuseStrength.pos = 1.0;
+                            specularStrength.pos = 0.75;
+                            specularIntensity.pos = 5.0;
+                            lightAmbient.value = 0x191919;
+                            lightDiffuse.value = 0x808080;
+                            lightSpecular.value = 0xffffff;
+                        }
+
+                        /* Reset the default values for the materials properties. Again state flags that
+                         * might also be set in the configuration callback itself are not touched.
+                         */
+                        function resetMaterialsValues() {
+                            ambient.value = 0x00190f;
+                            diffuse.value = 0x008181;
+                            specular.value = 0x7f7f7f;
+                            shininess.pos = 5.0;
+                        }
+
+                        /* Simple Rubik's cube with colored faces only and no light or lighting */
+                        function rubiksConfigFn() {
+                            resetLightingValues();
+                            resetMaterialsValues();
+
+                            // Set to basic Rubik's cube play mode
+                            noTexture.selected = true;
+                            simple.selected = true;
+                            simpleLighting.hidden = false;
+                            uiSceneRubiks.selected = true;
+                            uiMouseTargetsCube.selected = true;
+                        }
+
+                        /* Rubik's cube with light, textured, colored faces, and simple phong lighting */
+                        function phongConfigFn() {
+                            resetLightingValues();
+                            resetMaterialsValues();
+
+                            // Lighting
+                            simple.selected = true;
+
+                            // Materials
+                            useTexture.selected = true;
+
+                            // Scene
+                            uiSceneRubiksWithLight.selected = true;
+                        }
+
+                        /* Rubik's cube with light, textured, colored faces, and three component
+                         * phong materials and lighting.
+                         */
+                        function phongMaterialsConfigFn() {
+                            resetLightingValues();
+                            resetMaterialsValues();
+
+                            // Lighting
+                            complex.selected = true;
+
+                            // Materials
+                            useMaterials.selected = true;
+
+                            // Scene
+                            uiSceneRubiksWithLight.selected = true;
+                        }
+
+                        /* Rubik's cube with light, lighting maps, and three component phong lighting. */
+                        function lightMapsConfigFn() {
+                            resetLightingValues();
+                            resetMaterialsValues();
+
+                            // Lighting
+                            complex.selected = true;
+
+                            // Materials
+                            useLightMaps.selected = true;
+
+                            // Scene
+                            uiSceneRubiksWithLight.selected = true;
+                        }
+
+                        function lightCastersConfigFn() {
+                            resetLightingValues();
+                            resetMaterialsValues();
+
+                            // Enable light casters and cube cloud
+                        }
+                    </script>
+                    <frame text="Basic Mode" styleName="parameterTitle">
+                        <vbox>
+                            <optionbox id="rubiksConfig" componentGroup="configGroup" text="Rubik's Cube" selected="true" onChange="rubiksConfigFn()" />
+                            <optionbox id="simplePhongConfig" componentGroup="configGroup" text="Simple Phong Lighting" onChange="phongConfigFn()" />
+                            <optionbox id="phongConfig" componentGroup="configGroup" text="Phong Lighting and Materials" onChange="phongMaterialsConfigFn()" />
+                            <optionbox id="lightMapsConfig" componentGroup="configGroup" text="Lighting Maps" onChange="lightMapsConfigFn()" />
+                            <optionbox id="lightCastersConfig" componentGroup="configGroup" text="Light Casters" onChange="lightCastersConfigFn()" />
+                        </vbox>
+                    </frame>
+                    <frame text="Mouse Controls" styleName="parameterTitle">
+                        <hbox>
+                            <checkbox id="uiMouseTargetsCube" selected="false"></checkbox>
+                            <label text="Mouse targets cube"></label>
+                        </hbox>
+                    </frame>
+                </vbox>
                 <vbox id="lightingControls" text="Lighting" styleName="controlBox">
                     <vbox>
                         <optionbox id="simple" componentGroup="lightGroup" text="Simple lighting" selected="true" />
@@ -95,9 +205,9 @@
                             </frame>
                         </vbox>
                         <optionbox id="complex" componentGroup="lightGroup" text="3-component Phong lighting" disabled="${useTexture.selected}" />
-                        <vbox id="complexLighting" disabled="${!complex.selected}" hidden="${!complex.selected}" width="100%" height="100%">
+                        <vbox id="complexLighting" disabled="${!complex.selected}" hidden="${!complex.selected}" width="100%" height="200px">
                             <frame text="Complex Lighting" styleName="parameterTitle">
-                                <hbox>
+                                <vbox>
                                     <vbox>
                                         <label text="Ambient" styleName="parameterTitle"></label>
                                         <color-picker-popup id="lightAmbient" value="0x191919"></color-picker-popup>
@@ -110,14 +220,21 @@
                                         <label text="Specular" styleName="parameterTitle"></label>
                                         <color-picker-popup id="lightSpecular" value="0xffffff"></color-picker-popup>
                                     </vbox>
-                                </hbox>
+                                </vbox>
+                            </frame>
+                        </vbox>
+                        <optionbox id="directional" componentGroup="lightGroup" text="Directional light" disabled="${useTexture.selected}" />
+                        <vbox id="directionalLight" disabled="${!directional.selected}" hidden="${!directional.selected}" width="100%" height="100%">
+                            <frame text="Directional Light" styleName="parameterTitle">
+                                <hbox></hbox>
                             </frame>
                         </vbox>
                     </vbox>
                 </vbox>
                 <vbox id="materialControls" text="Materials" styleName="controlBox" style="background-color: #ffffff;">
                     <vbox width="100%">
-                        <optionbox id="useTexture" componentGroup="matGroup" text="Use Simple Texture" selected="true"></optionbox>
+                        <optionbox id="noTexture" componentGroup="matGroup" text="No Texture" selected="true" disabled="true"></optionbox>
+                        <optionbox id="useTexture" componentGroup="matGroup" text="Use Simple Texture"></optionbox>
                         <optionbox id="useMaterials" componentGroup="matGroup" text="Use Phong Materials"></optionbox>
                         <vbox disabled="${!useMaterials.selected}" hidden="${!useMaterials.selected}" height="175px" width="100%">
                             <scrollview height="100%" width="100%" contentLayoutName="vertical">
@@ -151,6 +268,20 @@
                             </scrollview>
                         </vbox>
                         <optionbox id="useLightMaps" componentGroup="matGroup" text="Use Light Maps"></optionbox>
+                    </vbox>
+                </vbox>
+                <vbox id="sceneControls" text="Scene" styleName="sceneBox">
+                    <optionbox id="uiSceneRubiks" componentGroup="sceneGroup" text="Rubik's Cube" selected="true"></optionbox>
+                    <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup" text="Rubik' s Cube with Light and Texture"></optionbox>
+                    <optionbox id="uiSceneCubeCloud" componentGroup="sceneGroup" text="Multiple Cubes"></optionbox>
+                    <vbox disabled="${!uiSceneCubeCloud.selected}" hidden="${!uiSceneCubeCloud.selected}" height="175px">
+                        <label text="Number of cubes" styleName="parameterTitle"></label>
+                        <label text="'${numCubes.pos}'" horizontalAlign="center"></label>
+                        <hbox>
+                            <label text="'${numCubes.min}'" verticalAlign=" center" width="20px" />
+                            <slider id="numCubes" min="1" max="10" step="1" pos="5" disabled="${!uiSceneCubeCloud.selected}"></slider>
+                            <label text="'${numCubes.max}'" verticalAlign=" center" width="20px" />
+                        </hbox>
                     </vbox>
                 </vbox>
             </accordion>
