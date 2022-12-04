@@ -97,13 +97,53 @@ class UI extends VBox
 
 		// Tooltips
 		var tooltipRenderer = new CustomToolTip();
-		// current custom tooltips must be assigned in code
+		/* FIXME - This is temporarily commented out as there is a bug in the tooltip support
+		 * that results in this vbox level tooltip overriding tooltips present on components within
+		 * the vbox.
+		 */
+		/*
+			ToolTipManager.instance.registerTooltip(configurationControls, {
+				renderer: tooltipRenderer,
+				tipData: {
+					title: "Configuration",
+					footer: "",
+					content: "Choose one of a variety of initial configuration, setting Lighting, Materials and Scene properties appropriately. From this starting point you may then make tweaks to the various properties to see how they change the rendered scene."
+				}
+		});*/
+
 		ToolTipManager.instance.registerTooltip(rubiksConfig, {
 			renderer: tooltipRenderer,
 			tipData: {
 				title: "Rubik's Cube (Play)",
 				footer: "",
 				content: "Just play with the virtual Rubik's cube.\n\nNo special lighting or material effects."
+			}
+		});
+
+		ToolTipManager.instance.registerTooltip(simplePhongConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Simple Phong Lighting",
+				footer: "",
+				content: "Simple textured surface with ambient, diffuse and specular light, each of a single color (grayscale) based on a strength value."
+			}
+		});
+
+		ToolTipManager.instance.registerTooltip(phongConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Phong Lighting and Materials",
+				footer: "",
+				content: "Using three component colors for materials and also for the ambient, diffuse and specular lighting components."
+			}
+		});
+
+		ToolTipManager.instance.registerTooltip(lightMapsConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Lighting Maps",
+				footer: "",
+				content: "Texture is switched to use diffuse and specular lighting map textures, with 3 component lighting, for a more realistic material look."
 			}
 		});
 	}
@@ -152,7 +192,7 @@ class UI extends VBox
 @:xml('
 <item-renderer layoutName="horizontal" width="350">
     <vbox width="100%">
-        <label id="title" style="font-size: 20;text-decoration:underline" />
+        <label id="title" style="font-size: 20;" />
         <label id="content" width="100%" />
         <rule />
         <label id="footer" width="100%" style="font-style: italic" />
