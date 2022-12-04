@@ -4,7 +4,7 @@
 	<meta title="Virtual Rubiks Cube" package="com.47rooks.virtualrubikscube" version="1.0.0" company="Rookery Games" />
 	<app main="Main" path="Export" file="VirtualRubiksCube" />
 	<!-- <window width="640" height="480" fps="60" /> -->
-	<window width="1280" height="960" fps="60" />
+	<window width="1280" height="960" fps="60" antialiasing="4" />
 
 	<source path="Source" />
 

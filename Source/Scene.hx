@@ -339,8 +339,14 @@ class Scene extends Sprite
 	public function render(ui:UI):Void
 	{
 		// Clear the screen and prepare for this frame
-		_gl.clearColor(0, 0, 0, 1); // Clear to black
-		// _gl.clearColor(0.53, 0.81, 0.92, 1); // Clear to sky blue
+		if (ui.sceneRubiks)
+		{
+			_gl.clearColor(0.53, 0.81, 0.92, 1); // Clear to sky blue
+		}
+		else
+		{
+			_gl.clearColor(0, 0, 0, 1); // Clear to black
+		}
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
 		_gl.depthFunc(_gl.LESS);
 		_gl.depthMask(true);

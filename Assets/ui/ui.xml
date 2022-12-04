@@ -272,7 +272,7 @@
                 </vbox>
                 <vbox id="sceneControls" text="Scene" styleName="sceneBox">
                     <optionbox id="uiSceneRubiks" componentGroup="sceneGroup" text="Rubik's Cube" selected="true"></optionbox>
-                    <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup" text="Rubik' s Cube with Light and Texture"></optionbox>
+                    <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup" text="Rubik's Cube with Light and Texture"></optionbox>
                     <optionbox id="uiSceneCubeCloud" componentGroup="sceneGroup" text="Multiple Cubes"></optionbox>
                     <vbox disabled="${!uiSceneCubeCloud.selected}" hidden="${!uiSceneCubeCloud.selected}" height="175px">
                         <label text="Number of cubes" styleName="parameterTitle"></label>
