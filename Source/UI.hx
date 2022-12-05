@@ -40,6 +40,20 @@ class UI extends VBox
 	@:bind(lightSpecular.value)
 	public var lightSpecularColor(default, null):Color;
 
+	/* Light Casters */
+	/* Directional */
+	@:bind(uiDirectional.selected)
+	public var directional(default, null):Bool;
+
+	@:bind(uiLightDirectionalAmbient.value)
+	public var lightDirectionalAmbientColor(default, null):Color;
+
+	@:bind(uiLightDirectionalDiffuse.value)
+	public var lightDirectionalDiffuseColor(default, null):Color;
+
+	@:bind(uiLightDirectionalSpecular.value)
+	public var lightDirectionalSpecularColor(default, null):Color;
+
 	/* Material Properties */
 	@:bind(useTexture.selected)
 	public var textureEnabled(default, null):Bool;
@@ -182,9 +196,9 @@ class UI extends VBox
 	public function onChangeMultipleCubes(e:UIEvent):Void
 	{
 		var o = cast(e.target, OptionBox);
-		if (e.data == 'selected' && o.value && directional.disabled)
+		if (e.data == 'selected' && o.value && uiLightCasters.disabled)
 		{
-			directional.disabled = false;
+			uiLightCasters.disabled = false;
 		}
 	}
 }

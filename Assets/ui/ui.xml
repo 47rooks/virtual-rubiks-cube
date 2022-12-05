@@ -56,7 +56,9 @@
                          * flag in a single callback pass leads to odd states. So states like "selected"
                          * are only set in the configuration callback itself.
                          */
-                        function resetLightingValues() {
+                        function resetLightingValues(disableSimpleLighting:Bool = false,
+                                                     disableComplexLighting:Bool = false,
+                                                     disableLightCasters:Bool = false) {
                             ambientStrength.pos = 0.1;
                             diffuseStrength.pos = 1.0;
                             specularStrength.pos = 0.75;
@@ -64,16 +66,24 @@
                             lightAmbient.value = 0x191919;
                             lightDiffuse.value = 0x808080;
                             lightSpecular.value = 0xffffff;
+                            simple.disabled = disableSimpleLighting;
+                            complex.disabled = disableComplexLighting;
+                            uiLightCasters.disabled = disableLightCasters;
                         }
 
                         /* Reset the default values for the materials properties. Again state flags that
                          * might also be set in the configuration callback itself are not touched.
                          */
-                        function resetMaterialsValues() {
+                        function resetMaterialsValues(disableUseTexture:Bool = false,
+                                                      disableUseMaterials:Bool = false,
+                                                      disableUseLightMaps:Bool = false) {
                             ambient.value = 0x00190f;
                             diffuse.value = 0x008181;
                             specular.value = 0x7f7f7f;
                             shininess.pos = 5.0;
+                            useTexture.disabled = disableUseTexture;
+                            useMaterials.disabled = disableUseMaterials;
+                            useLightMaps.disabled = disableUseLightMaps;
                         }
 
                         /* Simple Rubik's cube with colored faces only and no light or lighting */
@@ -127,7 +137,7 @@
                             resetMaterialsValues();
 
                             // Lighting
-                            complex.selected = true;
+                            complex.disabled = true;
 
                             // Materials
                             useLightMaps.selected = true;
@@ -137,10 +147,20 @@
                         }
 
                         function lightCastersConfigFn() {
-                            resetLightingValues();
-                            resetMaterialsValues();
+                            resetLightingValues(true, true);
+                            resetMaterialsValues(true, true);
 
                             // Enable light casters and cube cloud
+                            uiLightCasters.selected = true;
+
+                            // Materials
+                            useLightMaps.selected = true;
+
+                            // Scene
+                            uiSceneCubeCloud.selected = true;
+                            numCubes.pos = 10;
+
+                            uiMouseTargetsCube.selected = false;
                         }
                     </script>
                     <frame text="Basic Mode" styleName="parameterTitle">
@@ -204,7 +224,7 @@
                                 </vbox>
                             </frame>
                         </vbox>
-                        <optionbox id="complex" componentGroup="lightGroup" text="3-component Phong lighting" disabled="${useTexture.selected}" />
+                        <optionbox id="complex" componentGroup="lightGroup" text="3-component Phong lighting" />
                         <vbox id="complexLighting" disabled="${!complex.selected}" hidden="${!complex.selected}" width="100%" height="200px">
                             <frame text="Complex Lighting" styleName="parameterTitle">
                                 <vbox>
@@ -223,10 +243,30 @@
                                 </vbox>
                             </frame>
                         </vbox>
-                        <optionbox id="directional" componentGroup="lightGroup" text="Directional light" disabled="${useTexture.selected}" />
-                        <vbox id="directionalLight" disabled="${!directional.selected}" hidden="${!directional.selected}" width="100%" height="100%">
-                            <frame text="Directional Light" styleName="parameterTitle">
-                                <hbox></hbox>
+                        <optionbox id="uiLightCasters" componentGroup="lightGroup" text="Light Casters" />
+                        <vbox disabled="${!uiLightCasters.selected}" hidden="${!uiLightCasters.selected}" width="100%" height="100%">
+                            <frame text="Light Casters" styleName="parameterTitle" width="100%">
+                                <vbox>
+                                    <optionbox id="uiDirectional" componentGroup="lightCastersGroup" text="Directional Light" selected="true" />
+                                    <vbox disabled="${!uiDirectional.selected}" hidden="${!uiDirectional.selected}" width="100%" height="200px">
+                                        <frame text="Direction light values" styleName="parameterTitle">
+                                            <vbox>
+                                                <vbox>
+                                                    <label text="Ambient" styleName="parameterTitle"></label>
+                                                    <color-picker-popup id="uiLightDirectionalAmbient" value="0x191919"></color-picker-popup>
+                                                </vbox>
+                                                <vbox>
+                                                    <label text="Diffuse" styleName="parameterTitle"></label>
+                                                    <color-picker-popup id="uiLightDirectionalDiffuse" value="0x808080"></color-picker-popup>
+                                                </vbox>
+                                                <vbox>
+                                                    <label text="Specular" styleName="parameterTitle"></label>
+                                                    <color-picker-popup id="uiLightDirectionalSpecular" value="0xffffff"></color-picker-popup>
+                                                </vbox>
+                                            </vbox>
+                                        </frame>
+                                    </vbox>
+                                </vbox>
                             </frame>
                         </vbox>
                     </vbox>
