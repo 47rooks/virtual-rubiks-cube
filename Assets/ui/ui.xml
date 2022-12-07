@@ -56,7 +56,8 @@
                          * flag in a single callback pass leads to odd states. So states like "selected"
                          * are only set in the configuration callback itself.
                          */
-                        function resetLightingValues(disableSimpleLighting:Bool = false,
+                        function resetLightingValues(disableNoLight = false,
+                                                     disableSimpleLighting:Bool = false,
                                                      disableComplexLighting:Bool = false,
                                                      disableLightCasters:Bool = false) {
                             ambientStrength.pos = 0.1;
@@ -66,6 +67,7 @@
                             lightAmbient.value = 0x191919;
                             lightDiffuse.value = 0x808080;
                             lightSpecular.value = 0xffffff;
+                            noLight.disabled = disableNoLight;
                             simple.disabled = disableSimpleLighting;
                             complex.disabled = disableComplexLighting;
                             uiLightCasters.disabled = disableLightCasters;
@@ -74,35 +76,46 @@
                         /* Reset the default values for the materials properties. Again state flags that
                          * might also be set in the configuration callback itself are not touched.
                          */
-                        function resetMaterialsValues(disableUseTexture:Bool = false,
+                        function resetMaterialsValues(disableNoTexture = false,
+                                                      disableUseTexture:Bool = false,
                                                       disableUseMaterials:Bool = false,
                                                       disableUseLightMaps:Bool = false) {
                             ambient.value = 0x00190f;
                             diffuse.value = 0x008181;
                             specular.value = 0x7f7f7f;
                             shininess.pos = 5.0;
+                            noTexture.disabled = disableNoTexture;
                             useTexture.disabled = disableUseTexture;
                             useMaterials.disabled = disableUseMaterials;
                             useLightMaps.disabled = disableUseLightMaps;
                         }
 
+                        function resetSceneValues(disableSceneRubiks:Bool = false,
+                                                  disableSceneRubiksWithLight:Bool = false,
+                                                  disableSceneCubeCloud:Bool = false) {
+                            uiSceneRubiks.disabled = disableSceneRubiks;
+                            uiSceneRubiksWithLight.disabled = disableSceneRubiksWithLight;
+                            uiSceneCubeCloud.disabled = disableSceneCubeCloud;
+                        }
+
                         /* Simple Rubik's cube with colored faces only and no light or lighting */
                         function rubiksConfigFn() {
-                            resetLightingValues();
-                            resetMaterialsValues();
+                            resetLightingValues(false, true, true, true);
+                            resetMaterialsValues(false, true, true, true);
+                            resetSceneValues(false, true, true);
 
                             // Set to basic Rubik's cube play mode
                             noTexture.selected = true;
-                            simple.selected = true;
-                            simpleLighting.hidden = false;
+                            noLight.selected = true;
                             uiSceneRubiks.selected = true;
                             uiMouseTargetsCube.selected = true;
                         }
 
                         /* Rubik's cube with light, textured, colored faces, and simple phong lighting */
                         function phongConfigFn() {
-                            resetLightingValues();
-                            resetMaterialsValues();
+                            resetLightingValues(true, false, true, true);
+                            resetMaterialsValues(true, false, true, true);
+                            resetSceneValues(true, false, true);
 
                             // Lighting
                             simple.selected = true;
@@ -118,8 +131,9 @@
                          * phong materials and lighting.
                          */
                         function phongMaterialsConfigFn() {
-                            resetLightingValues();
-                            resetMaterialsValues();
+                            resetLightingValues(true, true, false, true);
+                            resetMaterialsValues(true, true, false, true);
+                            resetSceneValues(true, false, true);
 
                             // Lighting
                             complex.selected = true;
@@ -133,11 +147,12 @@
 
                         /* Rubik's cube with light, lighting maps, and three component phong lighting. */
                         function lightMapsConfigFn() {
-                            resetLightingValues();
-                            resetMaterialsValues();
+                            resetLightingValues(true, true, false, true);
+                            resetMaterialsValues(true, true, true, false);
+                            resetSceneValues(true, false, true);
 
                             // Lighting
-                            complex.disabled = true;
+                            complex.selected = true;
 
                             // Materials
                             useLightMaps.selected = true;
@@ -181,7 +196,8 @@
                 </vbox>
                 <vbox id="lightingControls" text="Lighting" styleName="controlBox">
                     <vbox>
-                        <optionbox id="simple" componentGroup="lightGroup" text="Simple lighting" selected="true" />
+                        <optionbox id="noLight" componentGroup="lightGroup" text="No lighting" selected="true" />
+                        <optionbox id="simple" componentGroup="lightGroup" text="Simple lighting" />
                         <vbox id="simpleLighting" disabled="${!simple.selected}" hidden="${!simple.selected}" width="100%" height="330px">
                             <frame text="Simple Phong Lighting" styleName="parameterTitle">
                                 <vbox>

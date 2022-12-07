@@ -48,8 +48,8 @@ class LightMapsProgram extends Program
 	private var _programViewerPositionUniform:GLUniformLocation;
 
 	/* Material properties - lighting maps */
-	private var _programDiffuseLightMapUniform:Int; // Diffuse light map
-	private var _programSpecularLightMapUniform:Int; // Specular light map
+	private var _programDiffuseLightMapUniform:GLUniformLocation; // Diffuse light map
+	private var _programSpecularLightMapUniform:GLUniformLocation; // Specular light map
 	private var _programSpecularShininessUniform:GLUniformLocation; // Shininess
 
 	/**
