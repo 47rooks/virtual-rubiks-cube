@@ -197,6 +197,8 @@ class RubiksCube
 	 * @param y y position to place cube at
 	 * @param z z position to place cube at
 	 * @param scene the owning Scene object, for event dispatch
+	 * @param gl The WebGL render context
+	 * @param context The OpenFL 3D render context
 	 */
 	public function new(x:Int, y:Int, z:Int, scene:Scene, gl:WebGLRenderContext, context:Context3D)
 	{
@@ -246,7 +248,7 @@ class RubiksCube
 	/**
 	 * Create the required number of cubes with correct colors and positioning data.
 	 * 
-	 * @param gl the GL render context to use
+	 * @param context the GL render context to use
 	 * @return Map<String, CubeData>
 	 */
 	function createCubes(context:Context3D):Map<String, CubeData>

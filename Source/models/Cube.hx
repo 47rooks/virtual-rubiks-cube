@@ -1,5 +1,6 @@
 package models;
 
+import Color.WHITE;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
 import openfl.Vector;
@@ -36,9 +37,28 @@ class Cube
 
 	private var _color:ColorSpec;
 
+	/**
+	 * Constructor
+	 * @param color a ColorSpec specifying colors for each face. If null, all faces will be all white.
+	 * @param context The OpenFL 3D render context.
+	 */
 	public function new(color:ColorSpec, context:Context3D)
 	{
-		_color = color;
+		if (color != null)
+		{
+			_color = color;
+		}
+		else
+		{
+			_color = {
+				front: WHITE,
+				back: WHITE,
+				top: WHITE,
+				bottom: WHITE,
+				left: WHITE,
+				right: WHITE
+			};
+		}
 		initializeBuffers(context);
 	}
 

@@ -2,27 +2,17 @@ package;
 
 import Camera.CameraLookTo;
 import Camera.CameraMovement;
-import Color.BLUE;
-import Color.GREEN;
-import Color.ORANGE;
-import Color.RED;
 import Color.WHITE;
-import Color.YELLOW;
 import MatrixUtils.createPerspectiveProjection;
-import MatrixUtils.createScaleMatrix;
-import MatrixUtils.createTranslationMatrix;
 import MatrixUtils.vector3DToFloat32Array;
-import gl.LightCastersProgram;
 import haxe.ValueException;
 import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
-import models.Cube;
+import models.CubeCloud;
 import models.Light;
 import models.RubiksCube;
-import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.display3D.Context3D;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.events.Event;
 import openfl.events.GameInputEvent;
 import openfl.events.KeyboardEvent;
@@ -136,15 +126,8 @@ class Scene extends Sprite
 	var operations:Array<Operation>;
 	var operNum:Int;
 
-	/* Individual cube positions */
-	var _cubesPositions:Array<Float32Array>;
-	var _cubeModel:Cube;
-	var _cubeProgram:LightCastersProgram;
-
-	// Lighting map textures
-	private var _diffuseLightMapTexture:RectangleTexture;
-
-	private var _specularLightMapTexture:RectangleTexture;
+	// Cube Cloud
+	var _cubeCloud:CubeCloud;
 
 	// Graphics Contexts
 	var _gl:WebGLRenderContext;
@@ -219,6 +202,8 @@ class Scene extends Sprite
 		// Add lights
 		_light = new Light(_lightPosition, LIGHT_COLOR, _gl, _context);
 
+		_cubeCloud = new CubeCloud(_gl, _context);
+
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
 
@@ -237,41 +222,6 @@ class Scene extends Sprite
 		// Add gamepad support
 		_gameInput.addEventListener(GameInputEvent.DEVICE_ADDED, gameInputOnDeviceAdded);
 		_gameInput.addEventListener(GameInputEvent.DEVICE_REMOVED, gameInputOnDeviceRemoved);
-	}
-
-	private function initializeCubePositions():Void
-	{
-		_cubesPositions = new Array<Float32Array>();
-		_cubesPositions[0] = new Float32Array([0.0, 0.0, 0.0]);
-		_cubesPositions[1] = new Float32Array([2.0, 5.0, -15.0]); // FIXME renders beyond frustum
-		_cubesPositions[2] = new Float32Array([-1.5, -2.2, -2.5]);
-		_cubesPositions[3] = new Float32Array([-3.8, -2.0, -2.5]);
-		_cubesPositions[4] = new Float32Array([2.4, -0.4, -3.5]);
-		_cubesPositions[5] = new Float32Array([-1.7, 3.0, -7.5]);
-		_cubesPositions[6] = new Float32Array([1.3, -2.0, -2.5]);
-		_cubesPositions[7] = new Float32Array([1.5, 2.0, -2.5]);
-		_cubesPositions[8] = new Float32Array([1.5, 0.2, -1.5]);
-		_cubesPositions[9] = new Float32Array([-1.3, 1.0, -1.5]);
-
-		var cs:ColorSpec = {
-			front: RED,
-			back: ORANGE,
-			top: WHITE,
-			bottom: YELLOW,
-			left: GREEN,
-			right: BLUE
-		};
-		_cubeModel = new Cube(cs, _context);
-		_cubeProgram = new LightCastersProgram(_gl, _context);
-
-		// Load texture - FIXME note this is duplicate code - same texture is loaded in
-		var diffuseLightMapImageData = Assets.getBitmapData("assets/openflMetalDiffuse.png");
-		_diffuseLightMapTexture = _context.createRectangleTexture(diffuseLightMapImageData.width, diffuseLightMapImageData.height, BGRA, false);
-		_diffuseLightMapTexture.uploadFromBitmapData(diffuseLightMapImageData);
-
-		var specularLightMapImageData = Assets.getBitmapData("assets/openflMetalSpecular.png");
-		_specularLightMapTexture = _context.createRectangleTexture(specularLightMapImageData.width, specularLightMapImageData.height, BGRA, false);
-		_specularLightMapTexture.uploadFromBitmapData(specularLightMapImageData);
 	}
 
 	/**
@@ -334,13 +284,10 @@ class Scene extends Sprite
 				}
 			case CUBE_CLOUD:
 				{
-					if (_cubesPositions == null)
-					{
-						initializeCubePositions();
-					}
+					_cubeCloud.update(elapsed);
 				}
 		}
-		_rubiksCube.update(elapsed);
+		// FIXME remove ?_rubiksCube.update(elapsed);
 	}
 
 	public function render(ui:UI):Void
@@ -375,27 +322,9 @@ class Scene extends Sprite
 					_light.render(_gl, _context, lookAtMat, ui);
 				}
 			case CUBE_CLOUD:
-				{ // FIXME refactor to some sort of CubeCloud object
-					var lightColorArr = new Float32Array([LIGHT_COLOR.r, LIGHT_COLOR.g, LIGHT_COLOR.b]);
-					var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
-					var scale = 64;
-					_cubeProgram.use();
-
-					for (i in 0...ui.numOfCubes)
-					{
-						var model = createScaleMatrix(scale, scale, scale);
-						// FIXME mult. by 64 is a hack and kicks one cube beyond the frustum.
-						model.append(createTranslationMatrix(_cubesPositions[i][0] * scale, _cubesPositions[i][1] * scale, _cubesPositions[i][2] * scale));
-						var angle = 20.0 * i;
-						model.appendRotation(angle, new Vector3D(1.0, 0.3, 0.5));
-
-						var fullProjection = model.clone();
-						fullProjection.append(lookAtMat);
-
-						_cubeProgram.render(model, fullProjection, lightColorArr, lightDirection, vector3DToFloat32Array(_camera.cameraPos),
-							_cubeModel._glVertexBuffer, _cubeModel._glIndexBuffer, _diffuseLightMapTexture, _specularLightMapTexture, ui);
-					}
-					// _light.render(_gl, _context, lookAtMat, ui);
+				{
+					_cubeCloud.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
+					_light.render(_gl, _context, lookAtMat, ui);
 				}
 		}
 
