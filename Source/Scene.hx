@@ -215,7 +215,7 @@ class Scene extends Sprite
 
 		_cubeCloud = new CubeCloud(_gl, _context);
 
-		_pointLight = new PointLight(new Float32Array([0.0, 0.0, 200.0]), LIGHT_COLOR, _gl, _context);
+		_pointLight = new PointLight(new Float32Array([200.0, 200.0, 200.0]), LIGHT_COLOR, _gl, _context);
 
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
