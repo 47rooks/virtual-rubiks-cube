@@ -45,14 +45,48 @@ class UI extends VBox
 	@:bind(uiDirectional.selected)
 	public var directional(default, null):Bool;
 
-	@:bind(uiLightDirectionalAmbient.value)
+	@:bind(uiLightDirectionalAmbientColor.value)
 	public var lightDirectionalAmbientColor(default, null):Color;
 
-	@:bind(uiLightDirectionalDiffuse.value)
+	@:bind(uiLightDirectionalDiffuseColor.value)
 	public var lightDirectionalDiffuseColor(default, null):Color;
 
-	@:bind(uiLightDirectionalSpecular.value)
+	@:bind(uiLightDirectionalSpecularColor.value)
 	public var lightDirectionalSpecularColor(default, null):Color;
+
+	/* Point light */
+	@:bind(uiPointLight.selected)
+	public var pointLight:Bool;
+
+	@:bind(uiPointLightAmbientColor.value)
+	public var pointLightAmbientColor(default, null):Color;
+
+	@:bind(uiPointLightDiffuseColor.value)
+	public var pointLightDiffuseColor(default, null):Color;
+
+	@:bind(uiPointLightSpecularColor.value)
+	public var pointLightSpecularColor(default, null):Color;
+
+	@:bind(uiPointLightKc)
+	public var pointLightKc(default, null):Float;
+
+	public var pointLightKl(get, null):Float;
+
+	function get_pointLightKl():Float
+	{
+		// Division by 100 required so that the UI slider movement works because
+		// too small a step doesn't work well.
+		return uiPointLightKl.pos / 100.0;
+	}
+
+	public var pointLightKq(get, null):Float;
+
+	function get_pointLightKq():Float
+	{
+		// Division by 1000 required so that the UI slider movement works because
+		// too small a step doesn't work well.
+		return uiPointLightKq.pos / 1000.0;
+	}
 
 	/* Material Properties */
 	@:bind(useTexture.selected)

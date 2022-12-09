@@ -66,7 +66,7 @@ class Cube
 	{
 		final side = 1.0;
 
-		var v = [ // X, Y, Z                        U, V   R, G, B, A
+		var v = [ // X, Y, Z                        U, V   R, G, B, A,    Nx, Ny, Nz
 			side / 2.0,
 			side / 2,
 			-side / 2,

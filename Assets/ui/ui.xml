@@ -162,8 +162,9 @@
                         }
 
                         function lightCastersConfigFn() {
-                            resetLightingValues(true, true);
-                            resetMaterialsValues(true, true);
+                            resetLightingValues(true, true, true, false);
+                            resetMaterialsValues(true, true, true, false);
+                            resetSceneValues(true, true, false);
 
                             // Enable light casters and cube cloud
                             uiLightCasters.selected = true;
@@ -260,27 +261,77 @@
                             </frame>
                         </vbox>
                         <optionbox id="uiLightCasters" componentGroup="lightGroup" text="Light Casters" />
-                        <vbox disabled="${!uiLightCasters.selected}" hidden="${!uiLightCasters.selected}" width="100%" height="100%">
-                            <frame text="Light Casters" styleName="parameterTitle" width="100%">
+                        <vbox disabled="${!uiLightCasters.selected}" hidden="${!uiLightCasters.selected}">
+                            <frame text="Light Casters" styleName="parameterTitle">
                                 <vbox>
-                                    <optionbox id="uiDirectional" componentGroup="lightCastersGroup" text="Directional Light" selected="true" />
-                                    <vbox disabled="${!uiDirectional.selected}" hidden="${!uiDirectional.selected}" width="100%" height="200px">
-                                        <frame text="Direction light values" styleName="parameterTitle">
-                                            <vbox>
+                                    <vbox>
+                                        <checkbox id="uiDirectional" text="Directional Light" selected="true" />
+                                        <vbox disabled="${!uiDirectional.selected}" hidden="${!uiDirectional.selected}">
+                                            <frame text="Directional light values" styleName="parameterTitle">
                                                 <vbox>
-                                                    <label text="Ambient" styleName="parameterTitle"></label>
-                                                    <color-picker-popup id="uiLightDirectionalAmbient" value="0x191919"></color-picker-popup>
+                                                    <vbox>
+                                                        <label text="Ambient" styleName="parameterTitle"></label>
+                                                        <color-picker-popup id="uiLightDirectionalAmbientColor" value="0x191919"></color-picker-popup>
+                                                    </vbox>
+                                                    <vbox>
+                                                        <label text="Diffuse" styleName="parameterTitle"></label>
+                                                        <color-picker-popup id="uiLightDirectionalDiffuseColor" value="0x808080"></color-picker-popup>
+                                                    </vbox>
+                                                    <vbox>
+                                                        <label text="Specular" styleName="parameterTitle"></label>
+                                                        <color-picker-popup id="uiLightDirectionalSpecularColor" value="0xffffff"></color-picker-popup>
+                                                    </vbox>
                                                 </vbox>
+                                            </frame>
+                                        </vbox>
+                                    </vbox>
+                                    <vbox>
+                                        <checkbox id="uiPointLight" text="Point Light" />
+                                        <vbox disabled="${!uiPointLight.selected}" hidden="${!uiPointLight.selected}">
+                                            <frame text="Point light values" styleName="parameterTitle">
                                                 <vbox>
-                                                    <label text="Diffuse" styleName="parameterTitle"></label>
-                                                    <color-picker-popup id="uiLightDirectionalDiffuse" value="0x808080"></color-picker-popup>
+                                                    <vbox>
+                                                        <label text="Ambient" styleName="parameterTitle"></label>
+                                                        <color-picker-popup id="uiPointLightAmbientColor" value="0x191919"></color-picker-popup>
+                                                    </vbox>
+                                                    <vbox>
+                                                        <label text="Diffuse" styleName="parameterTitle"></label>
+                                                        <color-picker-popup id="uiPointLightDiffuseColor" value="0x808080"></color-picker-popup>
+                                                    </vbox>
+                                                    <vbox>
+                                                        <label text="Specular" styleName="parameterTitle"></label>
+                                                        <color-picker-popup id="uiPointLightSpecularColor" value="0xffffff"></color-picker-popup>
+                                                    </vbox>
+                                                    <label text="Attenuation constant Kc" styleName="parameterTitle"></label>
+                                                    <vbox>
+                                                        <label text="'${uiPointLightKc.pos}'" horizontalAlign="center"></label>
+                                                        <hbox>
+                                                            <label text="'${uiPointLightKc.min}'" verticalAlign="center" />
+                                                            <slider id="uiPointLightKc" min="0.0" max="1.0" step="1.0" pos="1.0"></slider>
+                                                            <label text="'${uiPointLightKc.max}'" verticalAlign="center" />
+                                                        </hbox>
+                                                    </vbox>
+                                                    <label text="Attenuation linear Kl" styleName="parameterTitle"></label>
+                                                    <vbox>
+                                                        <label text="'${uiPointLightKl.pos / 100.0}'" horizontalAlign="center"></label>
+                                                        <hbox>
+                                                            <label text="'${uiPointLightKl.min / 100.0}'" verticalAlign="center" />
+                                                            <slider id="uiPointLightKl" min="2.2" max="70.0" step="1.0" pos="9.0"></slider>
+                                                            <label text="'${uiPointLightKl.max / 100.0}'" verticalAlign="center" />
+                                                        </hbox>
+                                                    </vbox>
+                                                    <label text="Attenuation quadratic Kq" styleName="parameterTitle"></label>
+                                                    <vbox>
+                                                        <label text="'${uiPointLightKq.pos / 1000.0}'" horizontalAlign="center"></label>
+                                                        <hbox>
+                                                            <label text="'${uiPointLightKq.min / 1000.0}'" verticalAlign="center" />
+                                                            <slider id="uiPointLightKq" min="1.9" max="1800.0" step="1.0" pos="32.0"></slider>
+                                                            <label text="'${uiPointLightKq.max / 1000.0}'" verticalAlign="center" />
+                                                        </hbox>
+                                                    </vbox>
                                                 </vbox>
-                                                <vbox>
-                                                    <label text="Specular" styleName="parameterTitle"></label>
-                                                    <color-picker-popup id="uiLightDirectionalSpecular" value="0xffffff"></color-picker-popup>
-                                                </vbox>
-                                            </vbox>
-                                        </frame>
+                                            </frame>
+                                        </vbox>
                                     </vbox>
                                 </vbox>
                             </frame>

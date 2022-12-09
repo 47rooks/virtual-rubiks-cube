@@ -35,10 +35,21 @@ class LightCastersProgram extends Program
 
 	// Lighting variables
 	/* Directional light variables */
+	private var _programEnabledLightUniform:GLUniformLocation;
 	private var _programDirectionLightUniform:GLUniformLocation;
 	private var _programAmbientLightUniform:GLUniformLocation;
 	private var _programDiffuseLightUniform:GLUniformLocation;
 	private var _programSpecularLightUniform:GLUniformLocation;
+
+	/* Point light variables */
+	private var _programPointLightEnabledUniform:GLUniformLocation;
+	private var _programPointLightPositionUniform:GLUniformLocation;
+	private var _programPointLightAmbientUniform:GLUniformLocation;
+	private var _programPointLightDiffuseUniform:GLUniformLocation;
+	private var _programPointLightSpecularUniform:GLUniformLocation;
+	private var _programPointLightAttenuationKc:GLUniformLocation;
+	private var _programPointLightAttenuationKl:GLUniformLocation;
+	private var _programPointLightAttenuationKq:GLUniformLocation;
 
 	/* Camera position for light calculations */
 	private var _programViewerPositionUniform:GLUniformLocation;
@@ -79,11 +90,22 @@ class LightCastersProgram extends Program
 		_programNormalAttribute = _gl.getAttribLocation(_glProgram, "aNormal");
 		_gl.enableVertexAttribArray(_programNormalAttribute);
 
-		// Light
+		// Directional light
+		_programEnabledLightUniform = _gl.getUniformLocation(_glProgram, "uDirectionalLight.enabled");
 		_programDirectionLightUniform = _gl.getUniformLocation(_glProgram, "uDirectionalLight.direction");
 		_programAmbientLightUniform = _gl.getUniformLocation(_glProgram, "uDirectionalLight.ambient");
 		_programDiffuseLightUniform = _gl.getUniformLocation(_glProgram, "uDirectionalLight.diffuse");
 		_programSpecularLightUniform = _gl.getUniformLocation(_glProgram, "uDirectionalLight.specular");
+
+		// Point light
+		_programPointLightEnabledUniform = _gl.getUniformLocation(_glProgram, "uPointLight.enabled");
+		_programPointLightPositionUniform = _gl.getUniformLocation(_glProgram, "uPointLight.position");
+		_programPointLightAmbientUniform = _gl.getUniformLocation(_glProgram, "uPointLight.ambient");
+		_programPointLightDiffuseUniform = _gl.getUniformLocation(_glProgram, "uPointLight.diffuse");
+		_programPointLightSpecularUniform = _gl.getUniformLocation(_glProgram, "uPointLight.specular");
+		_programPointLightAttenuationKc = _gl.getUniformLocation(_glProgram, "uPointLight.constant");
+		_programPointLightAttenuationKl = _gl.getUniformLocation(_glProgram, "uPointLight.linear");
+		_programPointLightAttenuationKq = _gl.getUniformLocation(_glProgram, "uPointLight.quadratic");
 
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");
@@ -99,19 +121,39 @@ class LightCastersProgram extends Program
 	}
 
 	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightDirection:Float32Array, cameraPosition:Float32Array,
-			vbo:VertexBuffer3D, ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture, ui:UI):Void
+			vbo:VertexBuffer3D, ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture,
+			pointLightPos:Float32Array, ui:UI):Void
 	{
 		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
 
 		// Add projection and pass in to shader
 		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
 
-		// Light
-		_gl.uniform3fv(_programDirectionLightUniform, lightDirection, 0);
-		_gl.uniform3f(_programAmbientLightUniform, ui.lightDirectionalAmbientColor.r, ui.lightDirectionalAmbientColor.g, ui.lightDirectionalAmbientColor.b);
-		_gl.uniform3f(_programDiffuseLightUniform, ui.lightDirectionalDiffuseColor.r, ui.lightDirectionalDiffuseColor.g, ui.lightDirectionalDiffuseColor.b);
-		_gl.uniform3f(_programSpecularLightUniform, ui.lightDirectionalSpecularColor.r, ui.lightDirectionalSpecularColor.g,
-			ui.lightDirectionalSpecularColor.b);
+		// Directional light
+		_gl.uniform1i(_programEnabledLightUniform, ui.directional ? 1 : 0);
+		if (ui.directional)
+		{
+			_gl.uniform3fv(_programDirectionLightUniform, lightDirection, 0);
+			_gl.uniform3f(_programAmbientLightUniform, ui.lightDirectionalAmbientColor.r, ui.lightDirectionalAmbientColor.g,
+				ui.lightDirectionalAmbientColor.b);
+			_gl.uniform3f(_programDiffuseLightUniform, ui.lightDirectionalDiffuseColor.r, ui.lightDirectionalDiffuseColor.g,
+				ui.lightDirectionalDiffuseColor.b);
+			_gl.uniform3f(_programSpecularLightUniform, ui.lightDirectionalSpecularColor.r, ui.lightDirectionalSpecularColor.g,
+				ui.lightDirectionalSpecularColor.b);
+		}
+
+		// Point light
+		_gl.uniform1i(_programPointLightEnabledUniform, ui.pointLight ? 1 : 0);
+		if (ui.pointLight)
+		{
+			_gl.uniform3fv(_programPointLightPositionUniform, pointLightPos, 0);
+			_gl.uniform3f(_programPointLightAmbientUniform, ui.pointLightAmbientColor.r, ui.pointLightAmbientColor.g, ui.pointLightAmbientColor.b);
+			_gl.uniform3f(_programPointLightDiffuseUniform, ui.pointLightDiffuseColor.r, ui.pointLightDiffuseColor.g, ui.pointLightDiffuseColor.b);
+			_gl.uniform3f(_programPointLightSpecularUniform, ui.pointLightSpecularColor.r, ui.pointLightSpecularColor.g, ui.pointLightSpecularColor.b);
+			_gl.uniform1f(_programPointLightAttenuationKc, ui.pointLightKc);
+			_gl.uniform1f(_programPointLightAttenuationKl, ui.pointLightKl);
+			_gl.uniform1f(_programPointLightAttenuationKq, ui.pointLightKq);
+		}
 
 		// Lighting maps
 		_gl.uniform1i(_programDiffuseLightMapUniform, 0); // Diffuse lighting map

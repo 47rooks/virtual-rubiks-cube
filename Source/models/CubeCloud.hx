@@ -63,7 +63,7 @@ class CubeCloud
 	public function update(elapsed:Float) {}
 
 	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
-			cameraPosition:Float32Array, ui:UI):Void
+			cameraPosition:Float32Array, pointLightPos:Float32Array, ui:UI):Void
 	{
 		var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
@@ -82,7 +82,7 @@ class CubeCloud
 			fullProjection.append(projectionMatrix);
 
 			_cubeProgram.render(model, fullProjection, lightColorArr, lightDirection, cameraPosition, _cubeModel._glVertexBuffer, _cubeModel._glIndexBuffer,
-				_diffuseLightMapTexture, _specularLightMapTexture, ui);
+				_diffuseLightMapTexture, _specularLightMapTexture, pointLightPos, ui);
 		}
 	}
 }

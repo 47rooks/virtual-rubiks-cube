@@ -6,6 +6,7 @@ import Color.WHITE;
 import MatrixUtils.createPerspectiveProjection;
 import MatrixUtils.vector3DToFloat32Array;
 import haxe.ValueException;
+import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
 import models.CubeCloud;
@@ -134,10 +135,20 @@ class Scene extends Sprite
 	var _context:Context3D;
 
 	// Lights
+	// Simple 3-component light
 	var _light:Light;
 	final LIGHT_COLOR = WHITE;
 	final _lightPosition:Float32Array;
 
+	// Directional light
+	// var _directionalLight:DirectionalLight;
+	// Point Light
+	var _pointLight:PointLight;
+
+	// Spotlight
+	// var _splotlight:SpotLight;
+	// Flashlight
+	// var _flashLight:FlashLight;
 	// Camera
 	var _camera:Camera;
 
@@ -203,6 +214,8 @@ class Scene extends Sprite
 		_light = new Light(_lightPosition, LIGHT_COLOR, _gl, _context);
 
 		_cubeCloud = new CubeCloud(_gl, _context);
+
+		_pointLight = new PointLight(new Float32Array([0.0, 0.0, 200.0]), LIGHT_COLOR, _gl, _context);
 
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
@@ -323,8 +336,9 @@ class Scene extends Sprite
 				}
 			case CUBE_CLOUD:
 				{
-					_cubeCloud.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
-					_light.render(_gl, _context, lookAtMat, ui);
+					_cubeCloud.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), _pointLight.position,
+						ui);
+					_pointLight.render(_gl, _context, lookAtMat, ui);
 				}
 		}
 

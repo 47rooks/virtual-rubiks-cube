@@ -21,20 +21,53 @@ struct Material {
 uniform Material uMaterial;
 
 // Light colors
-struct Light {
+struct DirectionalLight {
+    bool enabled;
     vec3 direction;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 };
-uniform Light uDirectionalLight;
+uniform DirectionalLight uDirectionalLight;
+
+struct PointLight {
+    bool enabled;
+
+    vec3 position;
+
+    // Light colors
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    // Attenuation values
+    float constant;
+    float linear;
+    float quadratic;
+};
+uniform PointLight uPointLight;
 
 void main(void)
 {
-    /* Compute light color */
-    vec3 ambientLightColor = uDirectionalLight.ambient / 255.0;
-    vec3 diffuseLightColor = uDirectionalLight.diffuse / 255.0;
-    vec3 specularLightColor = uDirectionalLight.specular / 255.0;
+    /* Compute directional light color */
+    vec3 ambientLightColor = vec3(0.0, 0.0, 0.0);
+    vec3 diffuseLightColor = vec3(0.0, 0.0, 0.0);
+    vec3 specularLightColor = vec3(0.0, 0.0, 0.0);
+    if (uDirectionalLight.enabled) {
+        ambientLightColor = uDirectionalLight.ambient / 255.0;
+        diffuseLightColor = uDirectionalLight.diffuse / 255.0;
+        specularLightColor = uDirectionalLight.specular / 255.0;
+    }
+
+    /* Compute point light color and strength */
+    if (uPointLight.enabled) {
+        float distance = length(uPointLight.position - vFragPos);
+        float attenuation = 1.0 / (uPointLight.constant + (uPointLight.linear * distance) + (uPointLight.quadratic * distance * distance));
+
+        ambientLightColor += uPointLight.ambient * attenuation;
+        diffuseLightColor += uPointLight.diffuse * attenuation;
+        specularLightColor += uPointLight.specular * attenuation;
+    }
 
     /* Compute ambient material */
     vec3 ambient = ambientLightColor * vec3(texture2D(uMaterial.diffuse, vTexCoord));
