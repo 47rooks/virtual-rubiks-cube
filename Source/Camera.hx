@@ -40,7 +40,8 @@ class Camera
 	// Camera and world vectors
 	public var cameraPos(default, null):Vector3D;
 
-	var _cameraFront:Vector3D;
+	public var cameraFront(default, null):Vector3D;
+
 	var _cameraRight:Vector3D;
 	var _worldUp:Vector3D;
 
@@ -63,7 +64,7 @@ class Camera
 	{
 		cameraPos = pos;
 		_worldUp = cameraUp;
-		_cameraFront = new Vector3D(0, 0, -1);
+		cameraFront = new Vector3D(0, 0, -1);
 		_yaw = yaw;
 		_pitch = pitch;
 	}
@@ -74,7 +75,7 @@ class Camera
 	 */
 	public function getViewMatrix():Matrix3D
 	{
-		return createLookAtMatrix(cameraPos, cameraPos.add(_cameraFront), _worldUp);
+		return createLookAtMatrix(cameraPos, cameraPos.add(cameraFront), _worldUp);
 	}
 
 	/**
@@ -88,20 +89,20 @@ class Camera
 		switch (direction)
 		{
 			case FORWARD:
-				var tgt = _cameraFront.clone();
+				var tgt = cameraFront.clone();
 				tgt.scaleBy(speed);
 				cameraPos = cameraPos.add(tgt);
 			case BACKWARD:
-				var tgt = _cameraFront.clone();
+				var tgt = cameraFront.clone();
 				tgt.scaleBy(speed);
 				cameraPos = cameraPos.subtract(tgt);
 			case RIGHT:
-				var m = _cameraFront.crossProduct(_worldUp);
+				var m = cameraFront.crossProduct(_worldUp);
 				m.normalize();
 				m.scaleBy(speed);
 				cameraPos = cameraPos.subtract(m);
 			case LEFT:
-				var m = _cameraFront.crossProduct(_worldUp);
+				var m = cameraFront.crossProduct(_worldUp);
 				m.normalize();
 				m.scaleBy(speed);
 				cameraPos = cameraPos.add(m);
@@ -135,7 +136,7 @@ class Camera
 		direction.y = Math.sin(radians(_pitch));
 		direction.z = Math.sin(radians(_yaw)) * Math.cos(radians(_pitch));
 		direction.normalize();
-		_cameraFront = direction;
+		cameraFront = direction;
 	}
 
 	// FIXME
@@ -174,7 +175,7 @@ class Camera
 		direction.y = Math.sin(radians(_pitch));
 		direction.z = Math.sin(radians(_yaw)) * Math.cos(radians(_pitch));
 		direction.normalize();
-		_cameraFront = direction;
+		cameraFront = direction;
 	}
 
 	/**

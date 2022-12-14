@@ -7,6 +7,8 @@ import haxe.ui.events.UIEvent;
 import haxe.ui.tooltips.ToolTipManager;
 import haxe.ui.util.Color;
 
+using StringTools;
+
 /**
  * UI is basically a bean class providing programmatic access to all properties which may set by
  * HaxeUI widgets as defined in ui.xml.
@@ -70,23 +72,48 @@ class UI extends VBox
 	@:bind(uiPointLightKc)
 	public var pointLightKc(default, null):Float;
 
-	public var pointLightKl(get, null):Float;
+	@:bind(uiPointLightKl.pos)
+	public var pointLightKl(default, null):Float;
 
-	function get_pointLightKl():Float
+	@:bind(uiPointLightKq.pos)
+	public var pointLightKq(default, null):Float;
+
+	/* Flashlight */
+	@:bind(uiFlashlight.selected)
+	public var flashlight:Bool;
+
+	@:bind(uiFlashlightAmbientColor.value)
+	public var flashlightAmbientColor(default, null):Color;
+
+	@:bind(uiFlashlightDiffuseColor.value)
+	public var flashlightDiffuseColor(default, null):Color;
+
+	@:bind(uiFlashlightSpecularColor.value)
+	public var flashlightSpecularColor(default, null):Color;
+
+	@:bind(uiFlashlightKc)
+	public var flashlightKc(default, null):Float;
+
+	public var flashlightKl(get, null):Float;
+
+	function get_flashlightKl():Float
 	{
 		// Division by 100 required so that the UI slider movement works because
 		// too small a step doesn't work well.
-		return uiPointLightKl.pos / 100.0;
+		return uiFlashlightKl.pos / 100.0;
 	}
 
-	public var pointLightKq(get, null):Float;
+	public var flashlightKq(get, null):Float;
 
-	function get_pointLightKq():Float
+	function get_flashlightKq():Float
 	{
 		// Division by 1000 required so that the UI slider movement works because
 		// too small a step doesn't work well.
-		return uiPointLightKq.pos / 1000.0;
+		return uiFlashlightKq.pos / 1000.0;
 	}
+
+	@:bind(uiFlashlightCutoff.pos)
+	public var flashlightCutoff(default, null):Float;
 
 	/* Material Properties */
 	@:bind(useTexture.selected)

@@ -47,6 +47,25 @@ struct PointLight {
 };
 uniform PointLight uPointLight;
 
+struct Flashight {
+    bool enabled;
+
+    vec3 position;
+    vec3 direction;
+    float cutoff;
+
+    // Light colors
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    // Attenuation values
+    float constant;
+    float linear;
+    float quadratic;
+};
+uniform Flashight uFlashlight;
+
 vec3 computeDiffuseContribution(vec3 diffuseLightColor, vec3 norm, vec3 lightDirection)
 {
     float diff = max(dot(norm, lightDirection), 0.0);
@@ -91,10 +110,10 @@ void main(void)
         float distance = length(uPointLight.position - vFragPos);
         float attenuation = 1.0 / (uPointLight.constant + (uPointLight.linear * distance) + (uPointLight.quadratic * distance * distance));
 
-        ambientLightColor += uPointLight.ambient * attenuation;
+        ambientLightColor += uPointLight.ambient / 255.0 * attenuation;
 
-        vec3 pointDiffuseLightColor = uPointLight.diffuse * attenuation;
-        vec3 pointSpecularLightColor = uPointLight.specular * attenuation;
+        vec3 pointDiffuseLightColor = uPointLight.diffuse / 255.0 * attenuation;
+        vec3 pointSpecularLightColor = uPointLight.specular / 255.0 * attenuation;
 
         /* Compute diffuse material */
         vec3 lightDirection = normalize(uPointLight.position - vFragPos);
@@ -102,6 +121,30 @@ void main(void)
 
         /* Compute specular material */
         specular += computeSpecularContribution(pointSpecularLightColor, norm, lightDirection);
+    }
+
+    /* Compute flashlight contribution */
+    if (uFlashlight.enabled) {
+        // Compute theta to determine if fragment is lit by flashlight
+        vec3 lightDirection = normalize(uFlashlight.position - vFragPos);
+        float theta = dot(lightDirection, normalize(-uFlashlight.direction));
+        if (theta > uFlashlight.cutoff) {
+            float distance = length(uFlashlight.position - vFragPos);
+            float attenuation = 1.0 / (uFlashlight.constant + (uFlashlight.linear * distance) + (uFlashlight.quadratic * distance * distance));
+
+            ambientLightColor += uFlashlight.ambient / 255.0 * attenuation;
+
+            vec3 flashDiffuseLightColor = uFlashlight.diffuse / 255.0 * attenuation;
+            vec3 flashSpecularLightColor = uFlashlight.specular / 255.0 * attenuation;
+
+            /* Compute diffuse material */
+            diffuse += computeDiffuseContribution(flashDiffuseLightColor, norm, lightDirection);
+
+            /* Compute specular material */
+            specular += computeSpecularContribution(flashSpecularLightColor, norm, lightDirection);
+        } else {
+            ambientLightColor += uFlashlight.ambient / 255.0;
+        }
     }
 
     /* Compute ambient material */

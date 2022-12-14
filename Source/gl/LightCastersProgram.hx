@@ -1,6 +1,7 @@
 package gl;
 
 import MatrixUtils.matrix3DToFloat32Array;
+import MatrixUtils.radians;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.utils.Float32Array;
@@ -50,6 +51,17 @@ class LightCastersProgram extends Program
 	private var _programPointLightAttenuationKc:GLUniformLocation;
 	private var _programPointLightAttenuationKl:GLUniformLocation;
 	private var _programPointLightAttenuationKq:GLUniformLocation;
+
+	private var _programFlashlightEnabledUniform:GLUniformLocation;
+	private var _programFlashlightPositionUniform:GLUniformLocation;
+	private var _programFlashlightDirectionUniform:GLUniformLocation;
+	private var _programFlashlightCutoffUniform:GLUniformLocation;
+	private var _programFlashlightAmbientUniform:GLUniformLocation;
+	private var _programFlashlightDiffuseUniform:GLUniformLocation;
+	private var _programFlashlightSpecularUniform:GLUniformLocation;
+	private var _programFlashlightAttenuationKc:GLUniformLocation;
+	private var _programFlashlightAttenuationKl:GLUniformLocation;
+	private var _programFlashlightAttenuationKq:GLUniformLocation;
 
 	/* Camera position for light calculations */
 	private var _programViewerPositionUniform:GLUniformLocation;
@@ -107,6 +119,18 @@ class LightCastersProgram extends Program
 		_programPointLightAttenuationKl = _gl.getUniformLocation(_glProgram, "uPointLight.linear");
 		_programPointLightAttenuationKq = _gl.getUniformLocation(_glProgram, "uPointLight.quadratic");
 
+		// Flashlight
+		_programFlashlightEnabledUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.enabled");
+		_programFlashlightPositionUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.position");
+		_programFlashlightDirectionUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.direction");
+		_programFlashlightCutoffUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.cutoff");
+		_programFlashlightAmbientUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.ambient");
+		_programFlashlightDiffuseUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.diffuse");
+		_programFlashlightSpecularUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.specular");
+		_programFlashlightAttenuationKc = _gl.getUniformLocation(_glProgram, "uFlashlight.constant");
+		_programFlashlightAttenuationKl = _gl.getUniformLocation(_glProgram, "uFlashlight.linear");
+		_programFlashlightAttenuationKq = _gl.getUniformLocation(_glProgram, "uFlashight.quadratic");
+
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");
 		_programModelMatrixUniform = _gl.getUniformLocation(_glProgram, "uModel");
@@ -122,7 +146,7 @@ class LightCastersProgram extends Program
 
 	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightDirection:Float32Array, cameraPosition:Float32Array,
 			vbo:VertexBuffer3D, ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture,
-			pointLightPos:Float32Array, ui:UI):Void
+			pointLightPos:Float32Array, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
 		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
 
@@ -153,6 +177,21 @@ class LightCastersProgram extends Program
 			_gl.uniform1f(_programPointLightAttenuationKc, ui.pointLightKc);
 			_gl.uniform1f(_programPointLightAttenuationKl, ui.pointLightKl);
 			_gl.uniform1f(_programPointLightAttenuationKq, ui.pointLightKq);
+		}
+
+		// Flashlight
+		_gl.uniform1i(_programFlashlightEnabledUniform, ui.flashlight ? 1 : 0);
+		if (ui.flashlight)
+		{
+			_gl.uniform3fv(_programFlashlightPositionUniform, flashlightPos, 0);
+			_gl.uniform3fv(_programFlashlightDirectionUniform, flashlightDir, 0);
+			_gl.uniform3f(_programFlashlightAmbientUniform, ui.flashlightAmbientColor.r, ui.flashlightAmbientColor.g, ui.flashlightAmbientColor.b);
+			_gl.uniform3f(_programFlashlightDiffuseUniform, ui.flashlightDiffuseColor.r, ui.flashlightDiffuseColor.g, ui.flashlightDiffuseColor.b);
+			_gl.uniform3f(_programFlashlightSpecularUniform, ui.flashlightSpecularColor.r, ui.flashlightSpecularColor.g, ui.flashlightSpecularColor.b);
+			_gl.uniform1f(_programFlashlightAttenuationKc, ui.flashlightKc);
+			_gl.uniform1f(_programFlashlightAttenuationKl, ui.flashlightKl);
+			_gl.uniform1f(_programFlashlightAttenuationKq, ui.flashlightKq);
+			_gl.uniform1f(_programFlashlightCutoffUniform, Math.cos(radians(ui.flashlightCutoff)));
 		}
 
 		// Lighting maps

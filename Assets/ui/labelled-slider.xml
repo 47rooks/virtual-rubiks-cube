@@ -1,0 +1,11 @@
+<labelled-slider>
+    <label id="lsNameId" text="${title}" styleName="parameterTitle"></label>
+    <vbox>
+        <label id="lsCurValueId" horizontalAlign="center"></label>
+        <hbox>
+            <label id="lsMinId" verticalAlign="center" />
+            <slider id="lsSliderId" min="0.0" max="1.0" pos="1.0" precision="2"></slider>
+            <label id="lsMaxId" verticalAlign="center" />
+        </hbox>
+    </vbox>
+</labelled-slider>

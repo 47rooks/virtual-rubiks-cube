@@ -1,0 +1,6 @@
+<module>
+    <components>
+        <class package="." />
+        <component class="ui.LabelledSlider" />
+    </components>
+</module>
