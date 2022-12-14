@@ -112,8 +112,11 @@ class UI extends VBox
 		return uiFlashlightKq.pos / 1000.0;
 	}
 
-	@:bind(uiFlashlightCutoff.pos)
-	public var flashlightCutoff(default, null):Float;
+	@:bind(uiFlashlightCutoff.start)
+	public var flashlightInnerCutoff(default, null):Float;
+
+	@:bind(uiFlashlightCutoff.end)
+	public var flashlightOuterCutoff(default, null):Float;
 
 	/* Material Properties */
 	@:bind(useTexture.selected)

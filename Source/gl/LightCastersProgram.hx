@@ -52,10 +52,12 @@ class LightCastersProgram extends Program
 	private var _programPointLightAttenuationKl:GLUniformLocation;
 	private var _programPointLightAttenuationKq:GLUniformLocation;
 
+	// Flashlight variables
 	private var _programFlashlightEnabledUniform:GLUniformLocation;
 	private var _programFlashlightPositionUniform:GLUniformLocation;
 	private var _programFlashlightDirectionUniform:GLUniformLocation;
-	private var _programFlashlightCutoffUniform:GLUniformLocation;
+	private var _programFlashlightInnerCutoffUniform:GLUniformLocation;
+	private var _programFlashlightOuterCutoffUniform:GLUniformLocation;
 	private var _programFlashlightAmbientUniform:GLUniformLocation;
 	private var _programFlashlightDiffuseUniform:GLUniformLocation;
 	private var _programFlashlightSpecularUniform:GLUniformLocation;
@@ -123,7 +125,8 @@ class LightCastersProgram extends Program
 		_programFlashlightEnabledUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.enabled");
 		_programFlashlightPositionUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.position");
 		_programFlashlightDirectionUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.direction");
-		_programFlashlightCutoffUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.cutoff");
+		_programFlashlightInnerCutoffUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.inner_cutoff");
+		_programFlashlightOuterCutoffUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.outer_cutoff");
 		_programFlashlightAmbientUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.ambient");
 		_programFlashlightDiffuseUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.diffuse");
 		_programFlashlightSpecularUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.specular");
@@ -191,7 +194,8 @@ class LightCastersProgram extends Program
 			_gl.uniform1f(_programFlashlightAttenuationKc, ui.flashlightKc);
 			_gl.uniform1f(_programFlashlightAttenuationKl, ui.flashlightKl);
 			_gl.uniform1f(_programFlashlightAttenuationKq, ui.flashlightKq);
-			_gl.uniform1f(_programFlashlightCutoffUniform, Math.cos(radians(ui.flashlightCutoff)));
+			_gl.uniform1f(_programFlashlightInnerCutoffUniform, Math.cos(radians(ui.flashlightInnerCutoff)));
+			_gl.uniform1f(_programFlashlightOuterCutoffUniform, Math.cos(radians(ui.flashlightOuterCutoff)));
 		}
 
 		// Lighting maps

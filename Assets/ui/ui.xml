@@ -364,10 +364,10 @@
                                                         </vbox>
                                                         <label text="Cutoff Angle" styleName="parameterTitle"></label>
                                                         <vbox>
-                                                            <label text="'${uiFlashlightCutoff.pos}'" horizontalAlign="center"></label>
+                                                            <label text="'${uiFlashlightCutoff.start} - ${uiFlashlightCutoff.end}'" horizontalAlign="center"></label>
                                                             <hbox>
                                                                 <label text="'${uiFlashlightCutoff.min}'" verticalAlign="center" />
-                                                                <slider id="uiFlashlightCutoff" min="0.0" max="90.0" step="1.0" pos="30.0"></slider>
+                                                                <slider id="uiFlashlightCutoff" min="0.0" max="90.0" step="1.0" start="30.0" end="35"></slider>
                                                                 <label text="'${uiFlashlightCutoff.max}'" verticalAlign="center" />
                                                             </hbox>
                                                         </vbox>

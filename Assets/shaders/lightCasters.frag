@@ -52,7 +52,8 @@ struct Flashight {
 
     vec3 position;
     vec3 direction;
-    float cutoff;
+    float inner_cutoff;
+    float outer_cutoff;
 
     // Light colors
     vec3 ambient;
@@ -128,7 +129,11 @@ void main(void)
         // Compute theta to determine if fragment is lit by flashlight
         vec3 lightDirection = normalize(uFlashlight.position - vFragPos);
         float theta = dot(lightDirection, normalize(-uFlashlight.direction));
-        if (theta > uFlashlight.cutoff) {
+        float epsilon = uFlashlight.inner_cutoff - uFlashlight.outer_cutoff;
+        float intensity = clamp((theta - uFlashlight.outer_cutoff) / epsilon, 0.0, 1.0);
+
+        if (theta > uFlashlight.outer_cutoff) {
+            // Calculate attenuation
             float distance = length(uFlashlight.position - vFragPos);
             float attenuation = 1.0 / (uFlashlight.constant + (uFlashlight.linear * distance) + (uFlashlight.quadratic * distance * distance));
 
@@ -138,10 +143,10 @@ void main(void)
             vec3 flashSpecularLightColor = uFlashlight.specular / 255.0 * attenuation;
 
             /* Compute diffuse material */
-            diffuse += computeDiffuseContribution(flashDiffuseLightColor, norm, lightDirection);
+            diffuse += intensity * computeDiffuseContribution(flashDiffuseLightColor, norm, lightDirection);
 
             /* Compute specular material */
-            specular += computeSpecularContribution(flashSpecularLightColor, norm, lightDirection);
+            specular += intensity * computeSpecularContribution(flashSpecularLightColor, norm, lightDirection);
         } else {
             ambientLightColor += uFlashlight.ambient / 255.0;
         }
