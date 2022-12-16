@@ -6,6 +6,7 @@ import lime.utils.Float32Array;
 import models.Light;
 import openfl.display3D.Context3D;
 import openfl.geom.Matrix3D;
+import ui.UI;
 
 /**
  * A point light supporting attentuation and position.

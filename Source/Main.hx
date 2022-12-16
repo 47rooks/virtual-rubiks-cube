@@ -10,6 +10,7 @@ import openfl.events.KeyboardEvent;
 import openfl.events.RenderEvent;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
+import ui.UI;
 
 /**
  * This is the main class which sets up both the 3D scene and the 2D UI objects.

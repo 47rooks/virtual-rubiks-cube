@@ -26,6 +26,7 @@ import openfl.ui.GameInputControl;
 import openfl.ui.GameInputDevice;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
+import ui.UI;
 
 enum abstract GamepadControl(Int)
 {

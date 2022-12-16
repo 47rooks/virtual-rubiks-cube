@@ -10,6 +10,7 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
+import ui.UI;
 
 /**
  * A program class supporting Phong light and materials models.

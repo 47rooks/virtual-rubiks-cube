@@ -1,4 +1,4 @@
-package;
+package ui;
 
 import haxe.ui.components.OptionBox;
 import haxe.ui.containers.VBox;

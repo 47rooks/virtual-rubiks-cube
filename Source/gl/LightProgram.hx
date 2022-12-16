@@ -8,6 +8,7 @@ import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix3D;
+import ui.UI;
 
 /**
  * GL program class for a simple light.

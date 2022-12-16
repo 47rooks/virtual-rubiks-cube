@@ -24,6 +24,7 @@ import openfl.display3D.Context3D;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
+import ui.UI;
 
 /**
  * Component cube positional data.
