@@ -1,30 +1,4 @@
 <vbox width="100%" height="100%" style="padding: 5px;">
-    <style>
-        Accordion text {
-            color:black;
-            horizontalAlign: right;
-        }
-        Label {
-            color: black;
-        }
-        .sectionHeading text {
-            font-size: 14;
-            font-weight:bold;
-        }
-        Label.parameterTitle {
-            font-size: 12;
-        }
-        .controlBox, .helpBox, .hudKeyBox, .sceneBox {
-            border: 2px solid black;
-            border-radius: 5px;
-            padding: 5px;
-            background-color: #ffffff;
-        }
-        #introMessage {
-            font-size: 12;
-            text-align: center;
-        }
-    </style>
     <hbox width="100%" height="100%">
         <vbox height="100%">
             <vbox id="helpContainer" height="100%" width="300px">
@@ -32,8 +6,11 @@
                     <frame text="Key and Mouse Mappings">
                         <vbox>
                             <label text="R - Run through some cube moves"></label>
-                            <label text="W - Dolly in z-axis\nA - Truck (Strafe) left\nD - Truck (Strafe) right\nS - Dolly out z-axis"></label>
-                            <label text="M - Switch the object controlled by the mouse between camera lookat and cube rotation" wordWrap="true" width="100%"></label>
+                            <label
+                                text="W - Dolly in z-axis\nA - Truck (Strafe) left\nD - Truck (Strafe) right\nS - Dolly out z-axis"></label>
+                            <label
+                                text="M - Switch the object controlled by the mouse between camera lookat and cube rotation"
+                                wordWrap="true" width="100%"></label>
                             <label text="Mouse scroll wheel - zoom in/out"></label>
                         </vbox>
                     </frame>
@@ -44,22 +21,26 @@
                 <label id="hudKeyMessage" text="Hit H to toggle HUD"></label>
             </vbox>
         </vbox>
-        <vbox id="centerContent" width="100%">
-            <!-- Blank section to force left and right columns apart -->
+        <vbox id="references" width="100%">
+            <reference-library id="referencesContainer" styleName="referencesBox" title="References"
+            ></reference-library>
         </vbox>
+        <!-- <vbox id="centerContent" width="100%"> -->
+        <!-- Blank section to force left and right columns apart -->
+        <!-- </vbox> -->
         <vbox id="controls" styleName="controlBox" height="100%" style="background-color: #ffffff;">
             <accordion id="controlAccordion" width="320px" height="100%">
                 <vbox id="configurationControls" text="Configuration" styleName="controlBox">
                     <script>
                         /* Reset default values for lighting properties. This function deliberately
-                         * does not set selected flags. There is an issue where setting the same
-                         * flag in a single callback pass leads to odd states. So states like "selected"
-                         * are only set in the configuration callback itself.
-                         */
+                        * does not set selected flags. There is an issue where setting the same
+                        * flag in a single callback pass leads to odd states. So states like "selected"
+                        * are only set in the configuration callback itself.
+                        */
                         function resetLightingValues(disableNoLight = false,
-                                                     disableSimpleLighting:Bool = false,
-                                                     disableComplexLighting:Bool = false,
-                                                     disableLightCasters:Bool = false) {
+                            disableSimpleLighting:Bool = false,
+                            disableComplexLighting:Bool = false,
+                            disableLightCasters:Bool = false) {
                             ambientStrength.pos = 0.1;
                             diffuseStrength.pos = 1.0;
                             specularStrength.pos = 0.75;
@@ -73,13 +54,13 @@
                             uiLightCasters.disabled = disableLightCasters;
                         }
 
-                        /* Reset the default values for the materials properties. Again state flags that
-                         * might also be set in the configuration callback itself are not touched.
-                         */
+                        /* Reset the default values for the materials properties. Again state flags
+                         * that might also be set in the configuration callback itself are not touched.
+                        */
                         function resetMaterialsValues(disableNoTexture = false,
-                                                      disableUseTexture:Bool = false,
-                                                      disableUseMaterials:Bool = false,
-                                                      disableUseLightMaps:Bool = false) {
+                            disableUseTexture:Bool = false,
+                            disableUseMaterials:Bool = false,
+                            disableUseLightMaps:Bool = false) {
                             ambient.value = 0x00190f;
                             diffuse.value = 0x008181;
                             specular.value = 0x7f7f7f;
@@ -91,8 +72,8 @@
                         }
 
                         function resetSceneValues(disableSceneRubiks:Bool = false,
-                                                  disableSceneRubiksWithLight:Bool = false,
-                                                  disableSceneCubeCloud:Bool = false) {
+                        disableSceneRubiksWithLight:Bool = false,
+                        disableSceneCubeCloud:Bool = false) {
                             uiSceneRubiks.disabled = disableSceneRubiks;
                             uiSceneRubiksWithLight.disabled = disableSceneRubiksWithLight;
                             uiSceneCubeCloud.disabled = disableSceneCubeCloud;
@@ -111,7 +92,8 @@
                             uiMouseTargetsCube.selected = true;
                         }
 
-                        /* Rubik's cube with light, textured, colored faces, and simple phong lighting */
+                        /* Rubik's cube with light, textured, colored faces, and simple phong
+                        lighting */
                         function phongConfigFn() {
                             resetLightingValues(true, false, true, true);
                             resetMaterialsValues(true, false, true, true);
@@ -128,8 +110,8 @@
                         }
 
                         /* Rubik's cube with light, textured, colored faces, and three component
-                         * phong materials and lighting.
-                         */
+                        * phong materials and lighting.
+                        */
                         function phongMaterialsConfigFn() {
                             resetLightingValues(true, true, false, true);
                             resetMaterialsValues(true, true, false, true);
@@ -145,7 +127,8 @@
                             uiSceneRubiksWithLight.selected = true;
                         }
 
-                        /* Rubik's cube with light, lighting maps, and three component phong lighting. */
+                        /* Rubik's cube with light, lighting maps, and three component phong
+                        lighting. */
                         function lightMapsConfigFn() {
                             resetLightingValues(true, true, false, true);
                             resetMaterialsValues(true, true, true, false);
@@ -159,7 +142,7 @@
 
                             // Scene
                             uiSceneRubiksWithLight.selected = true;
-                        }
+                            }
 
                         function lightCastersConfigFn() {
                             resetLightingValues(true, true, true, false);
@@ -181,11 +164,17 @@
                     </script>
                     <frame text="Basic Mode" styleName="parameterTitle">
                         <vbox>
-                            <optionbox id="rubiksConfig" componentGroup="configGroup" text="Rubik's Cube" selected="true" onChange="rubiksConfigFn()" />
-                            <optionbox id="simplePhongConfig" componentGroup="configGroup" text="Simple Phong Lighting" onChange="phongConfigFn()" />
-                            <optionbox id="phongConfig" componentGroup="configGroup" text="Phong Lighting and Materials" onChange="phongMaterialsConfigFn()" />
-                            <optionbox id="lightMapsConfig" componentGroup="configGroup" text="Lighting Maps" onChange="lightMapsConfigFn()" />
-                            <optionbox id="lightCastersConfig" componentGroup="configGroup" text="Light Casters" onChange="lightCastersConfigFn()" />
+                            <optionbox id="rubiksConfig" componentGroup="configGroup"
+                                text="Rubik's Cube" selected="true" onChange="rubiksConfigFn()" />
+                            <optionbox id="simplePhongConfig" componentGroup="configGroup"
+                                text="Simple Phong Lighting" onChange="phongConfigFn()" />
+                            <optionbox id="phongConfig" componentGroup="configGroup"
+                                text="Phong Lighting and Materials"
+                                onChange="phongMaterialsConfigFn()" />
+                            <optionbox id="lightMapsConfig" componentGroup="configGroup"
+                                text="Lighting Maps" onChange="lightMapsConfigFn()" />
+                            <optionbox id="lightCastersConfig" componentGroup="configGroup"
+                                text="Light Casters" onChange="lightCastersConfigFn()" />
                         </vbox>
                     </frame>
                     <frame text="Mouse Controls" styleName="parameterTitle">
@@ -197,52 +186,72 @@
                 </vbox>
                 <vbox id="lightingControls" text="Lighting" styleName="controlBox">
                     <vbox>
-                        <optionbox id="noLight" componentGroup="lightGroup" text="No lighting" selected="true" />
+                        <optionbox id="noLight" componentGroup="lightGroup" text="No lighting"
+                            selected="true" />
                         <optionbox id="simple" componentGroup="lightGroup" text="Simple lighting" />
-                        <vbox id="simpleLighting" disabled="${!simple.selected}" hidden="${!simple.selected}" width="100%" height="330px">
+                        <vbox id="simpleLighting" disabled="${!simple.selected}"
+                            hidden="${!simple.selected}" width="100%" height="330px">
                             <frame text="Simple Phong Lighting" styleName="parameterTitle">
                                 <vbox>
                                     <label text="Ambient strength" styleName="parameterTitle"></label>
                                     <vbox>
-                                        <label text="'${ambientStrength.pos}'" horizontalAlign="center"></label>
+                                        <label text="'${ambientStrength.pos}'"
+                                            horizontalAlign="center"></label>
                                         <hbox>
-                                            <label text="'${ambientStrength.min}'" verticalAlign="center" width="20px" />
-                                            <slider id="ambientStrength" min="0.0" max="1.0" pos="0.1" precision="2"></slider>
-                                            <label text="'${ambientStrength.max}'" verticalAlign="center" width="20px" />
+                                            <label text="'${ambientStrength.min}'"
+                                                verticalAlign="center" width="20px" />
+                                            <slider id="ambientStrength" min="0.0" max="1.0"
+                                                pos="0.1" precision="2"></slider>
+                                            <label text="'${ambientStrength.max}'"
+                                                verticalAlign="center" width="20px" />
                                         </hbox>
                                     </vbox>
                                     <label text="Diffuse strength" styleName="parameterTitle"></label>
                                     <vbox>
-                                        <label text="'${diffuseStrength.pos}'" horizontalAlign="center"></label>
+                                        <label text="'${diffuseStrength.pos}'"
+                                            horizontalAlign="center"></label>
                                         <hbox>
-                                            <label text="'${diffuseStrength.min}'" verticalAlign="center" width="20px" />
-                                            <slider id="diffuseStrength" min="0.0" max="1.0" pos="1.0" precision="2"></slider>
-                                            <label text="'${diffuseStrength.max}'" verticalAlign="center" width="20px" />
+                                            <label text="'${diffuseStrength.min}'"
+                                                verticalAlign="center" width="20px" />
+                                            <slider id="diffuseStrength" min="0.0" max="1.0"
+                                                pos="1.0" precision="2"></slider>
+                                            <label text="'${diffuseStrength.max}'"
+                                                verticalAlign="center" width="20px" />
                                         </hbox>
                                     </vbox>
                                     <label text="Specular strength" styleName="parameterTitle"></label>
                                     <vbox>
-                                        <label text="'${specularStrength.pos}'" horizontalAlign="center"></label>
+                                        <label text="'${specularStrength.pos}'"
+                                            horizontalAlign="center"></label>
                                         <hbox>
-                                            <label text="'${specularStrength.min}'" verticalAlign="center" width="20px" />
-                                            <slider id="specularStrength" min="0.0" max="1.0" pos="0.75" precision="2"></slider>
-                                            <label text="'${specularStrength.max}'" verticalAlign="center" width="20px" />
+                                            <label text="'${specularStrength.min}'"
+                                                verticalAlign="center" width="20px" />
+                                            <slider id="specularStrength" min="0.0" max="1.0"
+                                                pos="0.75" precision="2"></slider>
+                                            <label text="'${specularStrength.max}'"
+                                                verticalAlign="center" width="20px" />
                                         </hbox>
                                     </vbox>
                                     <label text="Specular intensity" styleName="parameterTitle"></label>
                                     <vbox>
-                                        <label text="'${specularIntensity.pos}'" horizontalAlign="center"></label>
+                                        <label text="'${specularIntensity.pos}'"
+                                            horizontalAlign="center"></label>
                                         <hbox>
-                                            <label text="'${specularIntensity.min}'" verticalAlign="center" width="20px" />
-                                            <slider id="specularIntensity" min="1.0" max="9.0" step="1.0" pos="5.0"></slider>
-                                            <label text="'${specularIntensity.max}'" verticalAlign="center" width="20px" />
+                                            <label text="'${specularIntensity.min}'"
+                                                verticalAlign="center" width="20px" />
+                                            <slider id="specularIntensity" min="1.0" max="9.0"
+                                                step="1.0" pos="5.0"></slider>
+                                            <label text="'${specularIntensity.max}'"
+                                                verticalAlign="center" width="20px" />
                                         </hbox>
                                     </vbox>
                                 </vbox>
                             </frame>
                         </vbox>
-                        <optionbox id="complex" componentGroup="lightGroup" text="3-component Phong lighting" />
-                        <vbox id="complexLighting" disabled="${!complex.selected}" hidden="${!complex.selected}" width="100%" height="200px">
+                        <optionbox id="complex" componentGroup="lightGroup"
+                            text="3-component Phong lighting" />
+                        <vbox id="complexLighting" disabled="${!complex.selected}"
+                            hidden="${!complex.selected}" width="100%" height="200px">
                             <frame text="Complex Lighting" styleName="parameterTitle">
                                 <vbox>
                                     <vbox>
@@ -260,27 +269,41 @@
                                 </vbox>
                             </frame>
                         </vbox>
-                        <optionbox id="uiLightCasters" componentGroup="lightGroup" text="Light Casters" />
-                        <vbox height="700px" disabled="${!uiLightCasters.selected}" hidden="${!uiLightCasters.selected}">
+                        <optionbox id="uiLightCasters" componentGroup="lightGroup"
+                            text="Light Casters" />
+                        <vbox height="700px" disabled="${!uiLightCasters.selected}"
+                            hidden="${!uiLightCasters.selected}">
                             <frame height="100%" text="Light Casters" styleName="parameterTitle">
                                 <scrollview height="100%" contentLayoutName="vertical">
                                     <vbox>
                                         <vbox>
-                                            <checkbox id="uiDirectional" text="Directional Light" selected="true" />
-                                            <vbox disabled="${!uiDirectional.selected}" hidden="${!uiDirectional.selected}">
-                                                <frame text="Directional light values" styleName="parameterTitle">
+                                            <checkbox id="uiDirectional" text="Directional Light"
+                                                selected="true" />
+                                            <vbox disabled="${!uiDirectional.selected}"
+                                                hidden="${!uiDirectional.selected}">
+                                                <frame text="Directional light values"
+                                                    styleName="parameterTitle">
                                                     <vbox>
                                                         <vbox>
-                                                            <label text="Ambient" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiLightDirectionalAmbientColor" value="0x191919"></color-picker-popup>
+                                                            <label text="Ambient"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiLightDirectionalAmbientColor"
+                                                                value="0x191919"></color-picker-popup>
                                                         </vbox>
                                                         <vbox>
-                                                            <label text="Diffuse" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiLightDirectionalDiffuseColor" value="0x808080"></color-picker-popup>
+                                                            <label text="Diffuse"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiLightDirectionalDiffuseColor"
+                                                                value="0x808080"></color-picker-popup>
                                                         </vbox>
                                                         <vbox>
-                                                            <label text="Specular" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiLightDirectionalSpecularColor" value="0xffffff"></color-picker-popup>
+                                                            <label text="Specular"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiLightDirectionalSpecularColor"
+                                                                value="0xffffff"></color-picker-popup>
                                                         </vbox>
                                                     </vbox>
                                                 </frame>
@@ -288,37 +311,60 @@
                                         </vbox>
                                         <vbox>
                                             <checkbox id="uiPointLight" text="Point Light" />
-                                            <vbox disabled="${!uiPointLight.selected}" hidden="${!uiPointLight.selected}">
-                                                <frame text="Point light values" styleName="parameterTitle">
+                                            <vbox disabled="${!uiPointLight.selected}"
+                                                hidden="${!uiPointLight.selected}">
+                                                <frame text="Point light values"
+                                                    styleName="parameterTitle">
                                                     <vbox>
                                                         <vbox>
-                                                            <label text="Ambient" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiPointLightAmbientColor" value="0x191919"></color-picker-popup>
+                                                            <label text="Ambient"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiPointLightAmbientColor"
+                                                                value="0x191919"></color-picker-popup>
                                                         </vbox>
                                                         <vbox>
-                                                            <label text="Diffuse" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiPointLightDiffuseColor" value="0x808080"></color-picker-popup>
+                                                            <label text="Diffuse"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiPointLightDiffuseColor"
+                                                                value="0x808080"></color-picker-popup>
                                                         </vbox>
                                                         <vbox>
-                                                            <label text="Specular" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiPointLightSpecularColor" value="0xffffff"></color-picker-popup>
+                                                            <label text="Specular"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiPointLightSpecularColor"
+                                                                value="0xffffff"></color-picker-popup>
                                                         </vbox>
-                                                        <label text="Attenuation constant Kc" styleName="parameterTitle"></label>
+                                                        <label text="Attenuation constant Kc"
+                                                            styleName="parameterTitle"></label>
                                                         <vbox>
-                                                            <label text="'${uiPointLightKc.pos}'" horizontalAlign="center"></label>
+                                                            <label text="'${uiPointLightKc.pos}'"
+                                                                horizontalAlign="center"></label>
                                                             <hbox>
-                                                                <label text="'${uiPointLightKc.min}'" verticalAlign="center" />
-                                                                <slider id="uiPointLightKc" min="0.0" max="1.0" step="1.0" pos="1.0"></slider>
-                                                                <label text="'${uiPointLightKc.max}'" verticalAlign="center" />
+                                                                <label
+                                                                    text="'${uiPointLightKc.min}'"
+                                                                    verticalAlign="center" />
+                                                                <slider id="uiPointLightKc"
+                                                                    min="0.0" max="1.0" step="1.0"
+                                                                    pos="1.0"></slider>
+                                                                <label
+                                                                    text="'${uiPointLightKc.max}'"
+                                                                    verticalAlign="center" />
                                                             </hbox>
                                                         </vbox>
                                                         <vbox>
-                                                            <labelled-slider id="uiPointLightKl" name="Attenuation linear Kl" min="0.0014" max="0.7" pos="0.09"
+                                                            <labelled-slider id="uiPointLightKl"
+                                                                name="Attenuation linear Kl"
+                                                                min="0.0014" max="0.7" pos="0.09"
                                                                 scale="1000.0" minMaxPrecision="2"
                                                                 thumbPrecision="4" />
                                                         </vbox>
                                                         <vbox>
-                                                            <labelled-slider id="uiPointLightKq" name="Attenuation quadratic Kq" min="0.000007" max="1.8" pos="0.032"
+                                                            <labelled-slider id="uiPointLightKq"
+                                                                name="Attenuation quadratic Kq"
+                                                                min="0.000007" max="1.8" pos="0.032"
                                                                 scale="100000.0" minMaxPrecision="2"
                                                                 thumbPrecision="4" />
                                                         </vbox>
@@ -328,47 +374,79 @@
                                         </vbox>
                                         <vbox>
                                             <checkbox id="uiFlashlight" text="Flashlight" />
-                                            <vbox disabled="${!uiFlashlight.selected}" hidden="${!uiFlashlight.selected}">
-                                                <frame text="Flashlight values" styleName="parameterTitle">
+                                            <vbox disabled="${!uiFlashlight.selected}"
+                                                hidden="${!uiFlashlight.selected}">
+                                                <frame text="Flashlight values"
+                                                    styleName="parameterTitle">
                                                     <vbox>
                                                         <vbox>
-                                                            <label text="Ambient" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiFlashlightAmbientColor" value="0x191919"></color-picker-popup>
+                                                            <label text="Ambient"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiFlashlightAmbientColor"
+                                                                value="0x191919"></color-picker-popup>
                                                         </vbox>
                                                         <vbox>
-                                                            <label text="Diffuse" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiFlashlightDiffuseColor" value="0x808080"></color-picker-popup>
+                                                            <label text="Diffuse"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiFlashlightDiffuseColor"
+                                                                value="0x808080"></color-picker-popup>
                                                         </vbox>
                                                         <vbox>
-                                                            <label text="Specular" styleName="parameterTitle"></label>
-                                                            <color-picker-popup id="uiFlashlightSpecularColor" value="0xffffff"></color-picker-popup>
+                                                            <label text="Specular"
+                                                                styleName="parameterTitle"></label>
+                                                            <color-picker-popup
+                                                                id="uiFlashlightSpecularColor"
+                                                                value="0xffffff"></color-picker-popup>
                                                         </vbox>
-                                                        <label text="Attenuation constant Kc" styleName="parameterTitle"></label>
+                                                        <label text="Attenuation constant Kc"
+                                                            styleName="parameterTitle"></label>
                                                         <vbox>
-                                                            <label text="'${uiFlashlightKc.pos}'" horizontalAlign="center"></label>
+                                                            <label text="'${uiFlashlightKc.pos}'"
+                                                                horizontalAlign="center"></label>
                                                             <hbox>
-                                                                <label text="'${uiFlashlightKc.min}'" verticalAlign="center" />
-                                                                <slider id="uiFlashlightKc" min="0.0" max="1.0" step="1.0" pos="1.0"></slider>
-                                                                <label text="'${uiFlashlightKc.max}'" verticalAlign="center" />
+                                                                <label
+                                                                    text="'${uiFlashlightKc.min}'"
+                                                                    verticalAlign="center" />
+                                                                <slider id="uiFlashlightKc"
+                                                                    min="0.0" max="1.0" step="1.0"
+                                                                    pos="1.0"></slider>
+                                                                <label
+                                                                    text="'${uiFlashlightKc.max}'"
+                                                                    verticalAlign="center" />
                                                             </hbox>
                                                         </vbox>
                                                         <vbox>
-                                                            <labelled-slider id="uiFlashlightKl" name="Attenuation linear Kl" min="0.022" max="0.7" pos="0.09"
+                                                            <labelled-slider id="uiFlashlightKl"
+                                                                name="Attenuation linear Kl"
+                                                                min="0.022" max="0.7" pos="0.09"
                                                                 scale="1000.0" minMaxPrecision="2"
                                                                 thumbPrecision="4" />
                                                         </vbox>
                                                         <vbox>
-                                                            <labelled-slider id="uiFlashlightKq" name="Attenuation quadratic Kq" min="0.0019" max="1.8" pos="0.032"
+                                                            <labelled-slider id="uiFlashlightKq"
+                                                                name="Attenuation quadratic Kq"
+                                                                min="0.0019" max="1.8" pos="0.032"
                                                                 scale="10000.0" minMaxPrecision="2"
                                                                 thumbPrecision="4" />
                                                         </vbox>
-                                                        <label text="Cutoff Angle" styleName="parameterTitle"></label>
+                                                        <label text="Cutoff Angle"
+                                                            styleName="parameterTitle"></label>
                                                         <vbox>
-                                                            <label text="'${uiFlashlightCutoff.start} - ${uiFlashlightCutoff.end}'" horizontalAlign="center"></label>
+                                                            <label
+                                                                text="'${uiFlashlightCutoff.start} - ${uiFlashlightCutoff.end}'"
+                                                                horizontalAlign="center"></label>
                                                             <hbox>
-                                                                <label text="'${uiFlashlightCutoff.min}'" verticalAlign="center" />
-                                                                <slider id="uiFlashlightCutoff" min="0.0" max="90.0" step="1.0" start="30.0" end="35"></slider>
-                                                                <label text="'${uiFlashlightCutoff.max}'" verticalAlign="center" />
+                                                                <label
+                                                                    text="'${uiFlashlightCutoff.min}'"
+                                                                    verticalAlign="center" />
+                                                                <slider id="uiFlashlightCutoff"
+                                                                    min="0.0" max="90.0" step="1.0"
+                                                                    start="30.0" end="35"></slider>
+                                                                <label
+                                                                    text="'${uiFlashlightCutoff.max}'"
+                                                                    verticalAlign="center" />
                                                             </hbox>
                                                         </vbox>
                                                     </vbox>
@@ -381,12 +459,17 @@
                         </vbox>
                     </vbox>
                 </vbox>
-                <vbox id="materialControls" text="Materials" styleName="controlBox" style="background-color: #ffffff;">
+                <vbox id="materialControls" text="Materials" styleName="controlBox"
+                    style="background-color: #ffffff;">
                     <vbox width="100%">
-                        <optionbox id="noTexture" componentGroup="matGroup" text="No Texture" selected="true" disabled="true"></optionbox>
-                        <optionbox id="useTexture" componentGroup="matGroup" text="Use Simple Texture"></optionbox>
-                        <optionbox id="useMaterials" componentGroup="matGroup" text="Use Phong Materials"></optionbox>
-                        <vbox disabled="${!useMaterials.selected}" hidden="${!useMaterials.selected}" height="175px" width="100%">
+                        <optionbox id="noTexture" componentGroup="matGroup" text="No Texture"
+                            selected="true" disabled="true"></optionbox>
+                        <optionbox id="useTexture" componentGroup="matGroup"
+                            text="Use Simple Texture"></optionbox>
+                        <optionbox id="useMaterials" componentGroup="matGroup"
+                            text="Use Phong Materials"></optionbox>
+                        <vbox disabled="${!useMaterials.selected}"
+                            hidden="${!useMaterials.selected}" height="175px" width="100%">
                             <scrollview height="100%" width="100%" contentLayoutName="vertical">
                                 <vbox>
                                     <frame text="Face color" styleName="parameterTitle">
@@ -394,23 +477,35 @@
                                             <hbox width="100%">
                                                 <vbox height="100%">
                                                     <label text="Ambient" styleName="parameterTitle"></label>
-                                                    <color-picker-popup id="ambient" disabled="${!useMaterials.selected}" value="0x00190f"></color-picker-popup>
+                                                    <color-picker-popup id="ambient"
+                                                        disabled="${!useMaterials.selected}"
+                                                        value="0x00190f"></color-picker-popup>
                                                 </vbox>
                                                 <vbox>
                                                     <label text="Diffuse" styleName="parameterTitle"></label>
-                                                    <color-picker-popup id="diffuse" disabled="${!useMaterials.selected}" value="0x008181"></color-picker-popup>
+                                                    <color-picker-popup id="diffuse"
+                                                        disabled="${!useMaterials.selected}"
+                                                        value="0x008181"></color-picker-popup>
                                                 </vbox>
                                                 <vbox>
-                                                    <label text="Specular" styleName="parameterTitle"></label>
-                                                    <color-picker-popup id="specular" disabled="${!useMaterials.selected}" value="0x7f7f7f"></color-picker-popup>
+                                                    <label text="Specular"
+                                                        styleName="parameterTitle"></label>
+                                                    <color-picker-popup id="specular"
+                                                        disabled="${!useMaterials.selected}"
+                                                        value="0x7f7f7f"></color-picker-popup>
                                                 </vbox>
                                             </hbox>
                                             <label text="Shininess" styleName="parameterTitle"></label>
-                                            <label text="'${shininess.pos}'" horizontalAlign="center"></label>
+                                            <label text="'${shininess.pos}'"
+                                                horizontalAlign="center"></label>
                                             <hbox>
-                                                <label text="'${shininess.min}'" verticalAlign="center" width="20px" />
-                                                <slider id="shininess" min="1.0" max="9.0" step="1.0" pos="5.0" disabled="${!useMaterials.selected}"></slider>
-                                                <label text="'${shininess.max}'" verticalAlign=" center" width="20px" />
+                                                <label text="'${shininess.min}'"
+                                                    verticalAlign="center" width="20px" />
+                                                <slider id="shininess" min="1.0" max="9.0"
+                                                    step="1.0" pos="5.0"
+                                                    disabled="${!useMaterials.selected}"></slider>
+                                                <label text="'${shininess.max}'"
+                                                    verticalAlign=" center" width="20px" />
                                             </hbox>
                                         </vbox>
                                     </frame>
@@ -421,15 +516,20 @@
                     </vbox>
                 </vbox>
                 <vbox id="sceneControls" text="Scene" styleName="sceneBox">
-                    <optionbox id="uiSceneRubiks" componentGroup="sceneGroup" text="Rubik's Cube" selected="true"></optionbox>
-                    <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup" text="Rubik's Cube with Light and Texture"></optionbox>
-                    <optionbox id="uiSceneCubeCloud" componentGroup="sceneGroup" text="Multiple Cubes"></optionbox>
-                    <vbox disabled="${!uiSceneCubeCloud.selected}" hidden="${!uiSceneCubeCloud.selected}" height="175px">
+                    <optionbox id="uiSceneRubiks" componentGroup="sceneGroup" text="Rubik's Cube"
+                        selected="true"></optionbox>
+                    <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup"
+                        text="Rubik's Cube with Light and Texture"></optionbox>
+                    <optionbox id="uiSceneCubeCloud" componentGroup="sceneGroup"
+                        text="Multiple Cubes"></optionbox>
+                    <vbox disabled="${!uiSceneCubeCloud.selected}"
+                        hidden="${!uiSceneCubeCloud.selected}" height="175px">
                         <label text="Number of cubes" styleName="parameterTitle"></label>
                         <label text="'${numCubes.pos}'" horizontalAlign="center"></label>
                         <hbox>
                             <label text="'${numCubes.min}'" verticalAlign=" center" width="20px" />
-                            <slider id="numCubes" min="1" max="10" step="1" pos="5" disabled="${!uiSceneCubeCloud.selected}"></slider>
+                            <slider id="numCubes" min="1" max="10" step="1" pos="5"
+                                disabled="${!uiSceneCubeCloud.selected}"></slider>
                             <label text="'${numCubes.max}'" verticalAlign=" center" width="20px" />
                         </hbox>
                     </vbox>

@@ -171,6 +171,7 @@ class UI extends VBox
 		controls.visible = false;
 		help.visible = false;
 		hudKeyMessage.visible = true;
+		references.visible = false;
 		visible = true;
 
 		// Tooltips
@@ -228,15 +229,12 @@ class UI extends VBox
 
 	public function toggleVisibility():Void
 	{
-		if (keepHelp.selected)
+		if (!keepHelp.selected)
 		{
-			controls.visible = !controls.visible;
-		}
-		else
-		{
-			controls.visible = !controls.visible;
 			help.visible = !help.visible;
 		}
+		controls.visible = !controls.visible;
+		references.visible = !references.visible;
 	}
 
 	/**

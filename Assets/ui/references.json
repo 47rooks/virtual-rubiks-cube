@@ -1,0 +1,37 @@
+[
+    {
+        "title": "Basic 3D",
+        "description": "The Rubik's cube model is a very simple construction of 9 smaller cubes. The code involves the use of VBOs, matrix operations to scale, rotate and translate. The shaders are very simple drawing a single color between the vertices, the only complication being the construction of the black border. The mouse and keyboard controls include the ability to rotate the cube or the camera, to move the camera around the scene, and to zoom in or out. There is no lighting in the mode. The entire first part of the book is used to build this model and scene.",
+        "learnopenglReferences": ["Ch 5, 6, 7, 8, 9, 10, 11"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Rubik's Cube"}]
+    },
+    {
+        "title": "Simple Phong lighting",
+        "description": "This section concerns the construction of the basic Phong lighting model that is used and enhanced throughout part II of the book. It also covers normals. The normal data is already in the Cube.hx but in the book it is added in Ch 13. Specular values can be adjusted resulting hot spots or varying intensity and size. A simple texture of the OpenFL logo on a Rubik's color background is used.",
+        "learnopenglReferences": ["Ch 12, 13"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Simple Phong Lighting"}]
+    },
+    {
+        "title": "3-component Phong lighting",
+        "description": "Chapter 14 introduces 3-component materials and lighting. Materials and lights now have 3-component RGB colors. There are a number of controls in the demo to alter the material and light colors. There is reference material in DeVries which can be used to simulate specific materials. Strange effects can be created by creating lights with very different diffuse and specular colors.",
+        "learnopenglReferences": ["Ch 14"],
+        "codeReferences": [],
+        "uiRefereneces": [{"scene": "Phong Lighting and Materials"}]
+    },
+    {
+        "title": "Lighting maps",
+        "description": "Lighting maps are a way to use textures to assist in producing more realistic looking materials and specular highlights. In this chapter I switched from using the OpenFL logo on a colored background to using a chrome logo on a plywood background. This gives a good contrast of the dull wood and the specular highlight on the chrome.",
+        "learnopenglReferences": ["Ch 15"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Lighting Maps"}]
+    },
+    {
+        "title": "Light casters",
+        "description": "Light casters simulate various kinds of lights - directional, point, spot and flashlights. And while putting them all together in one scene is left to chapter 17 of DeVries, here I have them combined. \n\nThe concept and simulation of attenuation is introduced here also. Independent sliders for attenuation constants are provided. Strictly this is probably incorrect as it enables creation of light attenuation not naturally seen. In 16.3.1 of DeVries there is a table of constants that can be used as a guide.\n\nInitially with only a flashlight the scene is almost invisible.",
+        "learnopenglReferences": ["Ch 16"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Light Casters"}]
+    }
+]

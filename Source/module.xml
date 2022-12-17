@@ -2,5 +2,14 @@
     <components>
         <class package="." />
         <component class="ui.LabelledSlider" />
+        <component class="ui.ReferenceLibrary" />
     </components>
+    <resources>
+        <resource path="Assets" prefix="assets" />
+    </resources>
+    <themes>
+        <default>
+            <style resource="assets/ui/ui.css" />
+        </default>
+    </themes>
 </module>

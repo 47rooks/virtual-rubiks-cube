@@ -1,0 +1,28 @@
+<reference-library>
+    <vbox>
+        <hbox style="spacing:15px;">
+            <listview id="toc" width="200" height="100%" selectedIndex="0">
+            </listview>
+
+            <vbox>
+                <label id="titleId" styleName="title"></label>
+                <label id="descriptionId" width="405px"></label>
+                <rule />
+                <label id="book-references" text="Learn OpenGL References"></label>
+                <tableview id="book-references-table" width="100%" height="100px">
+                    <header width="100%">
+                        <column id="chapter" text="Chapter / Section" width="100%" />
+                    </header>
+                </tableview>
+                <label id="code-references" text="Code References"></label>
+                <tableview id="code-references-table" width="100%" height="100px">
+                    <header width="100%">
+                        <column id="File" text="File" width="100%" />
+                        <column id="Function" text="Function" width="100%" />
+                        <column id="Lines" text="Lines" width="100%" />
+                    </header>
+                </tableview>
+            </vbox>
+        </hbox>
+    </vbox>
+</reference-library>

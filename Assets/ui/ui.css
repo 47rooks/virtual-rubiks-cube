@@ -1,0 +1,34 @@
+.title {
+    font-size: 14;
+    font-weight:bold;
+}
+
+.sectionHeading {
+    font-size: 14;
+    font-weight:bold;
+}
+
+Accordion text {
+    color:black;
+    horizontalAlign: right;
+}
+
+Label {
+    color: black;
+}
+
+Label.parameterTitle {
+    font-size: 12;
+}
+
+.controlBox, .helpBox, .hudKeyBox, .sceneBox, .referencesBox {
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #ffffff;
+}
+
+#introMessage {
+    font-size: 12;
+    text-align: center;
+}
