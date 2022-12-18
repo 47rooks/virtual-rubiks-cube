@@ -3,6 +3,7 @@
         <class package="." />
         <component class="ui.LabelledSlider" />
         <component class="ui.ReferenceLibrary" />
+        <component class="ui.ReferenceLibraryDropdown" />
     </components>
     <resources>
         <resource path="Assets" prefix="assets" />

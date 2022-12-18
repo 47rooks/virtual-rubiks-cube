@@ -21,7 +21,7 @@ Label.parameterTitle {
     font-size: 12;
 }
 
-.controlBox, .helpBox, .hudKeyBox, .sceneBox, .referencesBox {
+.controlBox, .helpBox, .hudKeyBox, .sceneBox, .referencesBox, .referencesBox DropDown {
     border: 2px solid black;
     border-radius: 5px;
     padding: 5px;

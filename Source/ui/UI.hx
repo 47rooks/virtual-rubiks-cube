@@ -1,7 +1,11 @@
 package ui;
 
+import haxe.ui.components.DropDown.DropDownBuilder;
+import haxe.ui.components.DropDown.DropDownHandler;
 import haxe.ui.components.OptionBox;
+import haxe.ui.containers.ListView;
 import haxe.ui.containers.VBox;
+import haxe.ui.core.Component;
 import haxe.ui.core.ItemRenderer;
 import haxe.ui.events.UIEvent;
 import haxe.ui.tooltips.ToolTipManager;
@@ -168,6 +172,9 @@ class UI extends VBox
 	public function new()
 	{
 		super();
+
+		DropDownBuilder.HANDLER_MAP.set("referenceLibraryDropdownHandler", Type.getClassName(ReferenceLibraryDropdownHandler));
+
 		controls.visible = false;
 		help.visible = false;
 		hudKeyMessage.visible = true;
@@ -180,15 +187,14 @@ class UI extends VBox
 		 * that results in this vbox level tooltip overriding tooltips present on components within
 		 * the vbox.
 		 */
-		/*
-			ToolTipManager.instance.registerTooltip(configurationControls, {
-				renderer: tooltipRenderer,
-				tipData: {
-					title: "Configuration",
-					footer: "",
-					content: "Choose one of a variety of initial configuration, setting Lighting, Materials and Scene properties appropriately. From this starting point you may then make tweaks to the various properties to see how they change the rendered scene."
-				}
-		});*/
+		ToolTipManager.instance.registerTooltip(configurationControls, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Configuration",
+				footer: "",
+				content: "Choose one of a variety of initial configuration, setting Lighting, Materials and Scene properties appropriately. From this starting point you may then make tweaks to the various properties to see how they change the rendered scene."
+			}
+		});
 
 		ToolTipManager.instance.registerTooltip(rubiksConfig, {
 			renderer: tooltipRenderer,
@@ -263,6 +269,18 @@ class UI extends VBox
 			uiLightCasters.disabled = false;
 		}
 	}
+
+	@:bind(configurationGrpId, UIEvent.CHANGE)
+	// @:bind(rubiksConfig, UIEvent.CHANGE)
+	// @:bind(simplePhongConfig, UIEvent.CHANGE)
+	// @:bind(phongConfig, UIEvent.CHANGE)
+	// @:bind(lightMapsConfig, UIEvent.CHANGE)
+	// @:bind(lightCastersConfig, UIEvent.CHANGE)
+	public function onChangeConfiguration(e:UIEvent):Void
+	{
+		var tgt = cast(e.target, OptionBox);
+		trace('e=${tgt.text}, ud=${tgt.userData}');
+	}
 }
 
 @:xml('
@@ -276,3 +294,23 @@ class UI extends VBox
 </item-renderer>
 ')
 private class CustomToolTip extends ItemRenderer {}
+
+@:access(haxe.ui.core.Component)
+class ReferenceLibraryDropdownHandler extends DropDownHandler
+{
+	private var _view:ReferenceLibraryDropdown = null;
+
+	private override function get_component():Component
+	{
+		if (_view == null)
+		{
+			_view = new ReferenceLibraryDropdown();
+			var tgt:ListView = cast(_view.findComponent('toc', ListView));
+			tgt.onChange = function(e)
+			{
+				_dropdown.text = "Reference Library: " + cast(_view.findComponent('toc', ListView)).selectedItem;
+			}
+		}
+		return _view;
+	}
+}

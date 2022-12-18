@@ -22,8 +22,11 @@
             </vbox>
         </vbox>
         <vbox id="references" width="100%">
-            <reference-library id="referencesContainer" styleName="referencesBox" title="References"
-            ></reference-library>
+            <!-- <reference-library id="referencesContainer" styleName="referencesBox" title="References"
+            ></reference-library> -->
+            <!-- <reference-library-dropdown id="referencesContainer" styleName="referencesBox" text="Reference Library" width="405px"></reference-library-dropdown> -->
+            <dropdown id="referenceDDId" text="Reference Library" type="referenceLibraryDropdownHandler" styleName="referencesBox" width="100%" />
+
         </vbox>
         <!-- <vbox id="centerContent" width="100%"> -->
         <!-- Blank section to force left and right columns apart -->
@@ -164,17 +167,19 @@
                     </script>
                     <frame text="Basic Mode" styleName="parameterTitle">
                         <vbox>
-                            <optionbox id="rubiksConfig" componentGroup="configGroup"
-                                text="Rubik's Cube" selected="true" onChange="rubiksConfigFn()" />
-                            <optionbox id="simplePhongConfig" componentGroup="configGroup"
-                                text="Simple Phong Lighting" onChange="phongConfigFn()" />
-                            <optionbox id="phongConfig" componentGroup="configGroup"
-                                text="Phong Lighting and Materials"
-                                onChange="phongMaterialsConfigFn()" />
-                            <optionbox id="lightMapsConfig" componentGroup="configGroup"
-                                text="Lighting Maps" onChange="lightMapsConfigFn()" />
-                            <optionbox id="lightCastersConfig" componentGroup="configGroup"
-                                text="Light Casters" onChange="lightCastersConfigFn()" />
+                            <group id="configurationGrpId" layoutName="vertical">
+                                <optionbox id="rubiksConfig"
+                                    text="Rubik's Cube" selected="true" componentGroup="config" onChange="rubiksConfigFn()" />
+                                <optionbox id="simplePhongConfig" componentGroup="config" userData="this is me"
+                                    text="Simple Phong Lighting" onChange="phongConfigFn()" />
+                                <optionbox id="phongConfig" componentGroup="config"
+                                    text="Phong Lighting and Materials"
+                                    onChange="phongMaterialsConfigFn()" />
+                                <optionbox id="lightMapsConfig"  componentGroup="config"
+                                    text="Lighting Maps" onChange="lightMapsConfigFn()" />
+                                <optionbox id="lightCastersConfig" componentGroup="config"
+                                    text="Light Casters" onChange="lightCastersConfigFn()" />
+                            </group>
                         </vbox>
                     </frame>
                     <frame text="Mouse Controls" styleName="parameterTitle">
