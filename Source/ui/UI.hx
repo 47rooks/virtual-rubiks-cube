@@ -1,9 +1,6 @@
 package ui;
 
-import haxe.ui.components.DropDown.DropDownBuilder;
-import haxe.ui.components.DropDown.DropDownHandler;
 import haxe.ui.components.OptionBox;
-import haxe.ui.containers.ListView;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
 import haxe.ui.core.ItemRenderer;
@@ -173,8 +170,6 @@ class UI extends VBox
 	{
 		super();
 
-		DropDownBuilder.HANDLER_MAP.set("referenceLibraryDropdownHandler", Type.getClassName(ReferenceLibraryDropdownHandler));
-
 		controls.visible = false;
 		help.visible = false;
 		hudKeyMessage.visible = true;
@@ -294,23 +289,3 @@ class UI extends VBox
 </item-renderer>
 ')
 private class CustomToolTip extends ItemRenderer {}
-
-@:access(haxe.ui.core.Component)
-class ReferenceLibraryDropdownHandler extends DropDownHandler
-{
-	private var _view:ReferenceLibraryDropdown = null;
-
-	private override function get_component():Component
-	{
-		if (_view == null)
-		{
-			_view = new ReferenceLibraryDropdown();
-			var tgt:ListView = cast(_view.findComponent('toc', ListView));
-			tgt.onChange = function(e)
-			{
-				_dropdown.text = "Reference Library: " + cast(_view.findComponent('toc', ListView)).selectedItem;
-			}
-		}
-		return _view;
-	}
-}

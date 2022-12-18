@@ -22,11 +22,7 @@
             </vbox>
         </vbox>
         <vbox id="references" width="100%">
-            <!-- <reference-library id="referencesContainer" styleName="referencesBox" title="References"
-            ></reference-library> -->
-            <!-- <reference-library-dropdown id="referencesContainer" styleName="referencesBox" text="Reference Library" width="405px"></reference-library-dropdown> -->
-            <dropdown id="referenceDDId" text="Reference Library" type="referenceLibraryDropdownHandler" styleName="referencesBox" width="100%" />
-
+            <reference-library-dropdown id="referencesContainer" styleName="referencesBox" text="Reference Library" width="405px"></reference-library-dropdown>
         </vbox>
         <!-- <vbox id="centerContent" width="100%"> -->
         <!-- Blank section to force left and right columns apart -->
