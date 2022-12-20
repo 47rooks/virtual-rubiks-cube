@@ -1,5 +1,6 @@
 package ui;
 
+import haxe.ui.components.Label;
 import haxe.ui.components.OptionBox;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
@@ -266,15 +267,15 @@ class UI extends VBox
 	}
 
 	@:bind(configurationGrpId, UIEvent.CHANGE)
-	// @:bind(rubiksConfig, UIEvent.CHANGE)
-	// @:bind(simplePhongConfig, UIEvent.CHANGE)
-	// @:bind(phongConfig, UIEvent.CHANGE)
-	// @:bind(lightMapsConfig, UIEvent.CHANGE)
-	// @:bind(lightCastersConfig, UIEvent.CHANGE)
 	public function onChangeConfiguration(e:UIEvent):Void
 	{
 		var tgt = cast(e.target, OptionBox);
-		trace('e=${tgt.text}, ud=${tgt.userData}');
+		if (tgt.userData != null)
+		{
+			var refLib:ReferenceLibraryDropdown = cast(findComponent('referencesContainer'), ReferenceLibraryDropdown);
+			var toc:Label = findComponent('titleId', Label);
+			refLib.selectedItem = tgt.userData;
+		}
 	}
 }
 

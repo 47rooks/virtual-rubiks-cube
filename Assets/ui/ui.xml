@@ -165,15 +165,19 @@
                         <vbox>
                             <group id="configurationGrpId" layoutName="vertical">
                                 <optionbox id="rubiksConfig"
-                                    text="Rubik's Cube" selected="true" componentGroup="config" onChange="rubiksConfigFn()" />
-                                <optionbox id="simplePhongConfig" componentGroup="config" userData="this is me"
+                                    text="Rubik's Cube" selected="true" componentGroup="config" 
+                                    userData="Basic 3D" onChange="rubiksConfigFn()" />
+                                <optionbox id="simplePhongConfig" componentGroup="config" userData="Simple Phong lighting"
                                     text="Simple Phong Lighting" onChange="phongConfigFn()" />
                                 <optionbox id="phongConfig" componentGroup="config"
+                                    userData="3-component Phong lighting"
                                     text="Phong Lighting and Materials"
                                     onChange="phongMaterialsConfigFn()" />
                                 <optionbox id="lightMapsConfig"  componentGroup="config"
+                                    userData="Lighting maps"
                                     text="Lighting Maps" onChange="lightMapsConfigFn()" />
                                 <optionbox id="lightCastersConfig" componentGroup="config"
+                                    userData="Light casters"
                                     text="Light Casters" onChange="lightCastersConfigFn()" />
                             </group>
                         </vbox>
