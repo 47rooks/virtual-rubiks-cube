@@ -30,14 +30,18 @@ class ReferenceLibrary extends VBox
 	public function new()
 	{
 		super();
-		// label1.getTextDisplay().textField.selectable = true;
 		loadReferenceDb();
+
+		// Enable copying from the labels
+		titleId.getTextDisplay().textField.selectable = true;
+		titleId.getTextDisplay().textField.mouseEnabled = true;
+		descriptionId.getTextDisplay().textField.selectable = true;
+		descriptionId.getTextDisplay().textField.mouseEnabled = true;
 	}
 
 	function loadReferenceDb():Void
 	{
 		_RefDb = haxe.Json.parse(Assets.getText("assets/ui/references.json"));
-		// trace(refDb.entries);
 
 		for (e in _RefDb)
 		{
