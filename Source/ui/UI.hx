@@ -277,6 +277,142 @@ class UI extends VBox
 			refLib.selectedItem = tgt.userData;
 		}
 	}
+
+	/* Reset default values for lighting properties. This function deliberately
+	 * does not set selected flags. There is an issue where setting the same
+	 * flag in a single callback pass leads to odd states. So states like "selected"
+	 * are only set in the configuration callback itself.
+	 */
+	function resetLightingValues(disableNoLight = false, disableSimpleLighting:Bool = false, disableComplexLighting:Bool = false,
+			disableLightCasters:Bool = false)
+	{
+		ambientStrength.pos = 0.1;
+		diffuseStrength.pos = 1.0;
+		specularStrength.pos = 0.75;
+		specularIntensity.pos = 5.0;
+		lightAmbient.value = 0x191919;
+		lightDiffuse.value = 0x808080;
+		lightSpecular.value = 0xffffff;
+		noLight.disabled = disableNoLight;
+		simple.disabled = disableSimpleLighting;
+		complex.disabled = disableComplexLighting;
+		uiLightCasters.disabled = disableLightCasters;
+	}
+
+	/* Reset the default values for the materials properties. Again state flags
+	 * that might also be set in the configuration callback itself are not touched.
+	 */
+	function resetMaterialsValues(disableNoTexture = false, disableUseTexture:Bool = false, disableUseMaterials:Bool = false, disableUseLightMaps:Bool = false)
+	{
+		ambient.value = 0x00190f;
+		diffuse.value = 0x008181;
+		specular.value = 0x7f7f7f;
+		shininess.pos = 5.0;
+		noTexture.disabled = disableNoTexture;
+		useTexture.disabled = disableUseTexture;
+		useMaterials.disabled = disableUseMaterials;
+		useLightMaps.disabled = disableUseLightMaps;
+	}
+
+	function resetSceneValues(disableSceneRubiks:Bool = false, disableSceneRubiksWithLight:Bool = false, disableSceneCubeCloud:Bool = false)
+	{
+		uiSceneRubiks.disabled = disableSceneRubiks;
+		uiSceneRubiksWithLight.disabled = disableSceneRubiksWithLight;
+		uiSceneCubeCloud.disabled = disableSceneCubeCloud;
+	}
+
+	/* Simple Rubik's cube with colored faces only and no light or lighting */
+	@:bind(rubiksConfig, UIEvent.CHANGE)
+	function rubiksConfigFn(_)
+	{
+		resetLightingValues(false, true, true, true);
+		resetMaterialsValues(false, true, true, true);
+		resetSceneValues(false, true, true);
+
+		// Set to basic Rubik's cube play mode
+		noTexture.selected = true;
+		noLight.selected = true;
+		uiSceneRubiks.selected = true;
+		uiMouseTargetsCube.selected = true;
+	}
+
+	/* Rubik's cube with light, textured, colored faces, and simple phong
+		lighting */
+	@:bind(simplePhongConfig, UIEvent.CHANGE)
+	function phongConfigFn(_)
+	{
+		resetLightingValues(true, false, true, true);
+		resetMaterialsValues(true, false, true, true);
+		resetSceneValues(true, false, true);
+
+		// Lighting
+		simple.selected = true;
+
+		// Materials
+		useTexture.selected = true;
+
+		// Scene
+		uiSceneRubiksWithLight.selected = true;
+	}
+
+	/* Rubik's cube with light, textured, colored faces, and three component
+	 * phong materials and lighting.
+	 */
+	@:bind(phongConfig, UIEvent.CHANGE)
+	function phongMaterialsConfigFn(_)
+	{
+		resetLightingValues(true, true, false, true);
+		resetMaterialsValues(true, true, false, true);
+		resetSceneValues(true, false, true);
+
+		// Lighting
+		complex.selected = true;
+
+		// Materials
+		useMaterials.selected = true;
+
+		// Scene
+		uiSceneRubiksWithLight.selected = true;
+	}
+
+	/* Rubik's cube with light, lighting maps, and three component phong
+		lighting. */
+	@:bind(lightMapsConfig, UIEvent.CHANGE)
+	function lightMapsConfigFn(_)
+	{
+		resetLightingValues(true, true, false, true);
+		resetMaterialsValues(true, true, true, false);
+		resetSceneValues(true, false, true);
+
+		// Lighting
+		complex.selected = true;
+
+		// Materials
+		useLightMaps.selected = true;
+
+		// Scene
+		uiSceneRubiksWithLight.selected = true;
+	}
+
+	@:bind(lightCastersConfig, UIEvent.CHANGE)
+	function lightCastersConfigFn(_)
+	{
+		resetLightingValues(true, true, true, false);
+		resetMaterialsValues(true, true, true, false);
+		resetSceneValues(true, true, false);
+
+		// Enable light casters and cube cloud
+		uiLightCasters.selected = true;
+
+		// Materials
+		useLightMaps.selected = true;
+
+		// Scene
+		uiSceneCubeCloud.selected = true;
+		numCubes.pos = 10;
+
+		uiMouseTargetsCube.selected = false;
+	}
 }
 
 @:xml('
