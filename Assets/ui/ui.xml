@@ -257,7 +257,7 @@
                                                                 styleName="parameterTitle"></label>
                                                             <color-picker-popup
                                                                 id="uiFlashlightAmbientColor"
-                                                                value="0x191919"></color-picker-popup>
+                                                                value="0x090909"></color-picker-popup>
                                                         </vbox>
                                                         <vbox>
                                                             <label text="Diffuse"
