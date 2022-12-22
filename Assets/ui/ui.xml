@@ -229,16 +229,16 @@
                                                         </vbox>
                                                         <vbox>
                                                             <labelled-slider id="uiPointLightKl"
-                                                                name="Attenuation linear Kl"
+                                                                title="Attenuation linear Kl"
                                                                 min="0.0014" max="0.7" pos="0.09"
-                                                                scale="1000.0" minMaxPrecision="2"
+                                                                scale="10000.0" minMaxPrecision="2"
                                                                 thumbPrecision="4" />
                                                         </vbox>
                                                         <vbox>
                                                             <labelled-slider id="uiPointLightKq"
-                                                                name="Attenuation quadratic Kq"
+                                                                title="Attenuation quadratic Kq"
                                                                 min="0.000007" max="1.8" pos="0.032"
-                                                                scale="100000.0" minMaxPrecision="2"
+                                                                scale="1000000.0" minMaxPrecision="2"
                                                                 thumbPrecision="4" />
                                                         </vbox>
                                                     </vbox>

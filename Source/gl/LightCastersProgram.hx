@@ -133,7 +133,7 @@ class LightCastersProgram extends Program
 		_programFlashlightSpecularUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.specular");
 		_programFlashlightAttenuationKc = _gl.getUniformLocation(_glProgram, "uFlashlight.constant");
 		_programFlashlightAttenuationKl = _gl.getUniformLocation(_glProgram, "uFlashlight.linear");
-		_programFlashlightAttenuationKq = _gl.getUniformLocation(_glProgram, "uFlashight.quadratic");
+		_programFlashlightAttenuationKq = _gl.getUniformLocation(_glProgram, "uFlashlight.quadratic");
 
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");

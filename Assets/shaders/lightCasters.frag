@@ -47,7 +47,7 @@ struct PointLight {
 };
 uniform PointLight uPointLight;
 
-struct Flashight {
+struct Flashlight {
     bool enabled;
 
     vec3 position;
@@ -65,20 +65,125 @@ struct Flashight {
     float linear;
     float quadratic;
 };
-uniform Flashight uFlashlight;
+uniform Flashlight uFlashlight;
 
-vec3 computeDiffuseContribution(vec3 diffuseLightColor, vec3 norm, vec3 lightDirection)
+/*
+ * Compute the contribution of the directional light
+ *
+ * Parameters
+ *   DirectionalLight light - the point light to compute contribution for
+ *   vec3 normal - the normal to the fragment
+ *   vec3 viewerDir - the direction to the viewer
+ *
+ * Returns
+ *   vec3 color contribution of this light
+ */
+vec3 computeDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewerDir)
 {
-    float diff = max(dot(norm, lightDirection), 0.0);
-    return diffuseLightColor * (diff *  vec3(texture2D(uMaterial.diffuse, vTexCoord)));
+    vec3 lightDirection = normalize(-light.direction);
+    // diffuse lighting
+    float diff = max(dot(normal, lightDirection), 0.0);
+    // specular lighting
+    vec3 reflectDir = reflect(-lightDirection, normal);
+    float spec = pow(max(dot(viewerDir, reflectDir), 0.0), uMaterial.shininess);
+
+    // combine results
+    vec3 ambient = light.ambient / 255.0 * vec3(texture2D(uMaterial.diffuse, vTexCoord));
+    vec3 diffuse = light.diffuse / 255.0 * (diff *  vec3(texture2D(uMaterial.diffuse, vTexCoord)));
+    vec3 specular = light.specular / 255.0 * spec * vec3(texture2D(uMaterial.specular, vTexCoord));
+
+    return ambient + diffuse + specular;
 }
 
-vec3 computeSpecularContribution(vec3 specularLightColor, vec3 norm, vec3 lightDirection)
+/*
+ * Compute the point light contribution
+ *
+ * Parameters
+ *   PointLight light - the point light to compute contribution for
+ *   vec3 normal - the normal to the fragment
+ *   vec3 fragPos - the fragment position in world coordinates
+ *   vec3 viewerDir - the direction to the viewer
+ *
+ * Returns
+ *   vec3 color contribution of this light
+ */
+vec3 computePointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewerDir)
 {
-        vec3 viewerDir = normalize(uViewerPos.xyz - vFragPos);
-        vec3 reflectDir = reflect(-lightDirection, norm);
-        float spec = pow(max(dot(viewerDir, reflectDir), 0.0), uMaterial.shininess);
-        return specularLightColor * spec *vec3(texture2D(uMaterial.specular, vTexCoord));
+    vec3 lightDirection = normalize(light.position - fragPos);
+    // diffuse lighting
+    float diff = max(dot(normal, lightDirection), 0.0);
+    // specular lighting
+    vec3 reflectDir = reflect(-lightDirection, normal);
+    float spec = pow(max(dot(viewerDir, reflectDir), 0.0), uMaterial.shininess);
+
+    // Compute ttenuation factor
+    float distance = length(light.position - vFragPos);
+    float attenuation = 1.0 / (light.constant + (light.linear * distance) + (light.quadratic * distance * distance));
+
+    // combine results
+    vec3 ambient = light.ambient / 255.0 * vec3(texture2D(uMaterial.diffuse, vTexCoord));
+    vec3 diffuse = light.diffuse / 255.0 * (diff *  vec3(texture2D(uMaterial.diffuse, vTexCoord)));
+    vec3 specular = light.specular / 255.0 * spec * vec3(texture2D(uMaterial.specular, vTexCoord));
+
+    // Apply attenuation
+    ambient *= attenuation;
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    return ambient + diffuse + specular;
+}
+
+/*
+ * Compute spotlight contribution
+ *
+ * Parameters
+ *   Flashlight light - the spotlight to compute contribution for
+ *   vec3 normal - the normal to the fragment
+ *   vec3 fragPos - the fragment position in world coordinates
+ *   vec3 viewerDir - the direction to the viewer
+ *
+ * Returns
+ *   vec3 color contribution of this light
+ */
+vec3 computeSpotLight(Flashlight light, vec3 normal, vec3 fragPos, vec3 viewerDir)
+{
+    // Compute theta to determine if fragment is lit by flashlight
+    vec3 lightDirection = normalize(light.position - fragPos);
+
+    // Light cone and intensity for soft edges
+    float theta = dot(lightDirection, normalize(-light.direction));
+    float epsilon = light.inner_cutoff - light.outer_cutoff;
+    float intensity = clamp((theta - light.outer_cutoff) / epsilon, 0.0, 1.0);
+
+    // diffuse lighting
+    float diff = max(dot(normal, lightDirection), 0.0);
+
+    // specular lighting
+    vec3 reflectDir = reflect(-lightDirection, normal);
+    float spec = pow(max(dot(viewerDir, reflectDir), 0.0), uMaterial.shininess);
+
+    vec3 ambient = vec3(0.0, 0.0, 0.0);
+    vec3 diffuse = vec3(0.0, 0.0, 0.0);
+    vec3 specular = vec3(0.0, 0.0, 0.0);
+
+    if (theta > light.outer_cutoff) {
+        // Calculate attenuation
+        float distance = length(light.position - fragPos);
+        float attenuation = 1.0 / (light.constant + (light.linear * distance) + (light.quadratic * distance * distance));
+
+        // combine results
+        ambient += light.ambient / 255.0 * vec3(texture2D(uMaterial.diffuse, vTexCoord));
+        diffuse += intensity * light.diffuse / 255.0 * (diff *  vec3(texture2D(uMaterial.diffuse, vTexCoord)));
+        specular += intensity * light.specular / 255.0 * spec * vec3(texture2D(uMaterial.specular, vTexCoord));
+
+        // Apply attenuation
+        diffuse *= attenuation;
+        specular *= attenuation;
+    } else {
+        ambient += light.ambient / 255.0 * vec3(texture2D(uMaterial.diffuse, vTexCoord));
+    }
+
+    return ambient + diffuse + specular;
 }
 
 void main(void)
@@ -90,73 +195,25 @@ void main(void)
     vec3 diffuseLightColor = vec3(0.0, 0.0, 0.0);
     vec3 specularLightColor = vec3(0.0, 0.0, 0.0);
 
+    vec3 outputColor = vec3 (0.0, 0.0, 0.0);
+
+    vec3 viewerDir = normalize(uViewerPos.xyz - vFragPos);
     vec3 norm = normalize(vNormal);
 
-    /* Compute directional light contribution */
     if (uDirectionalLight.enabled) {
-        ambientLightColor = uDirectionalLight.ambient / 255.0;
-        diffuseLightColor = uDirectionalLight.diffuse / 255.0;
-        specularLightColor = uDirectionalLight.specular / 255.0;
-
-        /* Compute diffuse material */
-        vec3 lightDirection = normalize(-uDirectionalLight.direction);
-        diffuse += computeDiffuseContribution(diffuseLightColor, norm, lightDirection);
-
-        /* Compute specular material */
-        specular += computeSpecularContribution(specularLightColor, norm, lightDirection);
+        /* Compute directional light contribution */
+        outputColor += computeDirectionalLight(uDirectionalLight, norm, viewerDir);
     }
 
-    /* Compute point light contribution */
     if (uPointLight.enabled) {
-        float distance = length(uPointLight.position - vFragPos);
-        float attenuation = 1.0 / (uPointLight.constant + (uPointLight.linear * distance) + (uPointLight.quadratic * distance * distance));
-
-        ambientLightColor += uPointLight.ambient / 255.0 * attenuation;
-
-        vec3 pointDiffuseLightColor = uPointLight.diffuse / 255.0 * attenuation;
-        vec3 pointSpecularLightColor = uPointLight.specular / 255.0 * attenuation;
-
-        /* Compute diffuse material */
-        vec3 lightDirection = normalize(uPointLight.position - vFragPos);
-        diffuse += computeDiffuseContribution(pointDiffuseLightColor, norm, lightDirection);
-
-        /* Compute specular material */
-        specular += computeSpecularContribution(pointSpecularLightColor, norm, lightDirection);
+        /* Compute point light contribution */
+        outputColor += computePointLight(uPointLight, norm, vFragPos, viewerDir);
     }
 
-    /* Compute flashlight contribution */
     if (uFlashlight.enabled) {
-        // Compute theta to determine if fragment is lit by flashlight
-        vec3 lightDirection = normalize(uFlashlight.position - vFragPos);
-        float theta = dot(lightDirection, normalize(-uFlashlight.direction));
-        float epsilon = uFlashlight.inner_cutoff - uFlashlight.outer_cutoff;
-        float intensity = clamp((theta - uFlashlight.outer_cutoff) / epsilon, 0.0, 1.0);
-
-        if (theta > uFlashlight.outer_cutoff) {
-            // Calculate attenuation
-            float distance = length(uFlashlight.position - vFragPos);
-            float attenuation = 1.0 / (uFlashlight.constant + (uFlashlight.linear * distance) + (uFlashlight.quadratic * distance * distance));
-
-            ambientLightColor += uFlashlight.ambient / 255.0 * attenuation;
-
-            vec3 flashDiffuseLightColor = uFlashlight.diffuse / 255.0 * attenuation;
-            vec3 flashSpecularLightColor = uFlashlight.specular / 255.0 * attenuation;
-
-            /* Compute diffuse material */
-            diffuse += intensity * computeDiffuseContribution(flashDiffuseLightColor, norm, lightDirection);
-
-            /* Compute specular material */
-            specular += intensity * computeSpecularContribution(flashSpecularLightColor, norm, lightDirection);
-        } else {
-            ambientLightColor += uFlashlight.ambient / 255.0;
-        }
+        /* Compute flashlight contribution */
+        outputColor += computeSpotLight(uFlashlight, norm, vFragPos, viewerDir);
     }
-
-    /* Compute ambient material */
-    vec3 ambient = ambientLightColor * vec3(texture2D(uMaterial.diffuse, vTexCoord));
-
-    /* Apply ambient and diffuse lighting */
-    vec3 litColor = ambient + diffuse + specular;
     
-    gl_FragColor = vec4(litColor, 1.0);
+    gl_FragColor = vec4(outputColor, 1.0);
 }
