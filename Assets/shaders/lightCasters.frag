@@ -45,7 +45,8 @@ struct PointLight {
     float linear;
     float quadratic;
 };
-uniform PointLight uPointLight;
+#define NUM_POINT_LIGHTS 4
+uniform PointLight uPointLights[NUM_POINT_LIGHTS];
 
 struct Flashlight {
     bool enabled;
@@ -205,9 +206,11 @@ void main(void)
         outputColor += computeDirectionalLight(uDirectionalLight, norm, viewerDir);
     }
 
-    if (uPointLight.enabled) {
-        /* Compute point light contribution */
-        outputColor += computePointLight(uPointLight, norm, vFragPos, viewerDir);
+    for (int i=0; i < NUM_POINT_LIGHTS; i++) {
+        if (uPointLights[i].enabled) {
+            /* Compute point light contribution */
+            outputColor += computePointLight(uPointLights[i], norm, vFragPos, viewerDir);
+        }
     }
 
     if (uFlashlight.enabled) {

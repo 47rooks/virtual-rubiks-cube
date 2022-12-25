@@ -142,10 +142,10 @@ class Scene extends Sprite
 	final LIGHT_COLOR = WHITE;
 	final _lightPosition:Float32Array;
 
-	// Directional light
-	// var _directionalLight:DirectionalLight;
 	// Point Light
-	var _pointLight:PointLight;
+	var _pointLights:Array<PointLight>;
+
+	public static final NUM_POINT_LIGHTS = 4;
 
 	// Flashlight
 	var _flashlight:Flashlight;
@@ -216,7 +216,21 @@ class Scene extends Sprite
 
 		_cubeCloud = new CubeCloud(_gl, _context);
 
-		_pointLight = new PointLight(new Float32Array([200.0, 200.0, 200.0]), LIGHT_COLOR, _gl, _context);
+		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
+		// compared to DeVries original. Strictly this should be programmatically scaled by RubiksCube.SIDE.
+		// Previously used single point light location was [200.0, 200.0, 200.0]
+		_pointLights = new Array<PointLight>();
+		final pointLightPositions = [
+			[44.8, 12.8, 128.0],
+			[147.2, -211.2, -256.0],
+			[-256.0, 128.0, -768.0],
+			[0.0, 0.0, -192.0]
+		];
+
+		for (i in 0...NUM_POINT_LIGHTS)
+		{
+			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), LIGHT_COLOR, _gl, _context);
+		}
 
 		_flashlight = new Flashlight(vector3DToFloat32Array(_camera.cameraPos), vector3DToFloat32Array(_camera.cameraFront), 30, _gl, _context);
 
@@ -340,9 +354,16 @@ class Scene extends Sprite
 			case CUBE_CLOUD:
 				{
 					var cameraPos = vector3DToFloat32Array(_camera.cameraPos);
-					_cubeCloud.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, cameraPos, _pointLight.position, cameraPos,
+					_cubeCloud.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, cameraPos, _pointLights, cameraPos,
 						vector3DToFloat32Array(_camera.cameraFront), ui);
-					_pointLight.render(_gl, _context, lookAtMat, ui);
+					// _pointLight.render(_gl, _context, lookAtMat, ui);
+					for (i in 0...NUM_POINT_LIGHTS)
+					{
+						if (ui.pointLight(i).uiPointLightEnabled.selected)
+						{
+							_pointLights[i].render(_gl, _context, lookAtMat, ui);
+						}
+					}
 				}
 		}
 

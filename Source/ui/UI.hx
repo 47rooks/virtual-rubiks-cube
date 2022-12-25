@@ -58,27 +58,59 @@ class UI extends VBox
 	@:bind(uiLightDirectionalSpecularColor.value)
 	public var lightDirectionalSpecularColor(default, null):Color;
 
-	/* Point light */
-	@:bind(uiPointLight.selected)
-	public var pointLight:Bool;
+	/* Point lights */
+	@:isVar public var pointLight1(get, null):PointLight;
 
-	@:bind(uiPointLightAmbientColor.value)
-	public var pointLightAmbientColor(default, null):Color;
+	function get_pointLight1():PointLight
+	{
+		return uiPointLight1;
+	}
 
-	@:bind(uiPointLightDiffuseColor.value)
-	public var pointLightDiffuseColor(default, null):Color;
+	@:isVar public var pointLight2(get, null):PointLight;
 
-	@:bind(uiPointLightSpecularColor.value)
-	public var pointLightSpecularColor(default, null):Color;
+	function get_pointLight2():PointLight
+	{
+		return uiPointLight2;
+	}
 
-	@:bind(uiPointLightKc)
-	public var pointLightKc(default, null):Float;
+	@:isVar public var pointLight3(get, null):PointLight;
 
-	@:bind(uiPointLightKl.pos)
-	public var pointLightKl(default, null):Float;
+	function get_pointLight3():PointLight
+	{
+		return uiPointLight3;
+	}
 
-	@:bind(uiPointLightKq.pos)
-	public var pointLightKq(default, null):Float;
+	@:isVar public var pointLight4(get, null):PointLight;
+
+	function get_pointLight4():PointLight
+	{
+		return uiPointLight4;
+	}
+
+	/**
+	 * Get the specific point light. This method allows access to the
+	 * lights as if they were in an Array which better suites the array
+	 * binding in the shader.
+	 * 
+	 * @param idx number of the light, 0 to NUM_POINT_LIGHTS - 1
+	 * @return PointLight the specified point light.
+	 */
+	public function pointLight(idx:Int):PointLight
+	{
+		switch (idx)
+		{
+			case 0:
+				return pointLight1;
+			case 1:
+				return pointLight2;
+			case 2:
+				return pointLight3;
+			case 3:
+				return pointLight4;
+			default:
+				throw "invalid pointlight";
+		}
+	}
 
 	/* Flashlight */
 	@:bind(uiFlashlight.selected)

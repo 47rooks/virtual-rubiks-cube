@@ -22,7 +22,8 @@
             </vbox>
         </vbox>
         <vbox id="references" width="100%">
-            <reference-library-dropdown id="referencesContainer" styleName="referencesBox" text="Reference Library" width="405px"></reference-library-dropdown>
+            <reference-library-dropdown id="referencesContainer" styleName="referencesBox"
+                text="Reference Library" width="405px"></reference-library-dropdown>
         </vbox>
         <!-- <vbox id="centerContent" width="100%"> -->
         <!-- Blank section to force left and right columns apart -->
@@ -34,14 +35,15 @@
                         <vbox>
                             <group id="configurationGrpId" layoutName="vertical">
                                 <optionbox id="rubiksConfig"
-                                    text="Rubik's Cube" selected="true" componentGroup="config" 
+                                    text="Rubik's Cube" selected="true" componentGroup="config"
                                     userData="Basic 3D" />
-                                <optionbox id="simplePhongConfig" componentGroup="config" userData="Simple Phong lighting"
+                                <optionbox id="simplePhongConfig" componentGroup="config"
+                                    userData="Simple Phong lighting"
                                     text="Simple Phong Lighting" />
                                 <optionbox id="phongConfig" componentGroup="config"
                                     userData="3-component Phong lighting"
                                     text="Phong Lighting and Materials" />
-                                <optionbox id="lightMapsConfig"  componentGroup="config"
+                                <optionbox id="lightMapsConfig" componentGroup="config"
                                     userData="Lighting maps"
                                     text="Lighting Maps" />
                                 <optionbox id="lightCastersConfig" componentGroup="config"
@@ -182,69 +184,10 @@
                                                 </frame>
                                             </vbox>
                                         </vbox>
-                                        <vbox>
-                                            <checkbox id="uiPointLight" text="Point Light" />
-                                            <vbox disabled="${!uiPointLight.selected}"
-                                                hidden="${!uiPointLight.selected}">
-                                                <frame text="Point light values"
-                                                    styleName="parameterTitle">
-                                                    <vbox>
-                                                        <vbox>
-                                                            <label text="Ambient"
-                                                                styleName="parameterTitle"></label>
-                                                            <color-picker-popup
-                                                                id="uiPointLightAmbientColor"
-                                                                value="0x191919"></color-picker-popup>
-                                                        </vbox>
-                                                        <vbox>
-                                                            <label text="Diffuse"
-                                                                styleName="parameterTitle"></label>
-                                                            <color-picker-popup
-                                                                id="uiPointLightDiffuseColor"
-                                                                value="0x808080"></color-picker-popup>
-                                                        </vbox>
-                                                        <vbox>
-                                                            <label text="Specular"
-                                                                styleName="parameterTitle"></label>
-                                                            <color-picker-popup
-                                                                id="uiPointLightSpecularColor"
-                                                                value="0xffffff"></color-picker-popup>
-                                                        </vbox>
-                                                        <label text="Attenuation constant Kc"
-                                                            styleName="parameterTitle"></label>
-                                                        <vbox>
-                                                            <label text="'${uiPointLightKc.pos}'"
-                                                                horizontalAlign="center"></label>
-                                                            <hbox>
-                                                                <label
-                                                                    text="'${uiPointLightKc.min}'"
-                                                                    verticalAlign="center" />
-                                                                <slider id="uiPointLightKc"
-                                                                    min="0.0" max="1.0" step="1.0"
-                                                                    pos="1.0"></slider>
-                                                                <label
-                                                                    text="'${uiPointLightKc.max}'"
-                                                                    verticalAlign="center" />
-                                                            </hbox>
-                                                        </vbox>
-                                                        <vbox>
-                                                            <labelled-slider id="uiPointLightKl"
-                                                                title="Attenuation linear Kl"
-                                                                min="0.0014" max="0.7" pos="0.09"
-                                                                scale="10000.0" minMaxPrecision="2"
-                                                                thumbPrecision="4" />
-                                                        </vbox>
-                                                        <vbox>
-                                                            <labelled-slider id="uiPointLightKq"
-                                                                title="Attenuation quadratic Kq"
-                                                                min="0.000007" max="1.8" pos="0.032"
-                                                                scale="1000000.0" minMaxPrecision="2"
-                                                                thumbPrecision="4" />
-                                                        </vbox>
-                                                    </vbox>
-                                                </frame>
-                                            </vbox>
-                                        </vbox>
+                                        <point-light id="uiPointLight1" lightName="Point Light 1"></point-light>
+                                        <point-light id="uiPointLight2" lightName="Point Light 2"></point-light>
+                                        <point-light id="uiPointLight3" lightName="Point Light 3"></point-light>
+                                        <point-light id="uiPointLight4" lightName="Point Light 4"></point-light>
                                         <vbox>
                                             <checkbox id="uiFlashlight" text="Flashlight" />
                                             <vbox disabled="${!uiFlashlight.selected}"
@@ -292,14 +235,14 @@
                                                         </vbox>
                                                         <vbox>
                                                             <labelled-slider id="uiFlashlightKl"
-                                                                name="Attenuation linear Kl"
+                                                                title="Attenuation linear Kl"
                                                                 min="0.022" max="0.7" pos="0.09"
                                                                 scale="1000.0" minMaxPrecision="2"
                                                                 thumbPrecision="4" />
                                                         </vbox>
                                                         <vbox>
                                                             <labelled-slider id="uiFlashlightKq"
-                                                                name="Attenuation quadratic Kq"
+                                                                title="Attenuation quadratic Kq"
                                                                 min="0.0019" max="1.8" pos="0.032"
                                                                 scale="10000.0" minMaxPrecision="2"
                                                                 thumbPrecision="4" />

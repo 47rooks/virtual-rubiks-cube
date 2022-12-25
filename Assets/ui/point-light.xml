@@ -1,0 +1,63 @@
+<point-light>
+    <checkbox id="uiPointLightEnabled" text="${lightName}" />
+    <vbox disabled="${!uiPointLightEnabled.selected}"
+        hidden="${!uiPointLightEnabled.selected}">
+        <frame text="Point light values"
+            styleName="parameterTitle">
+            <vbox>
+                <vbox>
+                    <label text="Ambient"
+                        styleName="parameterTitle"></label>
+                    <color-picker-popup
+                        id="uiPointLightAmbientColor"
+                        value="0x191919"></color-picker-popup>
+                </vbox>
+                <vbox>
+                    <label text="Diffuse"
+                        styleName="parameterTitle"></label>
+                    <color-picker-popup
+                        id="uiPointLightDiffuseColor"
+                        value="0x808080"></color-picker-popup>
+                </vbox>
+                <vbox>
+                    <label text="Specular"
+                        styleName="parameterTitle"></label>
+                    <color-picker-popup
+                        id="uiPointLightSpecularColor"
+                        value="0xffffff"></color-picker-popup>
+                </vbox>
+                <label text="Attenuation constant Kc"
+                    styleName="parameterTitle"></label>
+                <vbox>
+                    <label text="'${uiPointLightKc.pos}'"
+                        horizontalAlign="center"></label>
+                    <hbox>
+                        <label
+                            text="'${uiPointLightKc.min}'"
+                            verticalAlign="center" />
+                        <slider id="uiPointLightKc"
+                            min="0.0" max="1.0" step="1.0"
+                            pos="1.0"></slider>
+                        <label
+                            text="'${uiPointLightKc.max}'"
+                            verticalAlign="center" />
+                    </hbox>
+                </vbox>
+                <vbox>
+                    <labelled-slider id="uiPointLightKl"
+                        title="Attenuation linear Kl"
+                        min="0.0014" max="0.7" pos="0.09"
+                        scale="10000.0" minMaxPrecision="2"
+                        thumbPrecision="4" />
+                </vbox>
+                <vbox>
+                    <labelled-slider id="uiPointLightKq"
+                        title="Attenuation quadratic Kq"
+                        min="0.000007" max="1.8" pos="0.032"
+                        scale="1000000.0" minMaxPrecision="2"
+                        thumbPrecision="4" />
+                </vbox>
+            </vbox>
+        </frame>
+    </vbox>
+</point-light>

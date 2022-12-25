@@ -1,9 +1,9 @@
 {
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
-    "[xml]": {
-        "editor.autoClosingBrackets": "never",
-        "files.trimFinalNewlines": true,
-        "editor.formatOnSave": false
-    }
+    // "[xml]": {
+    //     "editor.autoClosingBrackets": "never",
+    //     "files.trimFinalNewlines": true,
+    //     "editor.formatOnSave": false
+    // }
 }

@@ -2,6 +2,7 @@ package gl;
 
 import MatrixUtils.matrix3DToFloat32Array;
 import MatrixUtils.radians;
+import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.utils.Float32Array;
@@ -44,14 +45,14 @@ class LightCastersProgram extends Program
 	private var _programSpecularLightUniform:GLUniformLocation;
 
 	/* Point light variables */
-	private var _programPointLightEnabledUniform:GLUniformLocation;
-	private var _programPointLightPositionUniform:GLUniformLocation;
-	private var _programPointLightAmbientUniform:GLUniformLocation;
-	private var _programPointLightDiffuseUniform:GLUniformLocation;
-	private var _programPointLightSpecularUniform:GLUniformLocation;
-	private var _programPointLightAttenuationKc:GLUniformLocation;
-	private var _programPointLightAttenuationKl:GLUniformLocation;
-	private var _programPointLightAttenuationKq:GLUniformLocation;
+	private var _programPointLightEnabledUniform:Array<GLUniformLocation>;
+	private var _programPointLightPositionUniform:Array<GLUniformLocation>;
+	private var _programPointLightAmbientUniform:Array<GLUniformLocation>;
+	private var _programPointLightDiffuseUniform:Array<GLUniformLocation>;
+	private var _programPointLightSpecularUniform:Array<GLUniformLocation>;
+	private var _programPointLightAttenuationKc:Array<GLUniformLocation>;
+	private var _programPointLightAttenuationKl:Array<GLUniformLocation>;
+	private var _programPointLightAttenuationKq:Array<GLUniformLocation>;
 
 	// Flashlight variables
 	private var _programFlashlightEnabledUniform:GLUniformLocation;
@@ -112,15 +113,27 @@ class LightCastersProgram extends Program
 		_programDiffuseLightUniform = _gl.getUniformLocation(_glProgram, "uDirectionalLight.diffuse");
 		_programSpecularLightUniform = _gl.getUniformLocation(_glProgram, "uDirectionalLight.specular");
 
-		// Point light
-		_programPointLightEnabledUniform = _gl.getUniformLocation(_glProgram, "uPointLight.enabled");
-		_programPointLightPositionUniform = _gl.getUniformLocation(_glProgram, "uPointLight.position");
-		_programPointLightAmbientUniform = _gl.getUniformLocation(_glProgram, "uPointLight.ambient");
-		_programPointLightDiffuseUniform = _gl.getUniformLocation(_glProgram, "uPointLight.diffuse");
-		_programPointLightSpecularUniform = _gl.getUniformLocation(_glProgram, "uPointLight.specular");
-		_programPointLightAttenuationKc = _gl.getUniformLocation(_glProgram, "uPointLight.constant");
-		_programPointLightAttenuationKl = _gl.getUniformLocation(_glProgram, "uPointLight.linear");
-		_programPointLightAttenuationKq = _gl.getUniformLocation(_glProgram, "uPointLight.quadratic");
+		// Point lights
+		_programPointLightEnabledUniform = new Array<GLUniformLocation>();
+		_programPointLightPositionUniform = new Array<GLUniformLocation>();
+		_programPointLightAmbientUniform = new Array<GLUniformLocation>();
+		_programPointLightDiffuseUniform = new Array<GLUniformLocation>();
+		_programPointLightSpecularUniform = new Array<GLUniformLocation>();
+		_programPointLightAttenuationKc = new Array<GLUniformLocation>();
+		_programPointLightAttenuationKl = new Array<GLUniformLocation>();
+		_programPointLightAttenuationKq = new Array<GLUniformLocation>();
+
+		for (i in 0...Scene.NUM_POINT_LIGHTS)
+		{
+			_programPointLightEnabledUniform[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].enabled');
+			_programPointLightPositionUniform[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].position');
+			_programPointLightAmbientUniform[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].ambient');
+			_programPointLightDiffuseUniform[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].diffuse');
+			_programPointLightSpecularUniform[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].specular');
+			_programPointLightAttenuationKc[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].constant');
+			_programPointLightAttenuationKl[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].linear');
+			_programPointLightAttenuationKq[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].quadratic');
+		}
 
 		// Flashlight
 		_programFlashlightEnabledUniform = _gl.getUniformLocation(_glProgram, "uFlashlight.enabled");
@@ -150,7 +163,7 @@ class LightCastersProgram extends Program
 
 	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightDirection:Float32Array, cameraPosition:Float32Array,
 			vbo:VertexBuffer3D, ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture,
-			pointLightPos:Float32Array, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
+			pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
 		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
 
@@ -170,17 +183,27 @@ class LightCastersProgram extends Program
 				ui.lightDirectionalSpecularColor.b);
 		}
 
-		// Point light
-		_gl.uniform1i(_programPointLightEnabledUniform, ui.pointLight ? 1 : 0);
-		if (ui.pointLight)
+		// Point lights
+
+		// Point light 1
+		for (i in 0...Scene.NUM_POINT_LIGHTS)
 		{
-			_gl.uniform3fv(_programPointLightPositionUniform, pointLightPos, 0);
-			_gl.uniform3f(_programPointLightAmbientUniform, ui.pointLightAmbientColor.r, ui.pointLightAmbientColor.g, ui.pointLightAmbientColor.b);
-			_gl.uniform3f(_programPointLightDiffuseUniform, ui.pointLightDiffuseColor.r, ui.pointLightDiffuseColor.g, ui.pointLightDiffuseColor.b);
-			_gl.uniform3f(_programPointLightSpecularUniform, ui.pointLightSpecularColor.r, ui.pointLightSpecularColor.g, ui.pointLightSpecularColor.b);
-			_gl.uniform1f(_programPointLightAttenuationKc, ui.pointLightKc);
-			_gl.uniform1f(_programPointLightAttenuationKl, ui.pointLightKl);
-			_gl.uniform1f(_programPointLightAttenuationKq, ui.pointLightKq);
+			_gl.uniform1i(_programPointLightEnabledUniform[i], ui.pointLight(i).uiPointLightEnabled.selected ? 1 : 0);
+			if (ui.pointLight(i).uiPointLightEnabled.selected)
+			{
+				_gl.uniform3fv(_programPointLightPositionUniform[i], pointLights[i].position, 0);
+
+				// FIXME need array mapping of each ui pointlight element - how? * /
+				_gl.uniform3f(_programPointLightAmbientUniform[i], ui.pointLight(i).pointLightAmbientColor.r, ui.pointLight(i).pointLightAmbientColor.g,
+					ui.pointLight(i).pointLightAmbientColor.b);
+				_gl.uniform3f(_programPointLightDiffuseUniform[i], ui.pointLight(i).pointLightDiffuseColor.r, ui.pointLight(i).pointLightDiffuseColor.g,
+					ui.pointLight(i).pointLightDiffuseColor.b);
+				_gl.uniform3f(_programPointLightSpecularUniform[i], ui.pointLight(i).pointLightSpecularColor.r, ui.pointLight(i).pointLightSpecularColor.g,
+					ui.pointLight(i).pointLightSpecularColor.b);
+				_gl.uniform1f(_programPointLightAttenuationKc[i], ui.pointLight(i).pointLightKc);
+				_gl.uniform1f(_programPointLightAttenuationKl[i], ui.pointLight(i).pointLightKl);
+				_gl.uniform1f(_programPointLightAttenuationKq[i], ui.pointLight(i).pointLightKq);
+			}
 		}
 
 		// Flashlight
