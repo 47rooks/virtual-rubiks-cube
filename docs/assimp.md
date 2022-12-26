@@ -1,8 +1,12 @@
 # Asset-Importer-Lib
 
+- [Asset-Importer-Lib](#asset-importer-lib)
+  - [Build Steps](#build-steps)
+  - [Converting OBJ to GLTF2](#converting-obj-to-gltf2)
+
 These notes are specific to building on Windows, Windows 10 in my case.
 
-Learn OpenGL in part III Model Loading introduces the Asset-Importer-Lib (assimp). Building the assimp library itself is pretty straightforward but if you want to build the tools there are several steps that are required. The main reason for doing this is that there is an asset viewer tool which you can use to get a look at the backpack asset which is used for work in part IV.
+Learn OpenGL in part III Model Loading introduces the Asset-Importer-Lib (assimp). Building the assimp library itself is pretty straightforward but if you want to build the tools there are several steps that are required. The main reason for doing this is that there is an asset viewer tool which you can use to get a look at the backpack asset which is used for work in part IV. Further there is assimp_cmd which is a command line convertor. Using this you can convert from one input file type to supported output format. In this case I need to convert the obj to gltf2 for use with Haxe.
 
 Before you build do the following if you wish to build the tools you need to make sure that dependencies required by the viewer are on your system. The view requires DirectX on Windows. In addition there are some configuration changes required.
 
@@ -57,3 +61,12 @@ Visual Studio
       * Modify Library Directories to include $(DXSDK_DIR)Lib\x64 if you are building 64 bit or x86 if 32 bit
    * Now run the build for the Assimp solution
 
+## Converting OBJ to GLTF2
+
+The following command line will convert the backpack.obj to a GLTF2 format file.
+
+```
+assimpd.exe export "...\Game Artifacts\Survival Guitar Backpack\backpack.obj" backpack.gltf2 -fgltf2
+```
+
+In order to use the gltf2 file you will need to copy over the jpg files - diffuse.jpg, specular.jpg. If you then load this in assimp_viewer you will notice that the opacity texture is not present. It's not in the output JSON (gltf is JSON). But the model loads otherwise. 
