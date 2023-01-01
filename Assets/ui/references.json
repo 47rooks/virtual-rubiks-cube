@@ -30,8 +30,15 @@
     {
         "title": "Light casters",
         "description": "Light casters simulate various kinds of lights - directional, point, spot and flashlights. And while putting them all together in one scene is left to chapter 17 of DeVries, here I have them combined. \n\nThe concept and simulation of attenuation is introduced here also. Independent sliders for attenuation constants are provided. Strictly this is probably incorrect as it enables creation of light attenuation not naturally seen. In 16.3.1 of DeVries there is a table of constants that can be used as a guide.\n\nInitially with only a flashlight the scene is almost invisible.",
-        "learnopenglReferences": ["Ch 16"],
+        "learnopenglReferences": ["Ch 16, 17, 18"],
         "codeReferences": [],
         "uiReferences": [{"scene": "Light Casters"}]
+    },
+    {
+        "title": "Model loading",
+        "description": "Part III, Model Loading includes three chapters covering importing a complex mesh model and rendering it. It uses the Asset-Importer-Lib (assimp). Here assimp was used to convert the asset to GLTF2 format. For details refer to the assimp.md in /docs. ",
+        "learnopenglReferences": ["Ch 19, 20, 21"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Model Loading"}]
     }
 ]

@@ -262,6 +262,24 @@ class UI extends VBox
 				content: "Texture is switched to use diffuse and specular lighting map textures, with 3 component lighting, for a more realistic material look."
 			}
 		});
+
+		ToolTipManager.instance.registerTooltip(lightCastersConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Light Casters",
+				footer: "",
+				content: "A collection of cube models is used to explore the effects of multiple types of lights, directional, point and spot lights."
+			}
+		});
+
+		ToolTipManager.instance.registerTooltip(modelLoadingConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Model Loading",
+				footer: "",
+				content: "Model Loading uses a complex model containing dozens of meshes loaded from a GLTF2 asset and renders it with multiple lights as in the Light Casters example."
+			}
+		});
 	}
 
 	public function toggleVisibility():Void
