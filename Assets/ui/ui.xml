@@ -49,6 +49,9 @@
                                 <optionbox id="lightCastersConfig" componentGroup="config"
                                     userData="Light casters"
                                     text="Light Casters" />
+                                <optionbox id="modelLoadingConfig" componentGroup="config"
+                                    userData="Model loading"
+                                    text="Model Loading" />
                             </group>
                         </vbox>
                     </frame>
@@ -349,6 +352,8 @@
                             <label text="'${numCubes.max}'" verticalAlign=" center" width="20px" />
                         </hbox>
                     </vbox>
+                    <optionbox id="uiSceneModelLoading" componentGroup="sceneGroup"
+                        text="GLTF Backpack model"></optionbox>
                 </vbox>
             </accordion>
         </vbox>

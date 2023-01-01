@@ -64,6 +64,7 @@ class CubeCloud
 
 	public function update(elapsed:Float) {}
 
+	/* FIXME lightPosition is not used - remove */
 	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
 			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{

@@ -184,6 +184,9 @@ class UI extends VBox
 	@:bind(uiSceneCubeCloud.selected)
 	public var sceneCubeCloud(default, null):Bool;
 
+	@:bind(uiSceneModelLoading.selected)
+	public var sceneModelLoading(default, null):Bool;
+
 	// Mouse properties
 	@:bind(uiMouseTargetsCube.selected)
 	public var mouseTargetsCube(default, null):Bool;
@@ -346,11 +349,13 @@ class UI extends VBox
 		useLightMaps.disabled = disableUseLightMaps;
 	}
 
-	function resetSceneValues(disableSceneRubiks:Bool = false, disableSceneRubiksWithLight:Bool = false, disableSceneCubeCloud:Bool = false)
+	function resetSceneValues(disableSceneRubiks:Bool = false, disableSceneRubiksWithLight:Bool = false, disableSceneCubeCloud:Bool = false,
+			disableSceneModelLoading:Bool = false)
 	{
 		uiSceneRubiks.disabled = disableSceneRubiks;
 		uiSceneRubiksWithLight.disabled = disableSceneRubiksWithLight;
 		uiSceneCubeCloud.disabled = disableSceneCubeCloud;
+		uiSceneModelLoading.disabled = disableSceneModelLoading;
 	}
 
 	/* Simple Rubik's cube with colored faces only and no light or lighting */
@@ -359,7 +364,7 @@ class UI extends VBox
 	{
 		resetLightingValues(false, true, true, true);
 		resetMaterialsValues(false, true, true, true);
-		resetSceneValues(false, true, true);
+		resetSceneValues(false, true, true, true);
 
 		// Set to basic Rubik's cube play mode
 		noTexture.selected = true;
@@ -375,7 +380,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, false, true, true);
 		resetMaterialsValues(true, false, true, true);
-		resetSceneValues(true, false, true);
+		resetSceneValues(true, false, true, true);
 
 		// Lighting
 		simple.selected = true;
@@ -395,7 +400,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, true, false, true);
 		resetMaterialsValues(true, true, false, true);
-		resetSceneValues(true, false, true);
+		resetSceneValues(true, false, true, true);
 
 		// Lighting
 		complex.selected = true;
@@ -414,7 +419,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, true, false, true);
 		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, false, true);
+		resetSceneValues(true, false, true, true);
 
 		// Lighting
 		complex.selected = true;
@@ -431,7 +436,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, true, true, false);
 		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, true, false);
+		resetSceneValues(true, true, false, true);
 
 		// Enable light casters and cube cloud
 		uiLightCasters.selected = true;
@@ -442,6 +447,25 @@ class UI extends VBox
 		// Scene
 		uiSceneCubeCloud.selected = true;
 		numCubes.pos = 10;
+
+		uiMouseTargetsCube.selected = false;
+	}
+
+	@:bind(modelLoadingConfig, UIEvent.CHANGE)
+	function modelLoadingConfigFn(_)
+	{
+		resetLightingValues(true, true, true, false);
+		resetMaterialsValues(true, true, true, false);
+		resetSceneValues(true, true, true, false);
+
+		// Enable light casters and cube cloud
+		uiLightCasters.selected = true;
+
+		// Materials
+		useLightMaps.selected = true;
+
+		// Scene
+		uiSceneModelLoading.selected = true;
 
 		uiMouseTargetsCube.selected = false;
 	}

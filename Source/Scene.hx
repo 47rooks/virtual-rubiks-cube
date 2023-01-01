@@ -12,6 +12,7 @@ import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
 import models.CubeCloud;
 import models.Light;
+import models.ModelLoading;
 import models.RubiksCube;
 import openfl.display.Sprite;
 import openfl.display3D.Context3D;
@@ -100,6 +101,7 @@ enum ControlTarget
 {
 	CAMERA;
 	RUBIKS_CUBE;
+	MODEL;
 }
 
 enum SceneType
@@ -107,6 +109,7 @@ enum SceneType
 	RUBIKS;
 	RUBIKS_WITH_LIGHT;
 	CUBE_CLOUD;
+	MODEL_LOADING;
 }
 
 /**
@@ -131,6 +134,9 @@ class Scene extends Sprite
 
 	// Cube Cloud
 	var _cubeCloud:CubeCloud;
+
+	// Model Loading scene
+	var _modelLoading:ModelLoading;
 
 	// Graphics Contexts
 	var _gl:WebGLRenderContext;
@@ -216,6 +222,8 @@ class Scene extends Sprite
 
 		_cubeCloud = new CubeCloud(_gl, _context);
 
+		_modelLoading = new ModelLoading(_gl, _context);
+
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
 		// compared to DeVries original. Strictly this should be programmatically scaled by RubiksCube.SIDE.
 		// Previously used single point light location was [200.0, 200.0, 200.0]
@@ -263,7 +271,11 @@ class Scene extends Sprite
 	 */
 	private function setScene(ui:UI):SceneType
 	{
-		if (ui.sceneCubeCloud)
+		if (ui.sceneModelLoading)
+		{
+			return SceneType.MODEL_LOADING;
+		}
+		else if (ui.sceneCubeCloud)
 		{
 			return SceneType.CUBE_CLOUD;
 		}
@@ -291,14 +303,22 @@ class Scene extends Sprite
 			pollGamepad(gp);
 		}
 
-		if (ui.mouseTargetsCube)
-		{
-			_controlTarget = RUBIKS_CUBE;
-		}
-		else
-		{
-			_controlTarget = CAMERA;
-		}
+		// FIXME This needs to be changed to just select
+		//       either the camera or the model, or
+		//       something more general and possible UI
+		//       support.
+		// if (ui.mouseTargetsCube && _controlTarget == CAMERA)
+		// {
+		// 	_controlTarget = RUBIKS_CUBE;
+		// }
+		// else if (ui.mouseTargetsCube && _controlTarget == RUBIKS_CUBE)
+		// {
+		// 	_controlTarget = MODEL;
+		// }
+		// else
+		// {
+		// 	_controlTarget = CAMERA;
+		// }
 
 		// FIXME Add a configure scene method that sets up the right collection of object
 		// based on the selected scene.
@@ -315,6 +335,10 @@ class Scene extends Sprite
 			case CUBE_CLOUD:
 				{
 					_cubeCloud.update(elapsed);
+				}
+			case MODEL_LOADING:
+				{
+					_modelLoading.update(elapsed, ui);
 				}
 		}
 		// FIXME remove ?_rubiksCube.update(elapsed);
@@ -356,7 +380,22 @@ class Scene extends Sprite
 					var cameraPos = vector3DToFloat32Array(_camera.cameraPos);
 					_cubeCloud.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, cameraPos, _pointLights, cameraPos,
 						vector3DToFloat32Array(_camera.cameraFront), ui);
-					// _pointLight.render(_gl, _context, lookAtMat, ui);
+					for (i in 0...NUM_POINT_LIGHTS)
+					{
+						if (ui.pointLight(i).uiPointLightEnabled.selected)
+						{
+							_pointLights[i].render(_gl, _context, lookAtMat, ui);
+						}
+					}
+				}
+			case MODEL_LOADING:
+				{
+					var cameraPos = vector3DToFloat32Array(_camera.cameraPos);
+					_modelLoading.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, _pointLights, cameraPos,
+						vector3DToFloat32Array(_camera.cameraFront), ui);
+
+					// Rendering the point light objects
+					// FIXME might reposition the lights - well point light 1 - it's in the way
 					for (i in 0...NUM_POINT_LIGHTS)
 					{
 						if (ui.pointLight(i).uiPointLightEnabled.selected)
@@ -418,6 +457,11 @@ class Scene extends Sprite
 					_controlTarget = RUBIKS_CUBE;
 					_ui.mouseTargetsCube = true;
 				}
+				else if (_controlTarget == RUBIKS_CUBE)
+				{
+					_controlTarget = MODEL;
+					_ui.mouseTargetsCube = true;
+				}
 				else
 				{
 					_controlTarget = CAMERA;
@@ -472,6 +516,8 @@ class Scene extends Sprite
 				_camera.lookAround(e.localX - _mouseX, _mouseY - e.localY);
 			case RUBIKS_CUBE:
 				_rubiksCube.rotate(e.localX - _mouseX, _mouseY - e.localY);
+			case MODEL:
+				_modelLoading.rotate(e.localX - _mouseX, _mouseY - e.localY);
 		}
 		_mouseX = e.localX;
 		_mouseY = e.localY;

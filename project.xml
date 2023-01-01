@@ -12,6 +12,7 @@
 	<haxelib name="openfl" />
 	<haxelib name="haxeui-core" />
 	<haxelib name="haxeui-openfl" />
+	<haxelib name="gltf" />
 
 	<assets path="Assets" rename="assets" />
 
