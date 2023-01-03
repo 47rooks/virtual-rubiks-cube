@@ -10,6 +10,8 @@ import openfl.events.KeyboardEvent;
 import openfl.events.RenderEvent;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
+import scenes.BaseScene;
+import scenes.ModelLoadingScene;
 import ui.UI;
 
 /**
@@ -23,7 +25,10 @@ class Main extends Sprite
 {
 	private var cacheTime:Int;
 
-	var _scene:Scene;
+	var _sceneType:SceneType;
+	var _scene:BaseScene;
+
+	var _sceneInitialUpdateCalled:Bool = false;
 
 	// UI Variables
 	var _ui:UI;
@@ -38,6 +43,7 @@ class Main extends Sprite
 		_ui = new UI();
 
 		_scene = new Scene(_ui);
+		_sceneType = SceneType.BASIC;
 
 		// Add event handlers
 		stage.addEventListener(Event.RESIZE, stage_onResize);
@@ -90,8 +96,44 @@ class Main extends Sprite
 		var elapsed = newTime - cacheTime; // ms elapsed
 		cacheTime = newTime;
 
-		// update current state
-		_scene.update(elapsed, _ui);
+		// If scene has changed create the new scene and close out the old one
+		if (_sceneType != _ui.sceneType)
+		{
+			if (_scene != null)
+			{
+				// Clean up current scene resources
+				_scene.closeScene();
+				removeChild(_scene);
+			}
+
+			switch (_ui.sceneType)
+			{
+				case BASIC:
+					{
+						_scene = new Scene(_ui);
+					}
+				case MODEL_LOADING:
+					{
+						_scene = new ModelLoadingScene(_ui);
+					};
+			}
+			_sceneType = _ui.sceneType;
+			addChild(_scene);
+			_sceneInitialUpdateCalled = false;
+
+			// Return here so that the new scene can process the ADDED_TO_STAGE event
+			return;
+		}
+
+		if (_scene.stage != null)
+		{
+			// update current state
+			_scene.updateScene(elapsed);
+			if (!_sceneInitialUpdateCalled)
+			{
+				_sceneInitialUpdateCalled = true;
+			}
+		}
 
 		// Now render - invalidating the stage will cause the render event to fire
 		//  which will trigger the stage_onRender() callback.
@@ -104,7 +146,13 @@ class Main extends Sprite
 		var renderer:OpenGLRenderer = cast event.renderer;
 		renderer.setShader(null);
 		var gl:WebGLRenderContext = renderer.gl;
-		_scene.render(_ui);
+
+		// Make sure that at least one update() call occurs before render. This prevents calling the render
+		// before the scene has had a chance to setup anything that is deferred to update().
+		if (_sceneInitialUpdateCalled)
+		{
+			_scene.renderScene();
+		}
 	}
 
 	function stage_onResize(event:Event):Void

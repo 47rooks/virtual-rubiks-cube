@@ -10,9 +10,8 @@ The stack used is lime, openfl and haxeui.
 # To Do
 
    * Immediate
-     * create a second Scene for the model loading demo
-     * create base scene class and extend it in both scenes
-     * fix mouse targetting code, simplify to target just the model whatever it is, or the camera
+     * move Scene to scenes and rename as appropriate
+     * fix bug where switching to the Basic scene from the menu flips the camera/model toggle. The fix is in ModelLoadingScene already
      * fix GLTF loader
        * handling of the materials
        * clean up code handling node/mesh recursion
@@ -21,6 +20,7 @@ The stack used is lime, openfl and haxeui.
      * move light position for the first point light - it obstructs the backpack model
      * add UI label indicating the target of the mouse ?
      * add loading message as the model load is done - it takes a while
+     * add BaseScene function to get scene clear color as black - subclasses to override if they want different colors
   
    * First
      * document code - in progress

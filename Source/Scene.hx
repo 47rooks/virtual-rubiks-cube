@@ -8,14 +8,10 @@ import MatrixUtils.vector3DToFloat32Array;
 import haxe.ValueException;
 import lights.Flashlight;
 import lights.PointLight;
-import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
 import models.CubeCloud;
 import models.Light;
-import models.ModelLoading;
 import models.RubiksCube;
-import openfl.display.Sprite;
-import openfl.display3D.Context3D;
 import openfl.events.Event;
 import openfl.events.GameInputEvent;
 import openfl.events.KeyboardEvent;
@@ -27,6 +23,7 @@ import openfl.ui.GameInputControl;
 import openfl.ui.GameInputDevice;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
+import scenes.BaseScene;
 import ui.UI;
 
 enum abstract GamepadControl(Int)
@@ -97,19 +94,11 @@ enum abstract GamepadControl(Int)
 	}
 }
 
-enum ControlTarget
-{
-	CAMERA;
-	RUBIKS_CUBE;
-	MODEL;
-}
-
-enum SceneType
+enum SceneSubType
 {
 	RUBIKS;
 	RUBIKS_WITH_LIGHT;
 	CUBE_CLOUD;
-	MODEL_LOADING;
 }
 
 /**
@@ -120,11 +109,10 @@ enum SceneType
  * It does contain some experimental gamepad support but it is by no means complete or fully worked
  * out.
  */
-class Scene extends Sprite
+class Scene extends BaseScene
 {
 	private var projectionTransform:Matrix3D;
 	private var _deltaTime:Float;
-	private var _ui:UI;
 
 	// Objects
 	/* Rubik's cube */
@@ -134,13 +122,6 @@ class Scene extends Sprite
 
 	// Cube Cloud
 	var _cubeCloud:CubeCloud;
-
-	// Model Loading scene
-	var _modelLoading:ModelLoading;
-
-	// Graphics Contexts
-	var _gl:WebGLRenderContext;
-	var _context:Context3D;
 
 	// Lights
 	// Simple 3-component light
@@ -158,10 +139,6 @@ class Scene extends Sprite
 
 	// Camera
 	var _camera:Camera;
-
-	// Control target - which object is controlled by the inputs
-	var _controlTarget:ControlTarget;
-	var _controlsEnabled:Bool;
 
 	// Gamepad input
 	var _gameInput:GameInput;
@@ -182,23 +159,19 @@ class Scene extends Sprite
 
 	public function new(ui:UI)
 	{
-		super();
+		super(ui);
 
 		// Initialize key fields
 		_deltaTime = 0;
-		_ui = ui;
 
 		_camera = new Camera(new Vector3D(0, 0, 500), new Vector3D(0, 1, 0));
 
 		// Setup input
-		_controlTarget = CAMERA;
+		_controlTarget = MODEL;
 		_gameInput = new GameInput();
 		_gamepads = new Array<GameInputDevice>();
 
-		_controlsEnabled = true;
-
 		_lightPosition = new Float32Array([200.0, 200.0, 200.0]);
-		addEventListener(Event.ADDED_TO_STAGE, addedToStage);
 	}
 
 	function addedToStage(e:Event):Void
@@ -221,8 +194,6 @@ class Scene extends Sprite
 		_light = new Light(_lightPosition, LIGHT_COLOR, _gl, _context);
 
 		_cubeCloud = new CubeCloud(_gl, _context);
-
-		_modelLoading = new ModelLoading(_gl, _context);
 
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
 		// compared to DeVries original. Strictly this should be programmatically scaled by RubiksCube.SIDE.
@@ -262,6 +233,16 @@ class Scene extends Sprite
 		_gameInput.addEventListener(GameInputEvent.DEVICE_REMOVED, gameInputOnDeviceRemoved);
 	}
 
+	function close():Void
+	{
+		removeEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
+		stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
+		stage.removeEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
+		_gameInput.removeEventListener(GameInputEvent.DEVICE_ADDED, gameInputOnDeviceAdded);
+		_gameInput.removeEventListener(GameInputEvent.DEVICE_REMOVED, gameInputOnDeviceRemoved);
+		stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
+	}
+
 	/**
 	 * Set the scene objects according to the selected mode.
 	 * For the moment this is a simple hack to return an enum.
@@ -269,31 +250,26 @@ class Scene extends Sprite
 	 * all scene objects.
 	 * @param ui UI parameters
 	 */
-	private function setScene(ui:UI):SceneType
+	private function setScene(ui:UI):SceneSubType
 	{
-		if (ui.sceneModelLoading)
+		if (ui.sceneCubeCloud)
 		{
-			return SceneType.MODEL_LOADING;
-		}
-		else if (ui.sceneCubeCloud)
-		{
-			return SceneType.CUBE_CLOUD;
+			return SceneSubType.CUBE_CLOUD;
 		}
 		else if (ui.sceneRubiksWithLight)
 		{
-			return SceneType.RUBIKS_WITH_LIGHT;
+			return SceneSubType.RUBIKS_WITH_LIGHT;
 		}
 
-		return SceneType.RUBIKS;
+		return SceneSubType.RUBIKS;
 	}
 
 	/**
 	 * Update the current state.
 	 * 
 	 * @param elapsed elapsed time since last call.
-	 * @param ui the UI property object
 	 */
-	public function update(elapsed:Float, ui:UI):Void
+	function update(elapsed:Float):Void
 	{
 		_deltaTime = elapsed / 1000.0;
 
@@ -303,26 +279,18 @@ class Scene extends Sprite
 			pollGamepad(gp);
 		}
 
-		// FIXME This needs to be changed to just select
-		//       either the camera or the model, or
-		//       something more general and possible UI
-		//       support.
-		// if (ui.mouseTargetsCube && _controlTarget == CAMERA)
-		// {
-		// 	_controlTarget = RUBIKS_CUBE;
-		// }
-		// else if (ui.mouseTargetsCube && _controlTarget == RUBIKS_CUBE)
-		// {
-		// 	_controlTarget = MODEL;
-		// }
-		// else
-		// {
-		// 	_controlTarget = CAMERA;
-		// }
+		if (_ui.mouseTargetsCube)
+		{
+			_controlTarget = MODEL;
+		}
+		else
+		{
+			_controlTarget = CAMERA;
+		}
 
 		// FIXME Add a configure scene method that sets up the right collection of object
 		// based on the selected scene.
-		switch (setScene(ui))
+		switch (setScene(_ui))
 		{
 			case RUBIKS:
 				{
@@ -336,18 +304,14 @@ class Scene extends Sprite
 				{
 					_cubeCloud.update(elapsed);
 				}
-			case MODEL_LOADING:
-				{
-					_modelLoading.update(elapsed, ui);
-				}
 		}
 		// FIXME remove ?_rubiksCube.update(elapsed);
 	}
 
-	public function render(ui:UI):Void
+	function render():Void
 	{
 		// Clear the screen and prepare for this frame
-		if (ui.sceneRubiks)
+		if (_ui.sceneRubiks)
 		{
 			_gl.clearColor(0.53, 0.81, 0.92, 1); // Clear to sky blue
 		}
@@ -364,43 +328,27 @@ class Scene extends Sprite
 		var lookAtMat = _camera.getViewMatrix();
 		lookAtMat.append(projectionTransform);
 
-		switch (setScene(ui))
+		switch (setScene(_ui))
 		{
 			case RUBIKS:
 				{
-					_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
+					_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), _ui);
 				}
 			case RUBIKS_WITH_LIGHT:
 				{
-					_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), ui);
-					_light.render(_gl, _context, lookAtMat, ui);
+					_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), _ui);
+					_light.render(_gl, _context, lookAtMat, _ui);
 				}
 			case CUBE_CLOUD:
 				{
 					var cameraPos = vector3DToFloat32Array(_camera.cameraPos);
 					_cubeCloud.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, cameraPos, _pointLights, cameraPos,
-						vector3DToFloat32Array(_camera.cameraFront), ui);
+						vector3DToFloat32Array(_camera.cameraFront), _ui);
 					for (i in 0...NUM_POINT_LIGHTS)
 					{
-						if (ui.pointLight(i).uiPointLightEnabled.selected)
+						if (_ui.pointLight(i).uiPointLightEnabled.selected)
 						{
-							_pointLights[i].render(_gl, _context, lookAtMat, ui);
-						}
-					}
-				}
-			case MODEL_LOADING:
-				{
-					var cameraPos = vector3DToFloat32Array(_camera.cameraPos);
-					_modelLoading.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, _pointLights, cameraPos,
-						vector3DToFloat32Array(_camera.cameraFront), ui);
-
-					// Rendering the point light objects
-					// FIXME might reposition the lights - well point light 1 - it's in the way
-					for (i in 0...NUM_POINT_LIGHTS)
-					{
-						if (ui.pointLight(i).uiPointLightEnabled.selected)
-						{
-							_pointLights[i].render(_gl, _context, lookAtMat, ui);
+							_pointLights[i].render(_gl, _context, lookAtMat, _ui);
 						}
 					}
 				}
@@ -430,14 +378,6 @@ class Scene extends Sprite
 	}
 
 	/**
-	 * Toggle controls, enabling them if they are disabled and disabling them if enabled.
-	 */
-	public function toggleControls():Void
-	{
-		_controlsEnabled = !_controlsEnabled;
-	}
-
-	/**
 	 * Handle key press events
 	 * 
 	 * @param event keyboard event
@@ -454,15 +394,10 @@ class Scene extends Sprite
 			case Keyboard.M:
 				if (_controlTarget == CAMERA)
 				{
-					_controlTarget = RUBIKS_CUBE;
-					_ui.mouseTargetsCube = true;
-				}
-				else if (_controlTarget == RUBIKS_CUBE)
-				{
 					_controlTarget = MODEL;
 					_ui.mouseTargetsCube = true;
 				}
-				else
+				else if (_controlTarget == MODEL)
 				{
 					_controlTarget = CAMERA;
 					_ui.mouseTargetsCube = false;
@@ -514,10 +449,8 @@ class Scene extends Sprite
 		{
 			case CAMERA:
 				_camera.lookAround(e.localX - _mouseX, _mouseY - e.localY);
-			case RUBIKS_CUBE:
-				_rubiksCube.rotate(e.localX - _mouseX, _mouseY - e.localY);
 			case MODEL:
-				_modelLoading.rotate(e.localX - _mouseX, _mouseY - e.localY);
+				_rubiksCube.rotate(e.localX - _mouseX, _mouseY - e.localY);
 		}
 		_mouseX = e.localX;
 		_mouseY = e.localY;

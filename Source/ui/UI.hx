@@ -11,6 +11,12 @@ import haxe.ui.util.Color;
 
 using StringTools;
 
+enum SceneType
+{
+	BASIC;
+	MODEL_LOADING;
+}
+
 /**
  * UI is basically a bean class providing programmatic access to all properties which may set by
  * HaxeUI widgets as defined in ui.xml.
@@ -186,6 +192,20 @@ class UI extends VBox
 
 	@:bind(uiSceneModelLoading.selected)
 	public var sceneModelLoading(default, null):Bool;
+
+	public var sceneType(get, null):SceneType;
+
+	public function get_sceneType():SceneType
+	{
+		if (sceneRubiks || sceneRubiksWithLight || sceneCubeCloud)
+		{
+			return SceneType.BASIC;
+		}
+		// else if (sceneModelLoading)
+		// {
+		return SceneType.MODEL_LOADING;
+		// }
+	}
 
 	// Mouse properties
 	@:bind(uiMouseTargetsCube.selected)
