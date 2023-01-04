@@ -211,6 +211,20 @@ class UI extends VBox
 	@:bind(uiMouseTargetsCube.selected)
 	public var mouseTargetsCube(default, null):Bool;
 
+	@:bind(uiMouseTargetsCube, UIEvent.CHANGE)
+	function updateControlTarget(_):Void
+	{
+		controlTargetMessage.text = 'Mouse controls: ';
+		if (mouseTargetsCube)
+		{
+			controlTargetMessage.text += "Model";
+		}
+		else
+		{
+			controlTargetMessage.text += "Camera";
+		}
+	}
+
 	/**
 	 * In order to handle the type conversion from Float slider position to Int number
 	 * cubes we query the current value when the property is requested.

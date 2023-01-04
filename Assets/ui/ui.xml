@@ -9,7 +9,7 @@
                             <label
                                 text="W - Dolly in z-axis\nA - Truck (Strafe) left\nD - Truck (Strafe) right\nS - Dolly out z-axis"></label>
                             <label
-                                text="M - Switch the object controlled by the mouse between camera lookat and cube rotation"
+                                text="M - Switch the object controlled by the mouse between camera lookat and model rotation"
                                 wordWrap="true" width="100%"></label>
                             <label text="Mouse scroll wheel - zoom in/out"></label>
                         </vbox>
@@ -17,9 +17,14 @@
                     <checkbox id="keepHelp" text="Keep" selected="false"></checkbox>
                 </vbox>
             </vbox>
-            <vbox styleName="hudKeyBox">
-                <label id="hudKeyMessage" text="Hit H to toggle HUD"></label>
-            </vbox>
+            <hbox>
+                <vbox styleName="hudKeyBox">
+                    <label id="hudKeyMessage" text="Hit H to toggle HUD"></label>
+                </vbox>
+                <vbox styleName="controlTargetBox">
+                    <label id="controlTargetMessage" text="Target: Model"></label>
+                </vbox>
+            </hbox>
         </vbox>
         <vbox id="references" width="100%">
             <reference-library-dropdown id="referencesContainer" styleName="referencesBox"
@@ -58,7 +63,7 @@
                     <frame text="Mouse Controls" styleName="parameterTitle">
                         <hbox>
                             <checkbox id="uiMouseTargetsCube" selected="true"></checkbox>
-                            <label text="Mouse targets cube"></label>
+                            <label text=""></label>
                         </hbox>
                     </frame>
                 </vbox>
