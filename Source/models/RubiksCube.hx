@@ -24,6 +24,7 @@ import openfl.display3D.Context3D;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
+import scenes.BasicsScene;
 import ui.UI;
 
 /**
@@ -189,7 +190,7 @@ class RubiksCube
 	var _pitch:Float;
 
 	// Scene reference
-	var _scene:Scene;
+	var _scene:BasicsScene;
 
 	/**
 	 * Constructor
@@ -201,7 +202,7 @@ class RubiksCube
 	 * @param gl The WebGL render context
 	 * @param context The OpenFL 3D render context
 	 */
-	public function new(x:Int, y:Int, z:Int, scene:Scene, gl:WebGLRenderContext, context:Context3D)
+	public function new(x:Int, y:Int, z:Int, scene:BasicsScene, gl:WebGLRenderContext, context:Context3D)
 	{
 		SIDE = 64; // FIXME this may need to be a constructor parameter
 		START_OFFSET = -(ROW_LEN * SIDE) / 2 + SIDE / 2;

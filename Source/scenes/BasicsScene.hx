@@ -1,4 +1,4 @@
-package;
+package scenes;
 
 import Camera.CameraLookTo;
 import Camera.CameraMovement;
@@ -102,14 +102,14 @@ enum SceneSubType
 }
 
 /**
- * Scene is the world for this Rubik's cube program. It contains all the world objects and drives
- * the rendering of all of them. It is created in the normal way of doing most of the work in
- * the ADDED_TO_STAGE event handler.
+ * BasicsScene is the scene used for exercises in the first two parts of Learn OpenGL.
+ * It contains all the world objects and drives the rendering of all of them. It is created
+ * in the normal way doing most of the work in the ADDED_TO_STAGE event handler.
  * 
  * It does contain some experimental gamepad support but it is by no means complete or fully worked
  * out.
  */
-class Scene extends BaseScene
+class BasicsScene extends BaseScene
 {
 	private var projectionTransform:Matrix3D;
 	private var _deltaTime:Float;

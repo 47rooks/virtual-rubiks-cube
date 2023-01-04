@@ -11,6 +11,7 @@ import openfl.events.RenderEvent;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import scenes.BaseScene;
+import scenes.BasicsScene;
 import scenes.ModelLoadingScene;
 import ui.UI;
 
@@ -42,7 +43,7 @@ class Main extends Sprite
 		Toolkit.init();
 		_ui = new UI();
 
-		_scene = new Scene(_ui);
+		_scene = new BasicsScene(_ui);
 		_sceneType = SceneType.BASIC;
 
 		// Add event handlers
@@ -110,7 +111,7 @@ class Main extends Sprite
 			{
 				case BASIC:
 					{
-						_scene = new Scene(_ui);
+						_scene = new BasicsScene(_ui);
 					}
 				case MODEL_LOADING:
 					{

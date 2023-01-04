@@ -12,6 +12,7 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
+import scenes.BasicsScene;
 import ui.UI;
 
 /**
@@ -123,7 +124,7 @@ class LightCastersProgram extends Program
 		_programPointLightAttenuationKl = new Array<GLUniformLocation>();
 		_programPointLightAttenuationKq = new Array<GLUniformLocation>();
 
-		for (i in 0...Scene.NUM_POINT_LIGHTS)
+		for (i in 0...BasicsScene.NUM_POINT_LIGHTS)
 		{
 			_programPointLightEnabledUniform[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].enabled');
 			_programPointLightPositionUniform[i] = _gl.getUniformLocation(_glProgram, 'uPointLights[${i}].position');
@@ -186,7 +187,7 @@ class LightCastersProgram extends Program
 		// Point lights
 
 		// Point light 1
-		for (i in 0...Scene.NUM_POINT_LIGHTS)
+		for (i in 0...BasicsScene.NUM_POINT_LIGHTS)
 		{
 			_gl.uniform1i(_programPointLightEnabledUniform[i], ui.pointLight(i).uiPointLightEnabled.selected ? 1 : 0);
 			if (ui.pointLight(i).uiPointLightEnabled.selected)
