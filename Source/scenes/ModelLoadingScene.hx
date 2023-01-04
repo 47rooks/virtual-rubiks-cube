@@ -131,7 +131,7 @@ class ModelLoadingScene extends BaseScene
 		// Previously used single point light location was [200.0, 200.0, 200.0]
 		_pointLights = new Array<PointLight>();
 		final pointLightPositions = [
-			[44.8, 12.8, 128.0],
+			[80.0, 100.0, 128.0],
 			[147.2, -211.2, -256.0],
 			[-256.0, 128.0, -768.0],
 			[0.0, 0.0, -192.0]
