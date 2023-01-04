@@ -15,7 +15,6 @@ import openfl.events.MouseEvent;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
 import openfl.ui.Keyboard;
-import openfl.ui.Mouse;
 import ui.UI;
 
 /**
@@ -61,7 +60,6 @@ class ModelLoadingScene extends BaseScene
 		super(ui);
 
 		_controlTarget = MODEL;
-		_controlsEnabled = false;
 		_deltaTime = 0;
 
 		// FIXME is this needed
@@ -144,7 +142,6 @@ class ModelLoadingScene extends BaseScene
 		}
 
 		// Setup mouse
-		Mouse.hide();
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
 	}

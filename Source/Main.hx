@@ -68,17 +68,16 @@ class Main extends Sprite
 		{
 			case Keyboard.H:
 				_ui.toggleVisibility();
-				_scene.toggleControls();
+				_scene.setControlsEnabled(!_ui.isVisible);
 				if (_mouseVisible)
 				{
 					Mouse.hide();
-					_mouseVisible = false;
 				}
 				else
 				{
 					Mouse.show();
-					_mouseVisible = true;
 				}
+				_mouseVisible = _ui.isVisible;
 			default:
 		}
 	}

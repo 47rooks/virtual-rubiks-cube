@@ -313,6 +313,16 @@ class UI extends VBox
 	}
 
 	/**
+	 * Whether the UI elements are visible to the user or not.
+	 */
+	public var isVisible(get, null):Bool;
+
+	public function get_isVisible():Bool
+	{
+		return controls.visible;
+	}
+
+	/**
 	 * Update the 'simple' lighting field to true if it is false and the
 	 * useTexture materials option is selected. This is required because
 	 * useTexture material (SimpleCubeProgram) will only support simple

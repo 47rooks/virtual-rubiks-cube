@@ -35,7 +35,7 @@ abstract class BaseScene extends Sprite
 	{
 		super();
 		_ui = ui;
-		_controlsEnabled = true;
+		_controlsEnabled = !_ui.isVisible;
 
 		addEventListener(Event.ADDED_TO_STAGE, sceneAddedToStage);
 	}
@@ -114,10 +114,13 @@ abstract class BaseScene extends Sprite
 	}
 
 	/**
-	 * Toggle controls, enabling them if they are disabled and disabling them if enabled.
+	 * Set controls to enabled or disabled. Enabled means that one can use the keyboard and mouse
+	 * to control the camera or model in the scene. Disabled means that they operate on the UI.
+	 * 
+	 * @param enabled, true to enable, false to disable the controls.
 	 */
-	public function toggleControls():Void
+	public function setControlsEnabled(enabled:Bool):Void
 	{
-		_controlsEnabled = !_controlsEnabled;
+		_controlsEnabled = enabled;
 	}
 }

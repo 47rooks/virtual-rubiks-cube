@@ -10,7 +10,6 @@ The stack used is lime, openfl and haxeui.
 # To Do
 
    * Immediate
-     * fix bug where switching to the Basic scene from the menu flips the camera/model and cursor visibility toggle. The fix is in ModelLoadingScene already
      * fix GLTF loader
        * handling of the materials
        * clean up code handling node/mesh recursion

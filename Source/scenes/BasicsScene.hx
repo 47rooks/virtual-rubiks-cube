@@ -224,7 +224,6 @@ class BasicsScene extends BaseScene
 		operNum = 0;
 
 		// Setup mouse
-		Mouse.hide();
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
 		stage.addEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
 
