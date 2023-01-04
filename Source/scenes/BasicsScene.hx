@@ -8,6 +8,7 @@ import MatrixUtils.vector3DToFloat32Array;
 import haxe.ValueException;
 import lights.Flashlight;
 import lights.PointLight;
+import lime.math.RGBA;
 import lime.utils.Float32Array;
 import models.CubeCloud;
 import models.Light;
@@ -22,7 +23,6 @@ import openfl.ui.GameInput;
 import openfl.ui.GameInputControl;
 import openfl.ui.GameInputDevice;
 import openfl.ui.Keyboard;
-import openfl.ui.Mouse;
 import scenes.BaseScene;
 import ui.UI;
 
@@ -619,6 +619,18 @@ class BasicsScene extends BaseScene
 				_gamepadLookAtX = xVal;
 				_gamepadLookAtY = yVal;
 			}
+		}
+	}
+
+	override function getClearColor():RGBA
+	{
+		if (_ui.sceneRubiks)
+		{
+			return RGBA.create(135, 207, 235, 255); // Clear to sky blue
+		}
+		else
+		{
+			return super.getClearColor();
 		}
 	}
 }

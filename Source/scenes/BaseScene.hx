@@ -1,6 +1,7 @@
 package scenes;
 
 import lime.graphics.WebGLRenderContext;
+import lime.math.RGBA;
 import openfl.display.Sprite;
 import openfl.display3D.Context3D;
 import openfl.events.Event;
@@ -89,16 +90,9 @@ abstract class BaseScene extends Sprite
 	public function renderScene():Void
 	{
 		// Clear the screen and prepare for this frame
-		// FIXME clearing the scene to a color probably should be based on UI configuration of the color
-		//       not on the hardcoding the scene names here. Or on a getter that subclasses can override.
-		if (_ui.sceneRubiks)
-		{
-			_gl.clearColor(0.53, 0.81, 0.92, 1); // Clear to sky blue
-		}
-		else
-		{
-			_gl.clearColor(0, 0, 0, 1); // Clear to black
-		}
+		var clearTo = getClearColor();
+		_gl.clearColor(clearTo.r / 255.0, clearTo.g / 255.0, clearTo.b / 255.0, clearTo.a / 255.0);
+
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
 		_gl.depthFunc(_gl.LESS);
 		_gl.depthMask(true);
@@ -111,6 +105,15 @@ abstract class BaseScene extends Sprite
 		// If you don't do this the UI will render badly, missing bits like text which is
 		// probably behind the buttons it's on and such like.
 		_gl.depthFunc(_gl.ALWAYS);
+	}
+
+	/**
+	 * Get the color to clear to. Subclasses may override this function.
+	 * @return RGBA
+	 */
+	function getClearColor():RGBA
+	{
+		return RGBA.create(0, 0, 0, 255);
 	}
 
 	/**
