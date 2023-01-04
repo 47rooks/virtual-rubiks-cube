@@ -16,7 +16,6 @@ The stack used is lime, openfl and haxeui.
        * comment fully
        * cleanup and/or refactor Mesh/Model to separate GLTF translation layer from generic data layer
      * add loading message as the model load is done - it takes a while
-     * add BaseScene function to get scene clear color as black - subclasses to override if they want different colors
   
    * First
      * document code - in progress
