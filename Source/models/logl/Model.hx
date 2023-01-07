@@ -69,7 +69,6 @@ class Model
 		_gltfRaw = GLTF.parse(gltfFile);
 		_gltfObject = GLTF.load(_gltfRaw, [gltfBinFile]);
 		_directory = Path.directory(gltfFilePath);
-		trace('_directory=${_directory}');
 
 		// Process all data to extract and marshal the data for the meshes
 		processScene(_gltfObject);
@@ -95,7 +94,6 @@ class Model
 		// {
 		// 	processMesh(n.mesh);
 		// }
-		trace('total meshes=${_meshes.length}');
 	}
 
 	function processNode(node:Node):Void
@@ -104,7 +102,6 @@ class Model
 		{
 			processMesh(node.mesh);
 		}
-		trace('processing ${node.children.length} child nodes');
 		if (node.children.length > 0)
 		{
 			for (childNode in node.children)

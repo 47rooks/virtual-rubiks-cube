@@ -99,6 +99,21 @@ class Main extends Sprite
 		// If scene has changed create the new scene and close out the old one
 		if (_sceneType != _ui.sceneType)
 		{
+			// Create the new scene
+			var newScene:BaseScene;
+			switch (_ui.sceneType)
+			{
+				case BASIC:
+					{
+						newScene = new BasicsScene(_ui);
+					}
+				case MODEL_LOADING:
+					{
+						newScene = new ModelLoadingScene(_ui);
+					};
+			}
+
+			// Clean up and remove the old scene
 			if (_scene != null)
 			{
 				// Clean up current scene resources
@@ -106,17 +121,8 @@ class Main extends Sprite
 				removeChild(_scene);
 			}
 
-			switch (_ui.sceneType)
-			{
-				case BASIC:
-					{
-						_scene = new BasicsScene(_ui);
-					}
-				case MODEL_LOADING:
-					{
-						_scene = new ModelLoadingScene(_ui);
-					};
-			}
+			// Add the new scene
+			_scene = newScene;
 			_sceneType = _ui.sceneType;
 			addChild(_scene);
 			_sceneInitialUpdateCalled = false;

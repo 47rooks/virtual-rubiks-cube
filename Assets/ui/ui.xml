@@ -340,25 +340,28 @@
                     </vbox>
                 </vbox>
                 <vbox id="sceneControls" text="Scene" styleName="sceneBox">
-                    <optionbox id="uiSceneRubiks" componentGroup="sceneGroup" text="Rubik's Cube"
-                        selected="true"></optionbox>
-                    <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup"
-                        text="Rubik's Cube with Light and Texture"></optionbox>
-                    <optionbox id="uiSceneCubeCloud" componentGroup="sceneGroup"
-                        text="Multiple Cubes"></optionbox>
-                    <vbox disabled="${!uiSceneCubeCloud.selected}"
-                        hidden="${!uiSceneCubeCloud.selected}" height="175px">
-                        <label text="Number of cubes" styleName="parameterTitle"></label>
-                        <label text="'${numCubes.pos}'" horizontalAlign="center"></label>
-                        <hbox>
-                            <label text="'${numCubes.min}'" verticalAlign=" center" width="20px" />
-                            <slider id="numCubes" min="1" max="10" step="1" pos="5"
-                                disabled="${!uiSceneCubeCloud.selected}"></slider>
-                            <label text="'${numCubes.max}'" verticalAlign=" center" width="20px" />
-                        </hbox>
-                    </vbox>
-                    <optionbox id="uiSceneModelLoading" componentGroup="sceneGroup"
-                        text="GLTF Backpack model"></optionbox>
+                    <group id="sceneGroup">
+                        <optionbox id="uiSceneRubiks" componentGroup="sceneGroup"
+                            text="Rubik's Cube"
+                            selected="true"></optionbox>
+                        <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup"
+                            text="Rubik's Cube with Light and Texture"></optionbox>
+                        <optionbox id="uiSceneCubeCloud" componentGroup="sceneGroup"
+                            text="Multiple Cubes"></optionbox>
+                        <vbox disabled="${!uiSceneCubeCloud.selected}"
+                            hidden="${!uiSceneCubeCloud.selected}" height="175px">
+                            <label text="Number of cubes" styleName="parameterTitle"></label>
+                            <label text="'${numCubes.pos}'" horizontalAlign="center"></label>
+                            <hbox>
+                                <label text="'${numCubes.min}'" verticalAlign=" center" width="20px" />
+                                <slider id="numCubes" min="1" max="10" step="1" pos="5"
+                                    disabled="${!uiSceneCubeCloud.selected}"></slider>
+                                <label text="'${numCubes.max}'" verticalAlign=" center" width="20px" />
+                            </hbox>
+                        </vbox>
+                        <optionbox id="uiSceneModelLoading" componentGroup="sceneGroup"
+                            text="GLTF Backpack model"></optionbox>
+                    </group>
                 </vbox>
             </accordion>
         </vbox>

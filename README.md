@@ -16,6 +16,7 @@ The stack used is lime, openfl and haxeui.
        * comment fully
        * cleanup and/or refactor Mesh/Model to separate GLTF translation layer from generic data layer
      * add loading message as the model load is done - it takes a while
+       * it turns out this is a bit tricky the way I planned. I added event sending support at the beginning of scene creation and at the end of the first render. Response to these events would be to disable and then re-enable the UI. This is not quite working. I'll leave it as is for now and revisit it later when perhaps I'll have a better idea how to do this - the main issue is the `pointer-events:none` styling which is not working as expected.
   
    * First
      * document code - in progress

@@ -32,3 +32,16 @@ Label.parameterTitle {
     font-size: 12;
     text-align: center;
 }
+
+/*
+Loading style to blur the UI and disable events.
+This is not current working so commented out for now.
+.loading {
+    filter:blur(3px);
+    pointer-events: none;
+}
+
+.loaded {
+    pointer-events: all;
+}
+*/

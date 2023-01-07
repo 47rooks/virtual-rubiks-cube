@@ -28,6 +28,8 @@ abstract class BaseScene extends Sprite
 	var _controlTarget:ControlTarget;
 	var _controlsEnabled:Bool;
 
+	var _initialSceneRendered:Bool = false;
+
 	/**
 	 * Constructor
 	 * @param ui the UI instance
@@ -35,6 +37,7 @@ abstract class BaseScene extends Sprite
 	public function new(ui:UI)
 	{
 		super();
+
 		_ui = ui;
 		_controlsEnabled = !_ui.isVisible;
 
@@ -76,6 +79,9 @@ abstract class BaseScene extends Sprite
 		_gl = stage.window.context.webgl;
 		_context = stage.context3D;
 
+		// Register initial scene render completed handler
+		// addEventListener(SceneEvent.SCENE_INITIAL_RENDER_END, _ui.clearSceneLoadingMessage);
+
 		// Notify current scene
 		addedToStage(e);
 
@@ -100,6 +106,15 @@ abstract class BaseScene extends Sprite
 
 		// Render current scene
 		render();
+
+		// Send end of first render event
+		// if (!_initialSceneRendered)
+		// {
+		// 	var evt = new SceneEvent(SceneEvent.SCENE_INITIAL_RENDER_END);
+		// 	dispatchEvent(evt);
+
+		// 	_initialSceneRendered = true;
+		// }
 
 		// Set depthFunc to always pass so that the 2D stage rendering follows render order
 		// If you don't do this the UI will render badly, missing bits like text which is

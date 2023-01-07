@@ -181,6 +181,8 @@ class UI extends VBox
 	public var specularShininess(default, null):Float = 5;
 
 	// Scene properties
+	var _currentSceneType:SceneType;
+
 	@:bind(uiSceneRubiks.selected)
 	public var sceneRubiks(default, null):Bool;
 
@@ -207,6 +209,30 @@ class UI extends VBox
 		// }
 	}
 
+	/**
+	 * Display a scene loading toast message during scene switching
+	 * @param _ 
+	 */
+	// @:bind(sceneGroup, UIEvent.CHANGE)
+	// function displaySceneLoadingMessage(_):Void
+	// {
+	// 	if (_currentSceneType == null || _currentSceneType != sceneType)
+	// 	{
+	// 		removeClass('loaded');
+	// 		addClass('loading');
+	// 		_currentSceneType = sceneType;
+	// 	}
+	// }
+
+	/**
+	 * Clear the scene loading toast message.
+	 * @return void
+	 */
+	// public function clearSceneLoadingMessage(_):Void
+	// {
+	// 	removeClass('loading');
+	// 	addClass('loaded');
+	// }
 	// Mouse properties
 	@:bind(uiMouseTargetsCube.selected)
 	public var mouseTargetsCube(default, null):Bool;
@@ -245,6 +271,9 @@ class UI extends VBox
 		hudKeyMessage.visible = true;
 		references.visible = false;
 		visible = true;
+
+		// addEventListener(SceneEvent.SCENE_INITIALIZATION_BEGIN, displaySceneLoadingMessage);
+		// addEventListener(SceneEvent.SCENE_INITIAL_RENDER_END, clearSceneLoadingMessage);
 
 		// Tooltips
 		var tooltipRenderer = new CustomToolTip();
