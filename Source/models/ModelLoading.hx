@@ -58,14 +58,12 @@ class ModelLoading
 		}
 	}
 
-	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, cameraPosition:Float32Array,
-			pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
+	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, cameraPosition:Float32Array, pointLights:Array<PointLight>,
+			flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
-		var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
 		_modelLoadingProgram.use();
-		_model.draw(_modelLoadingProgram, _modelRotation, projectionMatrix, lightColorArr, lightDirection, cameraPosition, pointLights, flashlightPos,
-			flashlightDir, ui);
+		_model.draw(_modelLoadingProgram, _modelRotation, projectionMatrix, lightDirection, cameraPosition, pointLights, flashlightPos, flashlightDir, ui);
 	}
 
 	/**

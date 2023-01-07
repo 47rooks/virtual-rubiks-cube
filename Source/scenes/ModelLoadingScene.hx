@@ -160,7 +160,7 @@ class ModelLoadingScene extends BaseScene
 		var lookAtMat = _camera.getViewMatrix();
 		lookAtMat.append(projectionTransform);
 
-		_modelLoading.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, _pointLights, cameraPos, vector3DToFloat32Array(_camera.cameraFront), _ui);
+		_modelLoading.render(_gl, _context, lookAtMat, _lightPosition, _pointLights, cameraPos, vector3DToFloat32Array(_camera.cameraFront), _ui);
 
 		// Rendering the point light objects
 		// FIXME might reposition the lights - well point light 1 - it's in the way

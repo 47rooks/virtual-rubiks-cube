@@ -169,9 +169,8 @@ class Mesh
 		_glIndexBuffer.uploadFromVector(indexData, 0, indexData.length);
 	}
 
-	public function draw(program:ModelLoadingProgram, rotationMatrix:Matrix3D, projectionMatrix:Matrix3D, lightColor:Float32Array,
-			lightDirection:Float32Array, cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array,
-			ui:UI)
+	public function draw(program:ModelLoadingProgram, rotationMatrix:Matrix3D, projectionMatrix:Matrix3D, lightDirection:Float32Array,
+			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI)
 	{
 		var diffuseNr:UInt = 1;
 		var specularNr:UInt = 1;
@@ -203,7 +202,7 @@ class Mesh
 		{
 			trace('problem with texturess');
 		}
-		program.render(modelMatrix, fullProjection, lightColor, lightDirection, cameraPosition, _glVertexBuffer, _glIndexBuffer, _textures[0].texture,
+		program.render(modelMatrix, fullProjection, lightDirection, cameraPosition, _glVertexBuffer, _glIndexBuffer, _textures[0].texture,
 			_textures[1].texture, pointLights, flashlightPos, flashlightDir, ui);
 	}
 }

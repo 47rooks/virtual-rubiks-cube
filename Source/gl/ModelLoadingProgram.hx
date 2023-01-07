@@ -162,9 +162,9 @@ class ModelLoadingProgram extends Program
 		_programViewerPositionUniform = _gl.getUniformLocation(_glProgram, "uViewerPos");
 	}
 
-	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightDirection:Float32Array, cameraPosition:Float32Array,
-			vbo:VertexBuffer3D, ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture,
-			pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
+	public function render(model:Matrix3D, projection:Matrix3D, lightDirection:Float32Array, cameraPosition:Float32Array, vbo:VertexBuffer3D,
+			ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture, pointLights:Array<PointLight>,
+			flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
 		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
 

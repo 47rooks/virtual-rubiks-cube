@@ -53,12 +53,12 @@ class Model
 		loadModel(gltfFilePath, gltfBinFilePath);
 	}
 
-	public function draw(program:ModelLoadingProgram, modelMatrix:Matrix3D, projectionMatrix:Matrix3D, lightColor:Float32Array, lightDirection:Float32Array,
+	public function draw(program:ModelLoadingProgram, modelMatrix:Matrix3D, projectionMatrix:Matrix3D, lightDirection:Float32Array,
 			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
 		for (m in _meshes)
 		{
-			m.draw(program, modelMatrix, projectionMatrix, lightColor, lightDirection, cameraPosition, pointLights, flashlightPos, flashlightDir, ui);
+			m.draw(program, modelMatrix, projectionMatrix, lightDirection, cameraPosition, pointLights, flashlightPos, flashlightDir, ui);
 		}
 	}
 
