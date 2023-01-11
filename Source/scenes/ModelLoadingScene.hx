@@ -1,6 +1,5 @@
 package scenes;
 
-import Camera.CameraMovement;
 import Color.WHITE;
 import MatrixUtils.createPerspectiveProjection;
 import MatrixUtils.vector3DToFloat32Array;
@@ -10,11 +9,7 @@ import lime.utils.Float32Array;
 import models.Light;
 import models.ModelLoading;
 import openfl.events.Event;
-import openfl.events.KeyboardEvent;
-import openfl.events.MouseEvent;
-import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
-import openfl.ui.Keyboard;
 import ui.UI;
 
 /**
@@ -23,16 +18,8 @@ import ui.UI;
  */
 class ModelLoadingScene extends BaseScene
 {
-	private var projectionTransform:Matrix3D;
-
 	// Model Loading scene
 	var _modelLoading:ModelLoading;
-
-	// Mouse coordinates
-	var _mouseX:Float;
-	var _mouseY:Float;
-	var _firstMove = true;
-	private var _deltaTime:Float;
 
 	// Lights
 	// Simple 3-component light
@@ -47,9 +34,6 @@ class ModelLoadingScene extends BaseScene
 
 	// Flashlight
 	var _flashlight:Flashlight;
-
-	// Camera
-	var _camera:Camera;
 
 	/**
 	 * Constructor
@@ -66,49 +50,9 @@ class ModelLoadingScene extends BaseScene
 		_lightPosition = new Float32Array([200.0, 200.0, 200.0]);
 	}
 
-	/**
-	 * Handle mouse movement events.
-	 * FIXME - duplicates Scene.hx
-	 * @param e 
-	 */
-	function mouseOnMove(e:MouseEvent):Void
+	override function rotateModel(xOffset:Float, yOffset:Float):Void
 	{
-		if (!_controlsEnabled)
-		{
-			return;
-		}
-
-		if (_firstMove)
-		{
-			_mouseX = e.localX;
-			_mouseY = e.localY;
-			_firstMove = false;
-		}
-
-		switch (_controlTarget)
-		{
-			case CAMERA:
-				_camera.lookAround(e.localX - _mouseX, _mouseY - e.localY);
-			case MODEL:
-				_modelLoading.rotate(e.localX - _mouseX, _mouseY - e.localY);
-		}
-		_mouseX = e.localX;
-		_mouseY = e.localY;
-	}
-
-	/**
-	 * Handle mouse wheel movement
-	 * @param e 
-	 */
-	function mouseOnWheel(e:MouseEvent):Void
-	{
-		if (!_controlsEnabled)
-		{
-			return;
-		}
-
-		_camera.zoom(e.delta);
-		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
+		_modelLoading.rotate(xOffset, yOffset);
 	}
 
 	function update(elapsed:Float)
@@ -155,19 +99,9 @@ class ModelLoadingScene extends BaseScene
 		{
 			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), LIGHT_COLOR, _gl, _context);
 		}
-
-		// Setup mouse
-		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
-		stage.addEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
-		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
 	}
 
-	function close()
-	{
-		stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
-		stage.removeEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
-		stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
-	}
+	function close() {}
 
 	function render()
 	{
@@ -187,43 +121,6 @@ class ModelLoadingScene extends BaseScene
 			{
 				_pointLights[i].render(_gl, _context, lookAtMat, _ui);
 			}
-		}
-	}
-
-	/**
-	 * Handle key press events
-	 * 
-	 * @param event keyboard event
-	 */
-	function keyHandler(event:KeyboardEvent):Void
-	{
-		if (!_controlsEnabled)
-		{
-			return;
-		}
-
-		switch (event.keyCode)
-		{
-			case Keyboard.M:
-				if (_controlTarget == CAMERA)
-				{
-					_controlTarget = MODEL;
-					_ui.mouseTargetsCube = true;
-				}
-				else if (_controlTarget == MODEL)
-				{
-					_controlTarget = CAMERA;
-					_ui.mouseTargetsCube = false;
-				}
-			case Keyboard.W:
-				_camera.move(CameraMovement.FORWARD, _deltaTime);
-			case Keyboard.S:
-				_camera.move(CameraMovement.BACKWARD, _deltaTime);
-			case Keyboard.A:
-				_camera.move(CameraMovement.LEFT, _deltaTime);
-			case Keyboard.D:
-				_camera.move(CameraMovement.RIGHT, _deltaTime);
-			default:
 		}
 	}
 }

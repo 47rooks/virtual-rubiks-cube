@@ -15,7 +15,6 @@ import models.logl.Model;
 import models.logl.PlaneModel;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
-import openfl.events.MouseEvent;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
 import openfl.ui.Keyboard;
@@ -27,14 +26,12 @@ import ui.UI;
  */
 class StencilBufferScene extends BaseScene
 {
-	private var projectionTransform:Matrix3D;
-
+	// private var projectionTransform:Matrix3D;
 	// Mouse coordinates
-	var _mouseX:Float;
-	var _mouseY:Float;
-	var _firstMove = true;
-	private var _deltaTime:Float;
-
+	// var _mouseX:Float;
+	// var _mouseY:Float;
+	// var _firstMove = true;
+	// private var _deltaTime:Float;
 	// Point Light
 	var _pointLights:Array<PointLight>;
 
@@ -42,9 +39,6 @@ class StencilBufferScene extends BaseScene
 
 	// Flashlight
 	var _flashlight:Flashlight;
-
-	// Camera
-	var _camera:Camera;
 
 	var _models:Array<Model>;
 	var _modelLoadingProgram:ModelLoadingProgram;
@@ -63,27 +57,6 @@ class StencilBufferScene extends BaseScene
 		_sceneRotation = new Matrix3D();
 		_models = new Array<Model>();
 		_controlTarget = MODEL;
-	}
-
-	function close()
-	{
-		stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
-		stage.removeEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
-		stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
-	}
-
-	function update(elapsed:Float)
-	{
-		_deltaTime = elapsed / 1000.0;
-
-		if (_ui.mouseTargetsCube)
-		{
-			_controlTarget = MODEL;
-		}
-		else
-		{
-			_controlTarget = CAMERA;
-		}
 	}
 
 	function addedToStage(e:Event)
@@ -120,11 +93,22 @@ class StencilBufferScene extends BaseScene
 		{
 			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl, _context);
 		}
+	}
 
-		// Setup mouse
-		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
-		stage.addEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
-		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
+	function close() {}
+
+	function update(elapsed:Float)
+	{
+		_deltaTime = elapsed / 1000.0;
+
+		if (_ui.mouseTargetsCube)
+		{
+			_controlTarget = MODEL;
+		}
+		else
+		{
+			_controlTarget = CAMERA;
+		}
 	}
 
 	function render()
@@ -201,7 +185,7 @@ class StencilBufferScene extends BaseScene
 	 * @param xOffset x axis offset from current value
 	 * @param yOffset y axis offset from current value
 	 */
-	public function rotate(xOffset:Float, yOffset:Float):Void
+	override function rotateModel(xOffset:Float, yOffset:Float):Void
 	{
 		var deltaX = xOffset * ROTATION_SENSITIVTY;
 		var deltaY = yOffset * ROTATION_SENSITIVTY;
@@ -222,87 +206,5 @@ class StencilBufferScene extends BaseScene
 		rotation.appendRotation(_yaw, new Vector3D(0, 1, 0));
 		rotation.appendRotation(_pitch, new Vector3D(1, 0, 0));
 		_sceneRotation = rotation;
-	}
-
-	/**
-	 * Handle key press events
-	 * 
-	 * @param event keyboard event
-	 */
-	function keyHandler(event:KeyboardEvent):Void
-	{
-		if (!_controlsEnabled)
-		{
-			return;
-		}
-
-		switch (event.keyCode)
-		{
-			case Keyboard.M:
-				if (_controlTarget == CAMERA)
-				{
-					_controlTarget = MODEL;
-					_ui.mouseTargetsCube = true;
-				}
-				else if (_controlTarget == MODEL)
-				{
-					_controlTarget = CAMERA;
-					_ui.mouseTargetsCube = false;
-				}
-			case Keyboard.W:
-				_camera.move(CameraMovement.FORWARD, _deltaTime);
-			case Keyboard.S:
-				_camera.move(CameraMovement.BACKWARD, _deltaTime);
-			case Keyboard.A:
-				_camera.move(CameraMovement.LEFT, _deltaTime);
-			case Keyboard.D:
-				_camera.move(CameraMovement.RIGHT, _deltaTime);
-			default:
-		}
-	}
-
-	/**
-	 * Handle mouse movement events.
-	 * FIXME - duplicates Scene.hx
-	 * @param e 
-	 */
-	function mouseOnMove(e:MouseEvent):Void
-	{
-		if (!_controlsEnabled)
-		{
-			return;
-		}
-
-		if (_firstMove)
-		{
-			_mouseX = e.localX;
-			_mouseY = e.localY;
-			_firstMove = false;
-		}
-
-		switch (_controlTarget)
-		{
-			case CAMERA:
-				_camera.lookAround(e.localX - _mouseX, _mouseY - e.localY);
-			case MODEL:
-				rotate(e.localX - _mouseX, _mouseY - e.localY);
-		}
-		_mouseX = e.localX;
-		_mouseY = e.localY;
-	}
-
-	/**
-	 * Handle mouse wheel movement
-	 * @param e 
-	 */
-	function mouseOnWheel(e:MouseEvent):Void
-	{
-		if (!_controlsEnabled)
-		{
-			return;
-		}
-
-		_camera.zoom(e.delta);
-		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 	}
 }

@@ -26,7 +26,7 @@ class CubeModel extends Model
 			 side / 2.0,  side / 2, -side / 2, // Back
 			-side / 2,	  side / 2, -side / 2,
 			-side / 2,	 -side / 2, -side / 2,
-			side / 2,    -side / 2, -side / 2,
+			 side / 2,   -side / 2, -side / 2,
 			-side / 2,    side / 2, -side / 2, // Left
 			-side / 2,	  side / 2,  side / 2,
 			-side / 2,   -side / 2,  side / 2,
