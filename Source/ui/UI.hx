@@ -15,6 +15,7 @@ enum SceneType
 {
 	BASIC;
 	MODEL_LOADING;
+	STENCIL;
 }
 
 /**
@@ -203,10 +204,14 @@ class UI extends VBox
 		{
 			return SceneType.BASIC;
 		}
-		// else if (sceneModelLoading)
-		// {
-		return SceneType.MODEL_LOADING;
-		// }
+		else if (sceneModelLoading)
+		{
+			return SceneType.MODEL_LOADING;
+		}
+		else
+		{
+			return SceneType.STENCIL;
+		}
 	}
 
 	/**
@@ -343,6 +348,15 @@ class UI extends VBox
 				content: "Model Loading uses a complex model containing dozens of meshes loaded from a GLTF2 asset and renders it with multiple lights as in the Light Casters example."
 			}
 		});
+
+		ToolTipManager.instance.registerTooltip(stencilBufferConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Stencil Buffer",
+				footer: "",
+				content: "This example demonstrates the use of the stencil test to outline an object, as might be done to indicate object selection in a game."
+			}
+		});
 	}
 
 	public function toggleVisibility():Void
@@ -441,12 +455,13 @@ class UI extends VBox
 	}
 
 	function resetSceneValues(disableSceneRubiks:Bool = false, disableSceneRubiksWithLight:Bool = false, disableSceneCubeCloud:Bool = false,
-			disableSceneModelLoading:Bool = false)
+			disableSceneModelLoading:Bool = false, disableSceneCustom:Bool = false)
 	{
 		uiSceneRubiks.disabled = disableSceneRubiks;
 		uiSceneRubiksWithLight.disabled = disableSceneRubiksWithLight;
 		uiSceneCubeCloud.disabled = disableSceneCubeCloud;
 		uiSceneModelLoading.disabled = disableSceneModelLoading;
+		uiSceneCustom.disabled = disableSceneCustom;
 	}
 
 	/* Simple Rubik's cube with colored faces only and no light or lighting */
@@ -455,7 +470,7 @@ class UI extends VBox
 	{
 		resetLightingValues(false, true, true, true);
 		resetMaterialsValues(false, true, true, true);
-		resetSceneValues(false, true, true, true);
+		resetSceneValues(false, true, true, true, true);
 
 		// Set to basic Rubik's cube play mode
 		noTexture.selected = true;
@@ -471,7 +486,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, false, true, true);
 		resetMaterialsValues(true, false, true, true);
-		resetSceneValues(true, false, true, true);
+		resetSceneValues(true, false, true, true, true);
 
 		// Lighting
 		simple.selected = true;
@@ -491,7 +506,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, true, false, true);
 		resetMaterialsValues(true, true, false, true);
-		resetSceneValues(true, false, true, true);
+		resetSceneValues(true, false, true, true, true);
 
 		// Lighting
 		complex.selected = true;
@@ -510,7 +525,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, true, false, true);
 		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, false, true, true);
+		resetSceneValues(true, false, true, true, true);
 
 		// Lighting
 		complex.selected = true;
@@ -527,7 +542,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, true, true, false);
 		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, true, false, true);
+		resetSceneValues(true, true, false, true, true);
 
 		// Enable light casters and cube cloud
 		uiLightCasters.selected = true;
@@ -547,7 +562,7 @@ class UI extends VBox
 	{
 		resetLightingValues(true, true, true, false);
 		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, true, true, false);
+		resetSceneValues(true, true, true, false, true);
 
 		// Enable light casters and cube cloud
 		uiLightCasters.selected = true;
@@ -559,6 +574,25 @@ class UI extends VBox
 		uiSceneModelLoading.selected = true;
 
 		uiMouseTargetsCube.selected = false;
+	}
+
+	@:bind(stencilBufferConfig, UIEvent.CHANGE)
+	function stencilBufferConfigFn(_)
+	{
+		resetLightingValues(true, true, true, false);
+		resetMaterialsValues(true, true, true, false);
+		resetSceneValues(true, true, true, true, false);
+
+		// Enable light casters and cube cloud
+		uiLightCasters.selected = true;
+
+		// Materials
+		useLightMaps.selected = true;
+
+		// Scene
+		uiSceneCustom.selected = true;
+
+		uiMouseTargetsCube.selected = true;
 	}
 }
 

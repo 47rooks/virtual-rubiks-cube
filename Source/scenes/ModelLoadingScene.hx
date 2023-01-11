@@ -96,6 +96,21 @@ class ModelLoadingScene extends BaseScene
 		_mouseY = e.localY;
 	}
 
+	/**
+	 * Handle mouse wheel movement
+	 * @param e 
+	 */
+	function mouseOnWheel(e:MouseEvent):Void
+	{
+		if (!_controlsEnabled)
+		{
+			return;
+		}
+
+		_camera.zoom(e.delta);
+		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
+	}
+
 	function update(elapsed:Float)
 	{
 		_deltaTime = elapsed / 1000.0;
@@ -143,12 +158,14 @@ class ModelLoadingScene extends BaseScene
 
 		// Setup mouse
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
+		stage.addEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
 	}
 
 	function close()
 	{
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseOnMove);
+		stage.removeEventListener(MouseEvent.MOUSE_WHEEL, mouseOnWheel);
 		stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
 	}
 

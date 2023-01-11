@@ -99,7 +99,11 @@ abstract class BaseScene extends Sprite
 		var clearTo = getClearColor();
 		_gl.clearColor(clearTo.r / 255.0, clearTo.g / 255.0, clearTo.b / 255.0, clearTo.a / 255.0);
 
-		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
+		// Disable the stencil buffer because otherwise the floor will write to it and break the outlining.
+		// This appears to be a side-affect of the OpenFL 2D render because it is only a problem when the UI is
+		// visible.
+		_gl.disable(_gl.STENCIL_TEST);
+		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT | _gl.STENCIL_BUFFER_BIT);
 		_gl.depthFunc(_gl.LESS);
 		_gl.depthMask(true);
 		_gl.enable(_gl.DEPTH_TEST);

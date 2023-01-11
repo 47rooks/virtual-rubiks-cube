@@ -1,6 +1,7 @@
 package models.logl;
 
 import gl.ModelLoadingProgram;
+import gl.OutliningProgram;
 import haxe.ValueException;
 import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
@@ -132,7 +133,6 @@ class Mesh
 	 * Marshall vertex data and index data into VAO/VBO and EBO via OpenFL Context3D
 	 * @param context 
 	 */
-	@:access(openfl.display3D.VertexBuffer3D.__data)
 	function setupMesh()
 	{
 		if (_glVertexBuffer != null)
@@ -192,6 +192,41 @@ class Mesh
 		// 	_context.setTextureAt(i, _textures[i].texture);
 		// }
 		// FIXME Hacked in passing the textures. Not generalized
+		var modelMatrix = new Matrix3D();
+		modelMatrix.identity();
+		modelMatrix.append(rotationMatrix);
+		modelMatrix.appendScale(64, 64, 64);
+		var fullProjection = modelMatrix.clone();
+		fullProjection.append(projectionMatrix);
+		if (_textures.length != 2 || _textures[0].texture == null || _textures[1].texture == null)
+		{
+			trace('problem with texturess');
+		}
+		program.render(modelMatrix, fullProjection, lightDirection, cameraPosition, _glVertexBuffer, _glIndexBuffer, _textures[0].texture,
+			_textures[1].texture, pointLights, flashlightPos, flashlightDir, ui);
+	}
+
+	/**
+	 * Draw the outline around a shape. 
+	 * 
+	 * FIXME Strictly this is badly factored and draw needs to be changed
+	 * so that it can handle more diverse functions.
+	 * @param program the shader program to use
+	 * @param rotationMatrix the rotation matrix to apply to the mesh
+	 * @param projectionMatrix the projection matrix to apply to the mesh
+	 * @param lightDirection the direction of the directional light
+	 * @param cameraPosition the position of the camera
+	 * @param pointLights an array of up to four point lights
+	 * @param flashlightPos the position of the flashlight
+	 * @param flashlightDir the direction of the flashlight
+	 * @param ui the UI object
+	 */
+	public function drawOutline(program:OutliningProgram, rotationMatrix:Matrix3D, projectionMatrix:Matrix3D, lightDirection:Float32Array,
+			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI)
+	{
+		var diffuseNr:UInt = 1;
+		var specularNr:UInt = 1;
+
 		var modelMatrix = new Matrix3D();
 		modelMatrix.identity();
 		modelMatrix.append(rotationMatrix);

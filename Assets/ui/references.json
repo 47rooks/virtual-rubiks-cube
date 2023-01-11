@@ -41,4 +41,12 @@
         "codeReferences": [],
         "uiReferences": [{"scene": "Model Loading"}]
     }
+    ,
+    {
+        "title": "Stencil buffer",
+        "description": "Stencil buffer example of outlining cubes. ",
+        "learnopenglReferences": ["Ch 23"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Stencil Buffer"}]
+    }
 ]

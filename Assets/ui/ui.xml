@@ -57,6 +57,9 @@
                                 <optionbox id="modelLoadingConfig" componentGroup="config"
                                     userData="Model loading"
                                     text="Model Loading" />
+                                <optionbox id="stencilBufferConfig" componentGroup="config"
+                                    userData="Stencil buffer"
+                                    text="Stencil Buffer" />
                             </group>
                         </vbox>
                     </frame>
@@ -361,6 +364,8 @@
                         </vbox>
                         <optionbox id="uiSceneModelLoading" componentGroup="sceneGroup"
                             text="GLTF Backpack model"></optionbox>
+                        <optionbox id="uiSceneCustom" componentGroup="sceneGroup"
+                            text="Custom scene for configuration"></optionbox>
                     </group>
                 </vbox>
             </accordion>

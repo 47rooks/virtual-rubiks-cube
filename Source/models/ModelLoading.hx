@@ -3,8 +3,8 @@ package models;
 import gl.ModelLoadingProgram;
 import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
-import lime.math.RGBA;
 import lime.utils.Float32Array;
+import models.logl.GLTFModel;
 import models.logl.Model;
 import openfl.display3D.Context3D;
 import openfl.geom.Matrix3D;
@@ -44,7 +44,7 @@ class ModelLoading
 		}
 
 		// Model loading
-		_model = new Model(_gl, _context, 'assets/gltf/backpack.gltf2', 'assets/gltf/backpack.bin');
+		_model = new GLTFModel(_gl, _context, 'assets/gltf/backpack.gltf2', 'assets/gltf/backpack.bin');
 		_modelLoadingProgram = new ModelLoadingProgram(_gl, _context);
 
 		_initialized = true;

@@ -13,6 +13,7 @@ import openfl.ui.Mouse;
 import scenes.BaseScene;
 import scenes.BasicsScene;
 import scenes.ModelLoadingScene;
+import scenes.StencilBufferScene;
 import ui.UI;
 
 /**
@@ -111,6 +112,10 @@ class Main extends Sprite
 					{
 						newScene = new ModelLoadingScene(_ui);
 					};
+				case STENCIL:
+					{
+						newScene = new StencilBufferScene(_ui);
+					}
 			}
 
 			// Clean up and remove the old scene
