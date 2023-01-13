@@ -1,6 +1,5 @@
 package scenes;
 
-import Camera.CameraMovement;
 import Color.WHITE;
 import MatrixUtils.createPerspectiveProjection;
 import MatrixUtils.vector3DToFloat32Array;
@@ -112,8 +111,8 @@ class BasicsScene extends BaseScene
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
 
-		// Add key listener to start example rotations
-		stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
+		// // Add key listener to start example rotations
+		// stage.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
 
 		// Setup the operations
 		operations = new Array<Operation>();
@@ -123,7 +122,6 @@ class BasicsScene extends BaseScene
 	function close():Void
 	{
 		removeEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
-		stage.removeEventListener(KeyboardEvent.KEY_DOWN, keyHandler);
 	}
 
 	/**

@@ -1,16 +1,11 @@
 package gl;
 
 import MatrixUtils.matrix3DToFloat32Array;
+import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
-import lime.utils.Float32Array;
 import openfl.Assets;
 import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.display3D.textures.RectangleTexture;
-import openfl.geom.Matrix3D;
-import ui.UI;
 
 /**
  * The basic unit cube GLSL program rendering colours and a single texture.
@@ -73,33 +68,33 @@ class SimpleCubeProgram extends Program
 	}
 
 	/**
-	 * Render the cube with the specified parameters.
-	 * @param model the model matrix
-	 * @param projection the final model-view-projection matrix
-	 * @param lightColor the color of the light
-	 * @param lightPosition the world position of the light
-	 * @param cameraPosition the world position of the camera
-	 * @param vbo the vertext buffer
-	 * @param ibo the index buffer for indexed drawing
-	 * @param texture the texture for the faces
-	 * @param ui the properties object from the UI
+	 * Draw with the specified parameters.
+	 * @param params the program parameters
+	 * 	the following ProgramParameters fields are required
+	 * 		- vbo
+	 * 		- ibo
+	 * 		- textures
+	 * 			- 0 the model texture
+	 * 		- modelMatrix
+	 * 		- projectionMatrix
+	 *		- cameraPosition
+	 * 		- ui
 	 */
-	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightPosition:Float32Array, cameraPosition:Float32Array,
-			vbo:VertexBuffer3D, ibo:IndexBuffer3D, texture:RectangleTexture, ui:UI):Void
+	public function render(params:ProgramParameters):Void
 	{
-		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
+		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(params.modelMatrix));
 
 		// Add projection and pass in to shader
-		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
+		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(params.projectionMatrix));
 
 		// Image texture
-		_context.setTextureAt(_programImageUniform, texture);
+		_context.setTextureAt(_programImageUniform, params.textures[0]);
 
 		// Apply GL calls to submit the cubbe data to the GPU
-		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
-		_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
-		_context.setVertexBufferAt(_programColorAttribute, vbo, 5, FLOAT_4);
+		_context.setVertexBufferAt(_programVertexAttribute, params.vbo, 0, FLOAT_3);
+		_context.setVertexBufferAt(_programTextureAttribute, params.vbo, 3, FLOAT_2);
+		_context.setVertexBufferAt(_programColorAttribute, params.vbo, 5, FLOAT_4);
 
-		_context.drawTriangles(ibo);
+		_context.drawTriangles(params.ibo);
 	}
 }

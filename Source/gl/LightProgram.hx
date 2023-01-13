@@ -1,14 +1,11 @@
 package gl;
 
 import MatrixUtils.matrix3DToFloat32Array;
+import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
 import openfl.Assets;
 import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.geom.Matrix3D;
-import ui.UI;
 
 /**
  * GL program class for a simple light.
@@ -66,26 +63,27 @@ class LightProgram extends Program
 	}
 
 	/**
-	 * Render the cube with the specified parameters.
-	 * @param model the model matrix
-	 * @param projection the final model-view-projection matrix
-	 * @param vbo the vertext buffer
-	 * @param ibo the index buffer for indexed drawing
-	 * @param ui the properties object from the UI
+	 * Draw with the specified parameters.
+	 * @param params the program parameters
+	 * 	the following ProgramParameters fields are required
+	 * 		- vbo
+	 * 		- ibo
+	 * 		- projectionMatrix
+	 * 		- ui
 	 */
-	public function render(model:Matrix3D, projection:Matrix3D, vbo:VertexBuffer3D, ibo:IndexBuffer3D, ui:UI):Void
+	public function render(params:ProgramParameters):Void
 	{
 		// Add projection and pass in to shader
-		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
+		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(params.projectionMatrix));
 
 		// Set light color if selected
-		_gl.uniform1i(_program3CompLightEnabledUniform, ui.componentLightEnabled ? 1 : 0);
-		_gl.uniform3f(_program3CompLightColorUniform, ui.lightAmbientColor.r, ui.lightAmbientColor.g, ui.lightAmbientColor.b);
+		_gl.uniform1i(_program3CompLightEnabledUniform, params.ui.componentLightEnabled ? 1 : 0);
+		_gl.uniform3f(_program3CompLightColorUniform, params.ui.lightAmbientColor.r, params.ui.lightAmbientColor.g, params.ui.lightAmbientColor.b);
 
 		// Apply GL calls to submit the cube data to the GPU
-		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
-		_context.setVertexBufferAt(_programColorAttribute, vbo, 4, FLOAT_4);
+		_context.setVertexBufferAt(_programVertexAttribute, params.vbo, 0, FLOAT_3);
+		_context.setVertexBufferAt(_programColorAttribute, params.vbo, 4, FLOAT_4);
 
-		_context.drawTriangles(ibo);
+		_context.drawTriangles(params.ibo);
 	}
 }

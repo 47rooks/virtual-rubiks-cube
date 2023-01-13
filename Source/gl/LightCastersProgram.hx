@@ -2,18 +2,12 @@ package gl;
 
 import MatrixUtils.matrix3DToFloat32Array;
 import MatrixUtils.radians;
-import lights.PointLight;
+import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
-import lime.utils.Float32Array;
 import openfl.Assets;
 import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.display3D.textures.RectangleTexture;
-import openfl.geom.Matrix3D;
 import scenes.BasicsScene;
-import ui.UI;
 
 /**
  * A program class supporting light casters.
@@ -162,26 +156,42 @@ class LightCastersProgram extends Program
 		_programViewerPositionUniform = _gl.getUniformLocation(_glProgram, "uViewerPos");
 	}
 
-	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightDirection:Float32Array, cameraPosition:Float32Array,
-			vbo:VertexBuffer3D, ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture,
-			pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
+	/**
+	 * Draw with the specified parameters.
+	 * @param params the program parameters
+	 * 	the following ProgramParameters fields are required
+	 * 		- vbo
+	 * 		- ibo
+	 * 		- textures
+	 * 			- 0 the diffuse light map
+	 * 			- 1 the specular light map
+	 * 		- modelMatrix
+	 * 		- projectionMatrix
+	 *		- cameraPosition
+	 * 		- directionalLight
+	 * 		- pointLights
+	 * 		- flashlightPos
+	 * 		- flashlightDir
+	 * 		- ui
+	 */
+	public function render(params:ProgramParameters):Void
 	{
-		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
+		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(params.modelMatrix));
 
 		// Add projection and pass in to shader
-		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
+		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(params.projectionMatrix));
 
 		// Directional light
-		_gl.uniform1i(_programEnabledLightUniform, ui.directional ? 1 : 0);
-		if (ui.directional)
+		_gl.uniform1i(_programEnabledLightUniform, params.ui.directional ? 1 : 0);
+		if (params.ui.directional)
 		{
-			_gl.uniform3fv(_programDirectionLightUniform, lightDirection, 0);
-			_gl.uniform3f(_programAmbientLightUniform, ui.lightDirectionalAmbientColor.r, ui.lightDirectionalAmbientColor.g,
-				ui.lightDirectionalAmbientColor.b);
-			_gl.uniform3f(_programDiffuseLightUniform, ui.lightDirectionalDiffuseColor.r, ui.lightDirectionalDiffuseColor.g,
-				ui.lightDirectionalDiffuseColor.b);
-			_gl.uniform3f(_programSpecularLightUniform, ui.lightDirectionalSpecularColor.r, ui.lightDirectionalSpecularColor.g,
-				ui.lightDirectionalSpecularColor.b);
+			_gl.uniform3fv(_programDirectionLightUniform, params.directionalLight, 0);
+			_gl.uniform3f(_programAmbientLightUniform, params.ui.lightDirectionalAmbientColor.r, params.ui.lightDirectionalAmbientColor.g,
+				params.ui.lightDirectionalAmbientColor.b);
+			_gl.uniform3f(_programDiffuseLightUniform, params.ui.lightDirectionalDiffuseColor.r, params.ui.lightDirectionalDiffuseColor.g,
+				params.ui.lightDirectionalDiffuseColor.b);
+			_gl.uniform3f(_programSpecularLightUniform, params.ui.lightDirectionalSpecularColor.r, params.ui.lightDirectionalSpecularColor.g,
+				params.ui.lightDirectionalSpecularColor.b);
 		}
 
 		// Point lights
@@ -189,54 +199,57 @@ class LightCastersProgram extends Program
 		// Point light 1
 		for (i in 0...BasicsScene.NUM_POINT_LIGHTS)
 		{
-			_gl.uniform1i(_programPointLightEnabledUniform[i], ui.pointLight(i).uiPointLightEnabled.selected ? 1 : 0);
-			if (ui.pointLight(i).uiPointLightEnabled.selected)
+			_gl.uniform1i(_programPointLightEnabledUniform[i], params.ui.pointLight(i).uiPointLightEnabled.selected ? 1 : 0);
+			if (params.ui.pointLight(i).uiPointLightEnabled.selected)
 			{
-				_gl.uniform3fv(_programPointLightPositionUniform[i], pointLights[i].position, 0);
+				_gl.uniform3fv(_programPointLightPositionUniform[i], params.pointLights[i].position, 0);
 
 				// FIXME need array mapping of each ui pointlight element - how? * /
-				_gl.uniform3f(_programPointLightAmbientUniform[i], ui.pointLight(i).pointLightAmbientColor.r, ui.pointLight(i).pointLightAmbientColor.g,
-					ui.pointLight(i).pointLightAmbientColor.b);
-				_gl.uniform3f(_programPointLightDiffuseUniform[i], ui.pointLight(i).pointLightDiffuseColor.r, ui.pointLight(i).pointLightDiffuseColor.g,
-					ui.pointLight(i).pointLightDiffuseColor.b);
-				_gl.uniform3f(_programPointLightSpecularUniform[i], ui.pointLight(i).pointLightSpecularColor.r, ui.pointLight(i).pointLightSpecularColor.g,
-					ui.pointLight(i).pointLightSpecularColor.b);
-				_gl.uniform1f(_programPointLightAttenuationKc[i], ui.pointLight(i).pointLightKc);
-				_gl.uniform1f(_programPointLightAttenuationKl[i], ui.pointLight(i).pointLightKl);
-				_gl.uniform1f(_programPointLightAttenuationKq[i], ui.pointLight(i).pointLightKq);
+				_gl.uniform3f(_programPointLightAmbientUniform[i], params.ui.pointLight(i).pointLightAmbientColor.r,
+					params.ui.pointLight(i).pointLightAmbientColor.g, params.ui.pointLight(i).pointLightAmbientColor.b);
+				_gl.uniform3f(_programPointLightDiffuseUniform[i], params.ui.pointLight(i).pointLightDiffuseColor.r,
+					params.ui.pointLight(i).pointLightDiffuseColor.g, params.ui.pointLight(i).pointLightDiffuseColor.b);
+				_gl.uniform3f(_programPointLightSpecularUniform[i], params.ui.pointLight(i).pointLightSpecularColor.r,
+					params.ui.pointLight(i).pointLightSpecularColor.g, params.ui.pointLight(i).pointLightSpecularColor.b);
+				_gl.uniform1f(_programPointLightAttenuationKc[i], params.ui.pointLight(i).pointLightKc);
+				_gl.uniform1f(_programPointLightAttenuationKl[i], params.ui.pointLight(i).pointLightKl);
+				_gl.uniform1f(_programPointLightAttenuationKq[i], params.ui.pointLight(i).pointLightKq);
 			}
 		}
 
 		// Flashlight
-		_gl.uniform1i(_programFlashlightEnabledUniform, ui.flashlight ? 1 : 0);
-		if (ui.flashlight)
+		_gl.uniform1i(_programFlashlightEnabledUniform, params.ui.flashlight ? 1 : 0);
+		if (params.ui.flashlight)
 		{
-			_gl.uniform3fv(_programFlashlightPositionUniform, flashlightPos, 0);
-			_gl.uniform3fv(_programFlashlightDirectionUniform, flashlightDir, 0);
-			_gl.uniform3f(_programFlashlightAmbientUniform, ui.flashlightAmbientColor.r, ui.flashlightAmbientColor.g, ui.flashlightAmbientColor.b);
-			_gl.uniform3f(_programFlashlightDiffuseUniform, ui.flashlightDiffuseColor.r, ui.flashlightDiffuseColor.g, ui.flashlightDiffuseColor.b);
-			_gl.uniform3f(_programFlashlightSpecularUniform, ui.flashlightSpecularColor.r, ui.flashlightSpecularColor.g, ui.flashlightSpecularColor.b);
-			_gl.uniform1f(_programFlashlightAttenuationKc, ui.flashlightKc);
-			_gl.uniform1f(_programFlashlightAttenuationKl, ui.flashlightKl);
-			_gl.uniform1f(_programFlashlightAttenuationKq, ui.flashlightKq);
-			_gl.uniform1f(_programFlashlightInnerCutoffUniform, Math.cos(radians(ui.flashlightInnerCutoff)));
-			_gl.uniform1f(_programFlashlightOuterCutoffUniform, Math.cos(radians(ui.flashlightOuterCutoff)));
+			_gl.uniform3fv(_programFlashlightPositionUniform, params.flashlightPos, 0);
+			_gl.uniform3fv(_programFlashlightDirectionUniform, params.flashlightDir, 0);
+			_gl.uniform3f(_programFlashlightAmbientUniform, params.ui.flashlightAmbientColor.r, params.ui.flashlightAmbientColor.g,
+				params.ui.flashlightAmbientColor.b);
+			_gl.uniform3f(_programFlashlightDiffuseUniform, params.ui.flashlightDiffuseColor.r, params.ui.flashlightDiffuseColor.g,
+				params.ui.flashlightDiffuseColor.b);
+			_gl.uniform3f(_programFlashlightSpecularUniform, params.ui.flashlightSpecularColor.r, params.ui.flashlightSpecularColor.g,
+				params.ui.flashlightSpecularColor.b);
+			_gl.uniform1f(_programFlashlightAttenuationKc, params.ui.flashlightKc);
+			_gl.uniform1f(_programFlashlightAttenuationKl, params.ui.flashlightKl);
+			_gl.uniform1f(_programFlashlightAttenuationKq, params.ui.flashlightKq);
+			_gl.uniform1f(_programFlashlightInnerCutoffUniform, Math.cos(radians(params.ui.flashlightInnerCutoff)));
+			_gl.uniform1f(_programFlashlightOuterCutoffUniform, Math.cos(radians(params.ui.flashlightOuterCutoff)));
 		}
 
 		// Lighting maps
 		_gl.uniform1i(_programDiffuseLightMapUniform, 0); // Diffuse lighting map
-		_context.setTextureAt(0, diffuseLightMapTexture);
+		_context.setTextureAt(0, params.textures[0]);
 		_gl.uniform1i(_programSpecularLightMapUniform, 1); // Specular lighting map
-		_context.setTextureAt(1, specularLightMapTexture);
-		_gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
-		_gl.uniform1f(_programSpecularShininessUniform, Math.pow(2, ui.specularShininess));
+		_context.setTextureAt(1, params.textures[1]);
+		_gl.uniform3fv(_programViewerPositionUniform, params.cameraPosition, 0);
+		_gl.uniform1f(_programSpecularShininessUniform, Math.pow(2, params.ui.specularShininess));
 
 		// Apply GL calls to submit the cube data to the GPU
-		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
-		_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
-		_context.setVertexBufferAt(_programColorAttribute, vbo, 5, FLOAT_4);
-		_context.setVertexBufferAt(_programNormalAttribute, vbo, 9, FLOAT_3);
+		_context.setVertexBufferAt(_programVertexAttribute, params.vbo, 0, FLOAT_3);
+		_context.setVertexBufferAt(_programTextureAttribute, params.vbo, 3, FLOAT_2);
+		_context.setVertexBufferAt(_programColorAttribute, params.vbo, 5, FLOAT_4);
+		_context.setVertexBufferAt(_programNormalAttribute, params.vbo, 9, FLOAT_3);
 
-		_context.drawTriangles(ibo);
+		_context.drawTriangles(params.ibo);
 	}
 }

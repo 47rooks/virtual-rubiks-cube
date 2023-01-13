@@ -1,21 +1,15 @@
 package gl;
 
 import MatrixUtils.matrix3DToFloat32Array;
-import lights.PointLight;
+import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
-import lime.utils.Float32Array;
 import openfl.Assets;
 import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.display3D.textures.RectangleTexture;
-import openfl.geom.Matrix3D;
-import ui.UI;
 
 /**
  * The Outlining program outputs the same color to every fragment within the area of the model.
- * It is intended to be used with the stencil buffer to produce an outline effect.
+ * It is intended to be used with the stencil buffer to produce an outline effect. 
  */
 class OutliningProgram extends Program
 {
@@ -26,6 +20,7 @@ class OutliningProgram extends Program
 	// GL variables
 	/* Full model-view-projection matrix */
 	private var _programMatrixUniform:GLUniformLocation;
+
 	/* Model matrix */
 	private var _programModelMatrixUniform:GLUniformLocation;
 	/* Image uniform used for the case where the cube face displays an image */
@@ -68,20 +63,26 @@ class OutliningProgram extends Program
 		_programModelMatrixUniform = _gl.getUniformLocation(_glProgram, "uModel");
 	}
 
-	public function render(model:Matrix3D, projection:Matrix3D, lightDirection:Float32Array, cameraPosition:Float32Array, vbo:VertexBuffer3D,
-			ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture, pointLights:Array<PointLight>,
-			flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
+	/**
+	 * Draw with the specified parameters.
+	 * @param params the program parameters. The following ProgramParameters fields are required:
+	 * 		- vbo
+	 * 		- ibo
+	 * 		- modelMatrix
+	 * 		- projectionMatrix
+	 */
+	public function render(params:ProgramParameters):Void
 	{
-		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
+		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(params.modelMatrix));
 
 		// Add projection and pass in to shader
-		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
+		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(params.projectionMatrix));
 
 		// Apply GL calls to submit the cube data to the GPU
-		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
-		_context.setVertexBufferAt(_programNormalAttribute, vbo, 3, FLOAT_3);
-		_context.setVertexBufferAt(_programTextureAttribute, vbo, 6, FLOAT_2);
+		_context.setVertexBufferAt(_programVertexAttribute, params.vbo, 0, FLOAT_3);
+		_context.setVertexBufferAt(_programNormalAttribute, params.vbo, 3, FLOAT_3);
+		_context.setVertexBufferAt(_programTextureAttribute, params.vbo, 6, FLOAT_2);
 
-		_context.drawTriangles(ibo);
+		_context.drawTriangles(params.ibo);
 	}
 }

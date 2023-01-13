@@ -84,8 +84,21 @@ class CubeCloud
 			var fullProjection = model.clone();
 			fullProjection.append(projectionMatrix);
 
-			_cubeProgram.render(model, fullProjection, lightColorArr, lightDirection, cameraPosition, _cubeModel._glVertexBuffer, _cubeModel._glIndexBuffer,
-				_diffuseLightMapTexture, _specularLightMapTexture, pointLights, flashlightPos, flashlightDir, ui);
+			_cubeProgram.render({
+				vbo: _cubeModel._glVertexBuffer,
+				ibo: _cubeModel._glIndexBuffer,
+				textures: [_diffuseLightMapTexture, _specularLightMapTexture],
+				modelMatrix: model,
+				projectionMatrix: fullProjection,
+				cameraPosition: cameraPosition,
+				lightColor: lightColorArr,
+				lightPosition: null,
+				directionalLight: lightDirection,
+				pointLights: pointLights,
+				flashlightPos: flashlightPos,
+				flashlightDir: flashlightDir,
+				ui: ui
+			});
 		}
 	}
 }

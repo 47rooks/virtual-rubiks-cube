@@ -4,7 +4,8 @@ import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
 import openfl.display3D.Context3D;
 
-/*A Flashlight is positioned at the viewer(camera) and points out.There is no
+/**
+ * A Flashlight is positioned at the viewer(camera) and points out.There is no
  * rendered model because standing with the viewer. 
  */
 class Flashlight

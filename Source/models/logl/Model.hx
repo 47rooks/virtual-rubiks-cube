@@ -1,15 +1,10 @@
 package models.logl;
 
 import MatrixUtils.createTranslationMatrix;
-import gl.ModelLoadingProgram;
-import gl.OutliningProgram;
-import lights.PointLight;
+import gl.Program;
 import lime.graphics.WebGLRenderContext;
-import lime.utils.Float32Array;
 import models.logl.Mesh.Texture;
 import openfl.display3D.Context3D;
-import openfl.geom.Matrix3D;
-import ui.UI;
 
 final MATERIAL_DIFFUSE = "texture_diffuse";
 final MATERIAL_SPECULAR = "texture_specular";
@@ -50,25 +45,47 @@ class Model
 		_loadedTextures = new Array<Texture>();
 	}
 
-	public function draw(program:ModelLoadingProgram, modelMatrix:Matrix3D, projectionMatrix:Matrix3D, lightDirection:Float32Array,
-			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
+	/**
+	 * Draw the mesh with the provided program and parameters.
+	 * @param program the program to render with
+	 * @param params the program parameters
+	 * 	the following ProgramParameters fields are required
+	 * 		- vbo
+	 * 		- ibo
+	 * 		- textures
+	 * 			- 0 the diffuse light map
+	 * 			- 1 the specular light map
+	 * 		- modelMatrix
+	 * 		- projectionMatrix
+	 *		- cameraPosition
+	 *		- directionalLight
+	 *		- pointLights
+	 *		- flashlighPos
+	 *		- flashlightDir
+	 * 		- ui
+	 */
+	public function draw(program:Program, params:ProgramParameters):Void
 	{
 		var matrix = createTranslationMatrix(_x, _y, _z);
-		matrix.append(modelMatrix);
-		for (m in _meshes)
-		{
-			m.draw(program, matrix, projectionMatrix, lightDirection, cameraPosition, pointLights, flashlightPos, flashlightDir, ui);
+		matrix.append(params.modelMatrix);
+		var meshParams = {
+			vbo: null,
+			ibo: null,
+			textures: null,
+			modelMatrix: matrix,
+			projectionMatrix: params.projectionMatrix,
+			cameraPosition: params.cameraPosition,
+			lightColor: null,
+			lightPosition: null,
+			directionalLight: params.directionalLight,
+			pointLights: params.pointLights,
+			flashlightPos: params.flashlightPos,
+			flashlightDir: params.flashlightDir,
+			ui: params.ui
 		}
-	}
-
-	public function drawOutline(program:OutliningProgram, modelMatrix:Matrix3D, projectionMatrix:Matrix3D, lightDirection:Float32Array,
-			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
-	{
-		var matrix = createTranslationMatrix(_x, _y, _z);
-		matrix.append(modelMatrix);
 		for (m in _meshes)
 		{
-			m.drawOutline(program, matrix, projectionMatrix, lightDirection, cameraPosition, pointLights, flashlightPos, flashlightDir, ui);
+			m.draw(program, meshParams);
 		}
 	}
 }

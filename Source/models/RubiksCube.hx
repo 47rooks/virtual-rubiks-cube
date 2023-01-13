@@ -912,26 +912,37 @@ class RubiksCube
 
 			// Light
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
-
+			var params:ProgramParameters = {
+				vbo: c.cube._glVertexBuffer,
+				ibo: c.cube._glIndexBuffer,
+				textures: [_faceTexture],
+				modelMatrix: fullModel,
+				projectionMatrix: fullProjection,
+				cameraPosition: cameraPosition,
+				lightColor: lightColorArr,
+				lightPosition: lightPosition,
+				directionalLight: null,
+				pointLights: null,
+				flashlightPos: null,
+				flashlightDir: null,
+				ui: ui
+			};
 			if (ui.sceneRubiks)
 			{
-				cast(GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE), SimpleCubeProgram).render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition,
-					c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
+				GLSL_PROGRAMS.get(GLSL_PROG_SIMPLE).render(params);
 			}
 			else if (ui.sceneRubiksWithLight && ui.textureEnabled)
 			{
-				cast(GLSL_PROGRAMS.get(GLSL_PROG_PHONG_LIGHT), PhongLightingProgram).render(fullModel, fullProjection, lightColorArr, lightPosition,
-					cameraPosition, c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
+				GLSL_PROGRAMS.get(GLSL_PROG_PHONG_LIGHT).render(params);
 			}
 			else if (ui.materialsEnabled)
 			{
-				cast(GLSL_PROGRAMS.get(GLSL_PROG_MATERIALS), PhongMaterialsProgram).render(fullModel, fullProjection, lightColorArr, lightPosition,
-					cameraPosition, c.cube._glVertexBuffer, c.cube._glIndexBuffer, _faceTexture, ui);
+				GLSL_PROGRAMS.get(GLSL_PROG_MATERIALS).render(params);
 			}
 			else
 			{
-				cast(GLSL_PROGRAMS.get(GLSL_PROG_LIGHTMAP), LightMapsProgram).render(fullModel, fullProjection, lightColorArr, lightPosition, cameraPosition,
-					c.cube._glVertexBuffer, c.cube._glIndexBuffer, _diffuseLightMapTexture, _specularLightMapTexture, ui);
+				params.textures = [_diffuseLightMapTexture, _specularLightMapTexture];
+				GLSL_PROGRAMS.get(GLSL_PROG_LIGHTMAP).render(params);
 			}
 		}
 	}

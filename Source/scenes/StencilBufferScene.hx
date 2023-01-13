@@ -1,6 +1,5 @@
 package scenes;
 
-import Camera.CameraMovement;
 import MatrixUtils.createPerspectiveProjection;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
@@ -14,13 +13,11 @@ import models.logl.CubeModel;
 import models.logl.Model;
 import models.logl.PlaneModel;
 import openfl.events.Event;
-import openfl.events.KeyboardEvent;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
-import openfl.ui.Keyboard;
 import ui.UI;
 
-/**
+/*
  * The StencilBufferScene demonstrates the use of the stencil buffer to 
  * render an outline around some objects while others remain un-outlined.
  */
@@ -128,8 +125,22 @@ class StencilBufferScene extends BaseScene
 		// Offset floor a little downward to prevent z-fighting between the bottom of the cubes and the floor.
 		var translation = createTranslationMatrix(0.0, -0.001, 0.0);
 		translation.append(_sceneRotation);
-		_models[3].draw(_modelLoadingProgram, translation, lookAtMat, lightDirection, cameraPos, _pointLights, cameraPos,
-			vector3DToFloat32Array(_camera.cameraFront), _ui);
+
+		_models[3].draw(_modelLoadingProgram, {
+			vbo: null,
+			ibo: null,
+			textures: null,
+			modelMatrix: translation,
+			projectionMatrix: lookAtMat,
+			cameraPosition: cameraPos,
+			lightColor: null,
+			lightPosition: null,
+			directionalLight: lightDirection,
+			pointLights: _pointLights,
+			flashlightPos: cameraPos,
+			flashlightDir: vector3DToFloat32Array(_camera.cameraFront),
+			ui: _ui
+		});
 
 		// Set stencil buffer to update
 		_gl.enable(_gl.STENCIL_TEST);
@@ -140,8 +151,21 @@ class StencilBufferScene extends BaseScene
 		// Draw initial correct model size
 		for (m in _models.slice(0, 3))
 		{
-			m.draw(_modelLoadingProgram, _sceneRotation, lookAtMat, lightDirection, cameraPos, _pointLights, cameraPos,
-				vector3DToFloat32Array(_camera.cameraFront), _ui);
+			m.draw(_modelLoadingProgram, {
+				vbo: null,
+				ibo: null,
+				textures: null,
+				modelMatrix: _sceneRotation,
+				projectionMatrix: lookAtMat,
+				cameraPosition: cameraPos,
+				lightColor: null,
+				lightPosition: null,
+				directionalLight: lightDirection,
+				pointLights: _pointLights,
+				flashlightPos: cameraPos,
+				flashlightDir: vector3DToFloat32Array(_camera.cameraFront),
+				ui: _ui
+			});
 		}
 
 		// Disable stencil buffer writes, depth buffer and set comparison operation
@@ -156,8 +180,21 @@ class StencilBufferScene extends BaseScene
 		scaleMatrix.append(_sceneRotation);
 		for (m in _models.slice(0, 2))
 		{
-			m.drawOutline(_outliningProgram, scaleMatrix, lookAtMat, lightDirection, cameraPos, _pointLights, cameraPos,
-				vector3DToFloat32Array(_camera.cameraFront), _ui);
+			m.draw(_outliningProgram, {
+				vbo: null,
+				ibo: null,
+				textures: null,
+				modelMatrix: scaleMatrix,
+				projectionMatrix: lookAtMat,
+				cameraPosition: cameraPos,
+				lightColor: null,
+				lightPosition: null,
+				directionalLight: lightDirection,
+				pointLights: _pointLights,
+				flashlightPos: cameraPos,
+				flashlightDir: vector3DToFloat32Array(_camera.cameraFront),
+				ui: _ui
+			});
 		}
 
 		// Re-enable depth buffer

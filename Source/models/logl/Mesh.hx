@@ -1,18 +1,14 @@
 package models.logl;
 
-import gl.ModelLoadingProgram;
-import gl.OutliningProgram;
+import gl.Program;
 import haxe.ValueException;
-import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
-import lime.utils.Float32Array;
 import openfl.Vector;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
-import ui.UI;
 
 /**
  * An unsigned integer implementation which throws an exception rather
@@ -169,8 +165,26 @@ class Mesh
 		_glIndexBuffer.uploadFromVector(indexData, 0, indexData.length);
 	}
 
-	public function draw(program:ModelLoadingProgram, rotationMatrix:Matrix3D, projectionMatrix:Matrix3D, lightDirection:Float32Array,
-			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI)
+	/**
+	 * Draw the mesh with the provided program and parameters.
+	 * @param program the program to render with
+	 * @param params the program parameters
+	 * 	the following ProgramParameters fields are required
+	 * 		- vbo
+	 * 		- ibo
+	 * 		- textures
+	 * 			- 0 the diffuse light map
+	 * 			- 1 the specular light map
+	 * 		- modelMatrix
+	 * 		- projectionMatrix
+	 *		- cameraPosition
+	 *		- directionalLight
+	 *		- pointLights
+	 *		- flashlighPos
+	 *		- flashlightDir
+	 * 		- ui
+	 */
+	public function draw(program:Program, params:ProgramParameters):Void
 	{
 		var diffuseNr:UInt = 1;
 		var specularNr:UInt = 1;
@@ -194,50 +208,28 @@ class Mesh
 		// FIXME Hacked in passing the textures. Not generalized
 		var modelMatrix = new Matrix3D();
 		modelMatrix.identity();
-		modelMatrix.append(rotationMatrix);
+		modelMatrix.append(params.modelMatrix);
 		modelMatrix.appendScale(64, 64, 64);
 		var fullProjection = modelMatrix.clone();
-		fullProjection.append(projectionMatrix);
+		fullProjection.append(params.projectionMatrix);
 		if (_textures.length != 2 || _textures[0].texture == null || _textures[1].texture == null)
 		{
 			trace('problem with texturess');
 		}
-		program.render(modelMatrix, fullProjection, lightDirection, cameraPosition, _glVertexBuffer, _glIndexBuffer, _textures[0].texture,
-			_textures[1].texture, pointLights, flashlightPos, flashlightDir, ui);
-	}
-
-	/**
-	 * Draw the outline around a shape. 
-	 * 
-	 * FIXME Strictly this is badly factored and draw needs to be changed
-	 * so that it can handle more diverse functions.
-	 * @param program the shader program to use
-	 * @param rotationMatrix the rotation matrix to apply to the mesh
-	 * @param projectionMatrix the projection matrix to apply to the mesh
-	 * @param lightDirection the direction of the directional light
-	 * @param cameraPosition the position of the camera
-	 * @param pointLights an array of up to four point lights
-	 * @param flashlightPos the position of the flashlight
-	 * @param flashlightDir the direction of the flashlight
-	 * @param ui the UI object
-	 */
-	public function drawOutline(program:OutliningProgram, rotationMatrix:Matrix3D, projectionMatrix:Matrix3D, lightDirection:Float32Array,
-			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI)
-	{
-		var diffuseNr:UInt = 1;
-		var specularNr:UInt = 1;
-
-		var modelMatrix = new Matrix3D();
-		modelMatrix.identity();
-		modelMatrix.append(rotationMatrix);
-		modelMatrix.appendScale(64, 64, 64);
-		var fullProjection = modelMatrix.clone();
-		fullProjection.append(projectionMatrix);
-		if (_textures.length != 2 || _textures[0].texture == null || _textures[1].texture == null)
-		{
-			trace('problem with texturess');
-		}
-		program.render(modelMatrix, fullProjection, lightDirection, cameraPosition, _glVertexBuffer, _glIndexBuffer, _textures[0].texture,
-			_textures[1].texture, pointLights, flashlightPos, flashlightDir, ui);
+		program.render({
+			vbo: _glVertexBuffer,
+			ibo: _glIndexBuffer,
+			textures: [_textures[0].texture, _textures[1].texture],
+			modelMatrix: modelMatrix,
+			projectionMatrix: fullProjection,
+			cameraPosition: params.cameraPosition,
+			lightColor: null,
+			lightPosition: null,
+			directionalLight: params.directionalLight,
+			pointLights: params.pointLights,
+			flashlightPos: params.flashlightPos,
+			flashlightDir: params.flashlightDir,
+			ui: params.ui
+		});
 	}
 }

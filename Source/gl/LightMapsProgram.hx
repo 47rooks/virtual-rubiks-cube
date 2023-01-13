@@ -1,16 +1,11 @@
 package gl;
 
 import MatrixUtils.matrix3DToFloat32Array;
+import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
-import lime.utils.Float32Array;
 import openfl.Assets;
 import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.display3D.textures.RectangleTexture;
-import openfl.geom.Matrix3D;
-import ui.UI;
 
 /**
  * A program class supporting lighting maps.
@@ -105,37 +100,51 @@ class LightMapsProgram extends Program
 		_programViewerPositionUniform = _gl.getUniformLocation(_glProgram, "uViewerPos");
 	}
 
-	public function render(model:Matrix3D, projection:Matrix3D, lightColor:Float32Array, lightPosition:Float32Array, cameraPosition:Float32Array,
-			vbo:VertexBuffer3D, ibo:IndexBuffer3D, diffuseLightMapTexture:RectangleTexture, specularLightMapTexture:RectangleTexture, ui:UI):Void
+	/**
+	 * Draw with the specified parameters.
+	 * @param params the program parameters. The following ProgramParameters fields are required:
+	 * 		- vbo
+	 * 		- ibo
+	 * 		- textures
+	 * 			- 0 the diffuse light map
+	 * 			- 1 the specular light map
+	 * 		- modelMatrix
+	 * 		- projectionMatrix
+	 * 		- lightColor
+	 * 		- lightPosition
+	 * 		- cameraPosition
+	 * 		- ui
+	 */
+	public function render(params:ProgramParameters):Void
 	{
-		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(model));
+		_gl.uniformMatrix4fv(_programModelMatrixUniform, false, matrix3DToFloat32Array(params.modelMatrix));
 
 		// Add projection and pass in to shader
-		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(projection));
+		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(params.projectionMatrix));
 
 		// Light
-		_gl.uniform3fv(_programLightColorUniform, lightColor, 0);
-		_gl.uniform3fv(_programLightPositionUniform, lightPosition, 0);
+		_gl.uniform3fv(_programLightColorUniform, params.lightColor, 0);
+		_gl.uniform3fv(_programLightPositionUniform, params.lightPosition, 0);
 
-		_gl.uniform1i(_programEnabledLightUniform, ui.componentLightEnabled ? 1 : 0);
-		_gl.uniform3f(_programAmbientLightUniform, ui.lightAmbientColor.r, ui.lightAmbientColor.g, ui.lightAmbientColor.b);
-		_gl.uniform3f(_programDiffuseLightUniform, ui.lightDiffuseColor.r, ui.lightDiffuseColor.g, ui.lightDiffuseColor.b);
-		_gl.uniform3f(_programSpecularLightUniform, ui.lightSpecularColor.r, ui.lightSpecularColor.g, ui.lightSpecularColor.b);
+		_gl.uniform1i(_programEnabledLightUniform, params.ui.componentLightEnabled ? 1 : 0);
+		_gl.uniform3f(_programAmbientLightUniform, params.ui.lightAmbientColor.r, params.ui.lightAmbientColor.g, params.ui.lightAmbientColor.b);
+		_gl.uniform3f(_programDiffuseLightUniform, params.ui.lightDiffuseColor.r, params.ui.lightDiffuseColor.g, params.ui.lightDiffuseColor.b);
+		_gl.uniform3f(_programSpecularLightUniform, params.ui.lightSpecularColor.r, params.ui.lightSpecularColor.g, params.ui.lightSpecularColor.b);
 
 		// Lighting maps
 		_gl.uniform1i(_programDiffuseLightMapUniform, 0); // Diffuse lighting map
-		_context.setTextureAt(0, diffuseLightMapTexture);
+		_context.setTextureAt(0, params.textures[0]);
 		_gl.uniform1i(_programSpecularLightMapUniform, 1); // Specular lighting map
-		_context.setTextureAt(1, specularLightMapTexture);
-		_gl.uniform3fv(_programViewerPositionUniform, cameraPosition, 0);
-		_gl.uniform1f(_programSpecularShininessUniform, Math.pow(2, ui.specularShininess));
+		_context.setTextureAt(1, params.textures[1]);
+		_gl.uniform3fv(_programViewerPositionUniform, params.cameraPosition, 0);
+		_gl.uniform1f(_programSpecularShininessUniform, Math.pow(2, params.ui.specularShininess));
 
 		// Apply GL calls to submit the cube data to the GPU
-		_context.setVertexBufferAt(_programVertexAttribute, vbo, 0, FLOAT_3);
-		_context.setVertexBufferAt(_programTextureAttribute, vbo, 3, FLOAT_2);
-		_context.setVertexBufferAt(_programColorAttribute, vbo, 5, FLOAT_4);
-		_context.setVertexBufferAt(_programNormalAttribute, vbo, 9, FLOAT_3);
+		_context.setVertexBufferAt(_programVertexAttribute, params.vbo, 0, FLOAT_3);
+		_context.setVertexBufferAt(_programTextureAttribute, params.vbo, 3, FLOAT_2);
+		_context.setVertexBufferAt(_programColorAttribute, params.vbo, 5, FLOAT_4);
+		_context.setVertexBufferAt(_programNormalAttribute, params.vbo, 9, FLOAT_3);
 
-		_context.drawTriangles(ibo);
+		_context.drawTriangles(params.ibo);
 	}
 }

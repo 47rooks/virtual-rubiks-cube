@@ -2,14 +2,100 @@ package gl;
 
 import gl.OpenGLUtils.glCreateProgram;
 import haxe.ValueException;
+import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLProgram;
+import lime.utils.Float32Array;
 import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.geom.Matrix3D;
+import ui.UI;
+
+/**
+ * ProgramParameters is a container type to carry all possible render function parameters. The exact
+ * parameters that must be set is determined by the specific Program subclass.
+ */
+typedef ProgramParameters =
+{
+	/**
+	 * The Vertex Buffer Object. The attributes present for each vertex will be determined by the
+	 * specific program.
+	 */
+	var vbo:VertexBuffer3D;
+
+	/**
+	 * The index buffer object. Whether indexed drawing is required or not will be determined by the
+	 * specific program.
+	 */
+	var ibo:IndexBuffer3D;
+
+	/**
+	 * An array of textures.
+	 * FIXME ultimately this should be an array of TextureInfo objects so that we can follow
+	 * a convention as to what textures are diffuse or specular or otherwise.
+	 */
+	var textures:Array<RectangleTexture>; // RectangleTexture should probably be TextureInfo
+
+	/**
+	 * The model matrix to apply to the model to place it properly oriented and position in the world.
+	 */
+	var modelMatrix:Matrix3D;
+
+	/**
+	 * The projection matrix to use.
+	 */
+	var projectionMatrix:Matrix3D;
+
+	/**
+	 * The camera position.
+	 * FIXME This should be a camera object
+	 */
+	var cameraPosition:Float32Array;
+
+	/**
+	 * The light color.
+	 * This is used in the simplest light models only.
+	 */
+	var lightColor:Float32Array;
+
+	/**
+	 * The light position.
+	 * This is used in the simplest light models only.
+	 */
+	var lightPosition:Float32Array;
+
+	/**
+	 * The direction vector of the directional light.
+	 * FIXME  This should be a directional light object
+	 */
+	var directionalLight:Float32Array;
+
+	var pointLights:Array<PointLight>;
+
+	/**
+	 * Flashlight position.
+	 * FIXME this should be part of a flashlight object
+	 */
+	var flashlightPos:Float32Array;
+
+	/**
+	 * Flashlight direction vector
+	 * FIXME this should be part of a flashlight object 
+	 */
+	var flashlightDir:Float32Array;
+
+	/**
+	 * The UI instance.
+	 */
+	var ui:UI;
+}
 
 /**
  * Base GL program class.
  */
-class Program
+abstract class Program
 {
 	// Graphics contexts
 	var _gl:WebGLRenderContext;
@@ -50,4 +136,15 @@ class Program
 			throw new ValueException('compilation failed, check accompanying errors');
 		}
 	}
+
+	/**
+	 * Render the object specified by the parameters.
+	 * The exact data provided in the params parameter
+	 * provides all the information required by the
+	 * Program to render an object. All fields are
+	 * optional but the program subclass may and 
+	 * probably should implement checks.
+	 * @param params the program data.
+	 */
+	public abstract function render(params:ProgramParameters):Void;
 }

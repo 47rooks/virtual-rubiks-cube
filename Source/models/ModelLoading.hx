@@ -63,7 +63,21 @@ class ModelLoading
 	{
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
 		_modelLoadingProgram.use();
-		_model.draw(_modelLoadingProgram, _modelRotation, projectionMatrix, lightDirection, cameraPosition, pointLights, flashlightPos, flashlightDir, ui);
+		_model.draw(_modelLoadingProgram, {
+			vbo: null,
+			ibo: null,
+			textures: null,
+			modelMatrix: _modelRotation,
+			projectionMatrix: projectionMatrix,
+			cameraPosition: cameraPosition,
+			lightColor: null,
+			lightPosition: null,
+			directionalLight: lightDirection,
+			pointLights: pointLights,
+			flashlightPos: flashlightPos,
+			flashlightDir: flashlightDir,
+			ui: ui
+		});
 	}
 
 	/**

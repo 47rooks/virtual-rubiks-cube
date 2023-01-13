@@ -275,6 +275,20 @@ class Light
 		fullProjection.append(projectionMatrix);
 
 		_program.use();
-		_program.render(_modelMatrix, fullProjection, _glVertexBuffer, _glIndexBuffer, ui);
+		_program.render({
+			vbo: _glVertexBuffer,
+			ibo: _glIndexBuffer,
+			textures: null,
+			modelMatrix: _modelMatrix,
+			projectionMatrix: fullProjection,
+			cameraPosition: null,
+			lightColor: null,
+			lightPosition: null,
+			directionalLight: null,
+			pointLights: null,
+			flashlightPos: null,
+			flashlightDir: null,
+			ui: ui
+		});
 	}
 }
