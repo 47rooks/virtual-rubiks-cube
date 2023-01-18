@@ -12,6 +12,7 @@ import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import scenes.BaseScene;
 import scenes.BasicsScene;
+import scenes.BlendingScene;
 import scenes.ModelLoadingScene;
 import scenes.StencilBufferScene;
 import ui.UI;
@@ -115,6 +116,10 @@ class Main extends Sprite
 				case STENCIL:
 					{
 						newScene = new StencilBufferScene(_ui);
+					}
+				case BLENDING:
+					{
+						newScene = new BlendingScene(_ui);
 					}
 			}
 

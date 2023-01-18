@@ -6,6 +6,8 @@ While none of this code is a direct copy the original code of Learn OpenGL, it i
 
 I've used the following artifacts under https://github.com/JoeyDeVries/LearnOpenGL/blob/master/LICENSE.md:
    * metal.png (unmodified) for the floor.
+   * grass.png (unmodified) for the simple transparency example.
+   * window.png (unmodified) for the blending example.
 
 ## Berk Gedik, Survival Guitar Backpack
 

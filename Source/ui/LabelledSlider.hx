@@ -113,6 +113,8 @@ class LabelledSlider extends VBox
 		lsMaxId.text = formatFloat(lsSliderId.max / scale, minMaxPrecision);
 		lsMinId.text = formatFloat(lsSliderId.min / scale, minMaxPrecision);
 		lsCurValueId.text = formatFloat(lsSliderId.pos / scale, thumbPrecision);
+
+		lsMaxId.disabled = lsMinId.disabled = lsCurValueId.disabled = lsSliderId.disabled = disabled;
 	}
 
 	/**

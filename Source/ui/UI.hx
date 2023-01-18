@@ -16,6 +16,7 @@ enum SceneType
 	BASIC;
 	MODEL_LOADING;
 	STENCIL;
+	BLENDING;
 }
 
 /**
@@ -196,6 +197,11 @@ class UI extends VBox
 	@:bind(uiSceneModelLoading.selected)
 	public var sceneModelLoading(default, null):Bool;
 
+	/**
+	 * The scene type to display. This identifies the scene class rather than what is
+	 * referred to as scene in the UI. This is slight confused and could do with 
+	 * some refactoring at some point.
+	 */
 	public var sceneType(get, null):SceneType;
 
 	public function get_sceneType():SceneType
@@ -208,10 +214,17 @@ class UI extends VBox
 		{
 			return SceneType.MODEL_LOADING;
 		}
-		else
+		else if (stencilBufferConfig.selected)
 		{
 			return SceneType.STENCIL;
 		}
+		else if (blendingConfig.selected)
+		{
+			return SceneType.BLENDING;
+		}
+
+		// Default case just return the Rubik's cube
+		return SceneType.BASIC;
 	}
 
 	/**
@@ -266,6 +279,25 @@ class UI extends VBox
 	{
 		return Math.ceil(numCubes.pos);
 	}
+
+	@:bind(uiBlendingEnabled.selected)
+	public var blendingEnabled(default, null):Bool;
+
+	@:bind(uiThresholdAlpha.selected)
+	public var blendThresholdAlpha(default, null):Bool;
+
+	public var blendAlphaValueThreshold(get, null):Float;
+
+	function get_blendAlphaValueThreshold():Float
+	{
+		return uiBlendAlphaThreshold.pos;
+	}
+
+	@:bind(uiSourceBlendFunc.text)
+	public var sourceBlendFunc(default, null):String;
+
+	@:bind(uiDestBlendFunc.text)
+	public var destBlendFunc(default, null):String;
 
 	public function new()
 	{
@@ -355,6 +387,15 @@ class UI extends VBox
 				title: "Stencil Buffer",
 				footer: "",
 				content: "This example demonstrates the use of the stencil test to outline an object, as might be done to indicate object selection in a game."
+			}
+		});
+
+		ToolTipManager.instance.registerTooltip(blendingConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Blending",
+				footer: "",
+				content: "An example of simple transparency and a second of blending of multiple semi-transparent elements."
 			}
 		});
 	}
@@ -578,6 +619,25 @@ class UI extends VBox
 
 	@:bind(stencilBufferConfig, UIEvent.CHANGE)
 	function stencilBufferConfigFn(_)
+	{
+		resetLightingValues(true, true, true, false);
+		resetMaterialsValues(true, true, true, false);
+		resetSceneValues(true, true, true, true, false);
+
+		// Enable light casters and cube cloud
+		uiLightCasters.selected = true;
+
+		// Materials
+		useLightMaps.selected = true;
+
+		// Scene
+		uiSceneCustom.selected = true;
+
+		uiMouseTargetsCube.selected = true;
+	}
+
+	@:bind(blendingConfig, UIEvent.CHANGE)
+	function blendingConfigFn(_)
 	{
 		resetLightingValues(true, true, true, false);
 		resetMaterialsValues(true, true, true, false);

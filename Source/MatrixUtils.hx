@@ -25,6 +25,19 @@ function createScaleMatrix(scaleX:Float, scaleY:Float, scaleZ:Float):Matrix3D
 }
 
 /**
+ * Create a rotation matrix of the specified angle about the specified axis.
+ * @param degrees angle of rotation
+ * @param axis the axis of the rotation
+ * @return Matrix3D
+ */
+function createRotationMatrix(degrees:Float, axis:Vector3D):Matrix3D
+{
+	var rotationMatrix = new Matrix3D();
+	rotationMatrix.appendRotation(degrees, axis);
+	return rotationMatrix;
+}
+
+/**
  * Create a translation matrix to translate to the specified coordinates.
  * 
  * @param x translation in x direction

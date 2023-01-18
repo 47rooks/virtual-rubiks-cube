@@ -60,6 +60,9 @@
                                 <optionbox id="stencilBufferConfig" componentGroup="config"
                                     userData="Stencil buffer"
                                     text="Stencil Buffer" />
+                                <optionbox id="blendingConfig" componentGroup="config"
+                                    userData="Blending"
+                                    text="Blending" />
                             </group>
                         </vbox>
                     </frame>
@@ -342,30 +345,114 @@
                         <optionbox id="useLightMaps" componentGroup="matGroup" text="Use Light Maps"></optionbox>
                     </vbox>
                 </vbox>
+                <vbox id="blendingControls" text="Blending" styleName="controlBox"
+                    style="background-color: #ffffff;">
+                    <vbox width="100%">
+                        <optionbox id="uiDiscardingEnabled" componentGroup="blendingGroup"
+                            text="Enable discarding fragments" selected="true" />
+                        <vbox disabled="${!uiDiscardingEnabled.selected}"
+                            hidden="${!uiDiscardingEnabled.selected}">
+                            <frame text="Discarding Fragments" styleName="parameterTitle">
+                                <vbox>
+                                    <checkbox id="uiBlendingEnabled" text="Enable blending"
+                                        selected="true" />
+                                    <checkbox id="uiThresholdAlpha"
+                                        text="Discard fragments with alpha &lt;="
+                                        selected="true" />
+                                    <labelled-slider id="uiBlendAlphaThreshold"
+                                        disabled="${!uiThresholdAlpha.selected}"
+                                        hidden="${!uiThresholdAlpha.selected}"
+                                        title="Opacity threshold to discard"
+                                        min="0.0" max="1.0" pos="0.00"
+                                        scale="1000.0" minMaxPrecision="2"
+                                        thumbPrecision="3" />
+                                </vbox>
+                            </frame>
+                        </vbox>
+                        <optionbox id="uiSemiTransparentEnabled" componentGroup="blendingGroup"
+                            text="Enable semi-transparent blending"
+                            selected="false" />
+                        <vbox disabled="${!uiSemiTransparentEnabled.selected}"
+                            hidden="${!uiSemiTransparentEnabled.selected}">
+                            <frame text="Semi-transparent Blending" styleName="parameterTitle">
+                                <vbox>
+                                    <checkbox id="uiSortWindows" text="z-sort windows"
+                                        selected="false" />
+                                    <label text="Source blend function" styleName="parameterTitle" />
+                                    <dropdown id="uiSourceBlendFunc" text="GL_SRC_ALPHA">
+                                        <data>
+                                            <item text="GL_ZERO" />
+                                            <item text="GL_ONE" />
+                                            <item text="GL_SRC_COLOR" />
+                                            <item text="GL_ONE_MINUS_SRC_COLOR" />
+                                            <item text="GL_DST_COLOR" />
+                                            <item text="GL_ONE_MINUS_DST_COLOR" />
+                                            <item text="GL_SRC_ALPHA" />
+                                            <item text="GL_ONE_MINUS_SRC_ALPHA" />
+                                            <item text="GL_DST_ALPHA" />
+                                            <item text="GL_ONE_MINUS_DST_ALPHA" />
+                                            <item text="GL_CONSTANT_COLOR" />
+                                            <item text="GL_ONE_MINUS_CONSTANT_COLOR" />
+                                            <item text="GL_CONSTANT_ALPHA" />
+                                            <item text="GL_ONE_MINUS_CONSTANT_ALPHA" />
+                                            <item text="GL_SRC_ALPHA_SATURATE" />
+                                        </data>
+                                    </dropdown>
+
+                                    <label text="Destination blend function"
+                                        styleName="parameterTitle" />
+                                    <dropdown id="uiDestBlendFunc" text="GL_ONE_MINUS_SRC_ALPHA">
+                                        <data>
+                                            <item text="GL_ZERO" />
+                                            <item text="GL_ONE" />
+                                            <item text="GL_SRC_COLOR" />
+                                            <item text="GL_ONE_MINUS_SRC_COLOR" />
+                                            <item text="GL_DST_COLOR" />
+                                            <item text="GL_ONE_MINUS_DST_COLOR" />
+                                            <item text="GL_SRC_ALPHA" />
+                                            <item text="GL_ONE_MINUS_SRC_ALPHA" />
+                                            <item text="GL_DST_ALPHA" />
+                                            <item text="GL_ONE_MINUS_DST_ALPHA" />
+                                            <item text="GL_CONSTANT_COLOR" />
+                                            <item text="GL_ONE_MINUS_CONSTANT_COLOR" />
+                                            <item text="GL_CONSTANT_ALPHA" />
+                                            <item text="GL_ONE_MINUS_CONSTANT_ALPHA" />
+                                            <item text="GL_SRC_ALPHA_SATURATE" />
+                                        </data>
+                                    </dropdown>
+                                </vbox>
+                            </frame>
+                        </vbox>
+                    </vbox>
+                </vbox>
                 <vbox id="sceneControls" text="Scene" styleName="sceneBox">
                     <group id="sceneGroup">
-                        <optionbox id="uiSceneRubiks" componentGroup="sceneGroup"
-                            text="Rubik's Cube"
-                            selected="true"></optionbox>
-                        <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup"
-                            text="Rubik's Cube with Light and Texture"></optionbox>
-                        <optionbox id="uiSceneCubeCloud" componentGroup="sceneGroup"
-                            text="Multiple Cubes"></optionbox>
-                        <vbox disabled="${!uiSceneCubeCloud.selected}"
-                            hidden="${!uiSceneCubeCloud.selected}" height="175px">
-                            <label text="Number of cubes" styleName="parameterTitle"></label>
-                            <label text="'${numCubes.pos}'" horizontalAlign="center"></label>
-                            <hbox>
-                                <label text="'${numCubes.min}'" verticalAlign=" center" width="20px" />
-                                <slider id="numCubes" min="1" max="10" step="1" pos="5"
-                                    disabled="${!uiSceneCubeCloud.selected}"></slider>
-                                <label text="'${numCubes.max}'" verticalAlign=" center" width="20px" />
-                            </hbox>
+                        <vbox>
+                            <optionbox id="uiSceneRubiks" componentGroup="sceneGroup"
+                                text="Rubik's Cube"
+                                selected="true"></optionbox>
+                            <optionbox id="uiSceneRubiksWithLight" componentGroup="sceneGroup"
+                                text="Rubik's Cube with Light and Texture"></optionbox>
+                            <optionbox id="uiSceneCubeCloud" componentGroup="sceneGroup"
+                                text="Multiple Cubes"></optionbox>
+                            <vbox disabled="${!uiSceneCubeCloud.selected}"
+                                hidden="${!uiSceneCubeCloud.selected}" height="175px">
+                                <label text="Number of cubes" styleName="parameterTitle"></label>
+                                <label text="'${numCubes.pos}'" horizontalAlign="center"></label>
+                                <hbox>
+                                    <label text="'${numCubes.min}'" verticalAlign=" center"
+                                        width="20px" />
+                                    <slider id="numCubes" min="1" max="10" step="1" pos="5"
+                                        disabled="${!uiSceneCubeCloud.selected}"></slider>
+                                    <label text="'${numCubes.max}'" verticalAlign=" center"
+                                        width="20px" />
+                                </hbox>
+                            </vbox>
+                            <optionbox id="uiSceneModelLoading" componentGroup="sceneGroup"
+                                text="GLTF Backpack model"></optionbox>
+                            <optionbox id="uiSceneCustom" componentGroup="sceneGroup"
+                                text="Custom scene for configuration"></optionbox>
                         </vbox>
-                        <optionbox id="uiSceneModelLoading" componentGroup="sceneGroup"
-                            text="GLTF Backpack model"></optionbox>
-                        <optionbox id="uiSceneCustom" componentGroup="sceneGroup"
-                            text="Custom scene for configuration"></optionbox>
                     </group>
                 </vbox>
             </accordion>

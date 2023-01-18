@@ -23,13 +23,6 @@ import ui.UI;
  */
 class StencilBufferScene extends BaseScene
 {
-	// private var projectionTransform:Matrix3D;
-	// Mouse coordinates
-	// var _mouseX:Float;
-	// var _mouseY:Float;
-	// var _firstMove = true;
-	// private var _deltaTime:Float;
-	// Point Light
 	var _pointLights:Array<PointLight>;
 
 	public static final NUM_POINT_LIGHTS = 4;

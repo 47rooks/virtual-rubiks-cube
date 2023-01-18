@@ -40,13 +40,19 @@
         "learnopenglReferences": ["Ch 19, 20, 21"],
         "codeReferences": [],
         "uiReferences": [{"scene": "Model Loading"}]
-    }
-    ,
+    },
     {
         "title": "Stencil buffer",
-        "description": "Stencil buffer example of outlining cubes. ",
+        "description": "Stencil buffer example of outlining cubes.",
         "learnopenglReferences": ["Ch 23"],
         "codeReferences": [],
         "uiReferences": [{"scene": "Stencil Buffer"}]
+    },
+    {
+        "title": "Blending",
+        "description": "Transparency and blending are demonstrated in this example. Two things of note here. The first is that transparent fragments won't render as transparent until GL is told how to handle them. The second is that when blending semi-transparent fragments the z-order is important. This can be seen clear with the z-sort windows checkbox in the Blending controls. To render multiple transparent items one behind the other properly they must be rendered in the order from the farthest from to the nearest to the camera.",
+        "learnopenglReferences": ["Ch 24"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Blending"}]
     }
 ]
