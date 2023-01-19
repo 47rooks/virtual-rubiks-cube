@@ -13,6 +13,7 @@ import openfl.events.GameInputEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.geom.Matrix3D;
+import openfl.geom.Vector3D;
 import openfl.ui.GameInput;
 import openfl.ui.GameInputControl;
 import openfl.ui.GameInputDevice;
@@ -132,6 +133,13 @@ abstract class BaseScene extends Sprite
 	var _firstMove = true;
 	private var _deltaTime:Float;
 
+	// Vectors and Matrices
+	var _sceneRotation:Matrix3D;
+	var _yaw:Float;
+	var _pitch:Float;
+
+	final ROTATION_SENSITIVTY = 0.5;
+
 	/**
 	 * Constructor
 	 * @param ui the UI instance
@@ -142,6 +150,7 @@ abstract class BaseScene extends Sprite
 
 		_ui = ui;
 		_controlsEnabled = !_ui.isVisible;
+		_sceneRotation = new Matrix3D();
 
 		// Setup input
 		_controlTarget = MODEL;
@@ -258,13 +267,6 @@ abstract class BaseScene extends Sprite
 	{
 		return RGBA.create(0, 0, 0, 255);
 	}
-
-	/**
-	 * Rotate the model in the scene. Subclasses are expected to override this function if required.
-	 * @param xOffset x axis offset from current value
-	 * @param yOffset y axis offset from current value
-	 */
-	function rotateModel(xOffset:Float, yOffset:Float):Void {}
 
 	/**
 	 * Set controls to enabled or disabled. Enabled means that one can use the keyboard and mouse
@@ -508,5 +510,33 @@ abstract class BaseScene extends Sprite
 				_camera.move(CameraMovement.RIGHT, _deltaTime);
 			default:
 		}
+	}
+
+	/**
+	 * Rotate the model in space.
+	 * @param xOffset x axis offset from current value
+	 * @param yOffset y axis offset from current value
+	 */
+	function rotateModel(xOffset:Float, yOffset:Float):Void
+	{
+		var deltaX = xOffset * ROTATION_SENSITIVTY;
+		var deltaY = yOffset * ROTATION_SENSITIVTY;
+
+		_yaw += deltaX;
+		_pitch += deltaY;
+
+		if (_pitch > 89)
+		{
+			_pitch = 89;
+		}
+		if (_pitch < -89)
+		{
+			_pitch = -89;
+		}
+
+		var rotation = new Matrix3D();
+		rotation.appendRotation(_yaw, new Vector3D(0, 1, 0));
+		rotation.appendRotation(_pitch, new Vector3D(1, 0, 0));
+		_sceneRotation = rotation;
 	}
 }

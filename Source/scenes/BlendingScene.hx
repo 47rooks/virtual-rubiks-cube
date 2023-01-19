@@ -36,13 +36,6 @@ class BlendingScene extends BaseScene
 	var _blendingProgram:BlendingProgram;
 	var _locs:Array<Array<Float>>;
 
-	// Vectors and Matrices
-	var _sceneRotation:Matrix3D;
-	var _yaw:Float;
-	var _pitch:Float;
-
-	final ROTATION_SENSITIVTY = 0.5;
-
 	/**
 	 * Constructor
 	 * @param ui the UI instance
@@ -50,7 +43,6 @@ class BlendingScene extends BaseScene
 	public function new(ui:UI)
 	{
 		super(ui);
-		_sceneRotation = new Matrix3D();
 		_models = new Array<Model>();
 		_grassModels = new Array<Model>();
 		_windowModels = new Array<Model>();
@@ -298,33 +290,5 @@ class BlendingScene extends BaseScene
 			default:
 				return null;
 		}
-	}
-
-	/**
-	 * Rotate the model in space.
-	 * @param xOffset x axis offset from current value
-	 * @param yOffset y axis offset from current value
-	 */
-	override function rotateModel(xOffset:Float, yOffset:Float):Void
-	{
-		var deltaX = xOffset * ROTATION_SENSITIVTY;
-		var deltaY = yOffset * ROTATION_SENSITIVTY;
-
-		_yaw += deltaX;
-		_pitch += deltaY;
-
-		if (_pitch > 89)
-		{
-			_pitch = 89;
-		}
-		if (_pitch < -89)
-		{
-			_pitch = -89;
-		}
-
-		var rotation = new Matrix3D();
-		rotation.appendRotation(_yaw, new Vector3D(0, 1, 0));
-		rotation.appendRotation(_pitch, new Vector3D(1, 0, 0));
-		_sceneRotation = rotation;
 	}
 }
