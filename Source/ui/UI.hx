@@ -17,6 +17,7 @@ enum SceneType
 	MODEL_LOADING;
 	STENCIL;
 	BLENDING;
+	CULLING;
 }
 
 /**
@@ -222,6 +223,10 @@ class UI extends VBox
 		{
 			return SceneType.BLENDING;
 		}
+		else if (cullingConfig.selected)
+		{
+			return SceneType.CULLING;
+		}
 
 		// Default case just return the Rubik's cube
 		return SceneType.BASIC;
@@ -298,6 +303,24 @@ class UI extends VBox
 
 	@:bind(uiDestBlendFunc.text)
 	public var destBlendFunc(default, null):String;
+
+	@:bind(uiCullingEnabled.selected)
+	public var cullingEnabled(default, null):Bool;
+
+	@:bind(uiCCW.selected)
+	public var ccw(default, null):Bool;
+
+	@:bind(uiCW.selected)
+	public var cw(default, null):Bool;
+
+	@:bind(uiCullFrontFace.selected)
+	public var cullFrontFace(default, null):Bool;
+
+	@:bind(uiCullBackFace.selected)
+	public var cullBackFace(default, null):Bool;
+
+	@:bind(uiCullBothFaces.selected)
+	public var cullBothFaces(default, null):Bool;
 
 	public function new()
 	{
@@ -396,6 +419,15 @@ class UI extends VBox
 				title: "Blending",
 				footer: "",
 				content: "An example of simple transparency and a second of blending of multiple semi-transparent elements."
+			}
+		});
+
+		ToolTipManager.instance.registerTooltip(cullingConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Culling",
+				footer: "",
+				content: "This example shows the basic face culling options."
 			}
 		});
 	}
@@ -638,6 +670,25 @@ class UI extends VBox
 
 	@:bind(blendingConfig, UIEvent.CHANGE)
 	function blendingConfigFn(_)
+	{
+		resetLightingValues(true, true, true, false);
+		resetMaterialsValues(true, true, true, false);
+		resetSceneValues(true, true, true, true, false);
+
+		// Enable light casters and cube cloud
+		uiLightCasters.selected = true;
+
+		// Materials
+		useLightMaps.selected = true;
+
+		// Scene
+		uiSceneCustom.selected = true;
+
+		uiMouseTargetsCube.selected = true;
+	}
+
+	@:bind(cullingConfig, UIEvent.CHANGE)
+	function cullingConfigFn(_)
 	{
 		resetLightingValues(true, true, true, false);
 		resetMaterialsValues(true, true, true, false);

@@ -54,5 +54,12 @@
         "learnopenglReferences": ["Ch 24"],
         "codeReferences": [],
         "uiReferences": [{"scene": "Blending"}]
+    },
+    {
+        "title": "Culling",
+        "description": "This section provides a simple cube and controls, in the Culling controls, to manipulate basic face culling parameters.",
+        "learnopenglReferences": ["Ch 25"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Culling"}]
     }
 ]

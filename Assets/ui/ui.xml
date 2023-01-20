@@ -63,6 +63,9 @@
                                 <optionbox id="blendingConfig" componentGroup="config"
                                     userData="Blending"
                                     text="Blending" />
+                                <optionbox id="cullingConfig" componentGroup="config"
+                                    userData="Culling"
+                                    text="Culling" />
                             </group>
                         </vbox>
                     </frame>
@@ -420,6 +423,45 @@
                                             <item text="GL_SRC_ALPHA_SATURATE" />
                                         </data>
                                     </dropdown>
+                                </vbox>
+                            </frame>
+                        </vbox>
+                    </vbox>
+                </vbox>
+                <vbox id="cullingControls" text="Culling" styleName="controlBox"
+                    style="background-color: #ffffff;">
+                    <vbox width="100%">
+                        <checkbox id="uiCullingEnabled"
+                            text="Enable face culling" selected="true" />
+                        <vbox disabled="${!uiCullingEnabled.selected}"
+                            hidden="${!uiCullingEnabled.selected}">
+                            <frame text="Face Culling" styleName="parameterTitle">
+                                <vbox>
+                                    <frame text="Winding order" styleName="parameterTitle">
+                                        <vbox>
+                                            <optionbox id="uiCCW"
+                                                componentGroup="cullFrontFaceGroup"
+                                                text="Counter-clockwise Front"
+                                                selected="true"></optionbox>
+                                            <optionbox id="uiCW"
+                                                componentGroup="cullFrontFaceGroup"
+                                                text="Clockwise Front"></optionbox>
+                                        </vbox>
+                                    </frame>
+                                    <frame text="Cull Which Face ?" styleName="parameterTitle">
+                                        <vbox>
+                                            <optionbox id="uiCullFrontFace"
+                                                componentGroup="cullFaceGroup"
+                                                text="Cull Front Face"></optionbox>
+                                            <optionbox id="uiCullBackFace"
+                                                selected="true"
+                                                componentGroup="cullFaceGroup"
+                                                text="Cull Back Face"></optionbox>
+                                            <optionbox id="uiCullBothFaces"
+                                                componentGroup="cullFaceGroup"
+                                                text="Cull Both Faces"></optionbox>
+                                        </vbox>
+                                    </frame>
                                 </vbox>
                             </frame>
                         </vbox>

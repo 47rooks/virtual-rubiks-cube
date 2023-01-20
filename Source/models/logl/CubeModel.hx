@@ -101,8 +101,7 @@ class CubeModel extends Model
 			1.0, 1.0,
 			0.0, 1.0
 		];
-		// @formatter:off
-
+		// @formatter:on
 		var vertices = new Array<Vertex>();
 		for (i in 0...Math.ceil(verts.length / 3))
 		{
@@ -113,21 +112,22 @@ class CubeModel extends Model
 			});
 		}
 
+		// @formatter:off
 		var indices:Array<UnsignedInt> = [
-			 2,  3,    0, // Back
-			 0,  1,           2,
-			10, 11,   9, // Front
-			 8,  9,          11,
-			 5,  4,    7, // Left
-			 7,  6,           5,
-			14, 15,  12, // Right
-			12, 13,          14,
-			18, 19, 16, // Bottom
-			16, 17,          18,
-			21, 20,    23, // Top
-			21, 23,          22
+			 3,  2,  0, // Back
+			 1,  0,  2,
+			11, 10,  9, // Front
+			 9,  8, 11,
+			 5,  4,  7, // Left
+			 7,  6,  5,
+			14, 15, 12, // Right
+			12, 13, 14,
+			16, 18, 19, // Bottom
+			16, 17, 18,
+			21, 20, 23, // Top
+			21, 23, 22
 		];
-
+        // @formatter:on
 		_meshes.push(new Mesh(_context, _gl, vertices, indices, loadTextures()));
 	}
 

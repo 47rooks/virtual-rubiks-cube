@@ -235,6 +235,7 @@ abstract class BaseScene extends Sprite
 		// Disable the stencil buffer because otherwise the floor will write to it and break the outlining.
 		// This appears to be a side-affect of the OpenFL 2D render because it is only a problem when the UI is
 		// visible.
+		// FIXME need to setup these states based on the scene.
 		_gl.disable(_gl.STENCIL_TEST);
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT | _gl.STENCIL_BUFFER_BIT);
 		_gl.depthFunc(_gl.LESS);
