@@ -13,7 +13,6 @@ import models.logl.Model;
 import models.logl.PlaneModel;
 import models.logl.QuadModel;
 import openfl.events.Event;
-import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
 import ui.UI;
 
@@ -46,7 +45,6 @@ class BlendingScene extends BaseScene
 		_models = new Array<Model>();
 		_grassModels = new Array<Model>();
 		_windowModels = new Array<Model>();
-		_controlTarget = MODEL;
 
         // @formatter:off
 		/**
@@ -60,20 +58,6 @@ class BlendingScene extends BaseScene
                  [ 0.5, 0.0, -0.6]
                 ];
         // @formatter:on
-	}
-
-	function update(elapsed:Float)
-	{
-		_deltaTime = elapsed / 1000.0;
-
-		if (_ui.mouseTargetsCube)
-		{
-			_controlTarget = MODEL;
-		}
-		else
-		{
-			_controlTarget = CAMERA;
-		}
 	}
 
 	function addedToStage(e:Event)

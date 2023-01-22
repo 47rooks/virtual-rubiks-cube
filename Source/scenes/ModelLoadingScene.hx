@@ -43,7 +43,6 @@ class ModelLoadingScene extends BaseScene
 	{
 		super(ui);
 
-		_controlTarget = MODEL;
 		_deltaTime = 0;
 
 		// FIXME is this needed
@@ -55,19 +54,8 @@ class ModelLoadingScene extends BaseScene
 		_modelLoading.rotate(xOffset, yOffset);
 	}
 
-	function update(elapsed:Float)
+	override function update(elapsed:Float)
 	{
-		_deltaTime = elapsed / 1000.0;
-
-		if (_ui.mouseTargetsCube)
-		{
-			_controlTarget = MODEL;
-		}
-		else
-		{
-			_controlTarget = CAMERA;
-		}
-
 		_modelLoading.update(elapsed, _ui);
 	}
 

@@ -161,13 +161,23 @@ abstract class BaseScene extends Sprite
 	}
 
 	/**
-	 * Update any scene state for this frame.
+	 * Update any scene state for this frame. Subclasses should override this if they need to do updates.
 	 * @param elapsed time since the last update
 	 */
-	abstract function update(elapsed:Float):Void;
+	public function update(elapsed:Float):Void {};
 
 	public function updateScene(elapsed:Float):Void
 	{
+		_deltaTime = elapsed / 1000.0;
+
+		if (_ui.mouseTargetsCube)
+		{
+			_controlTarget = MODEL;
+		}
+		else
+		{
+			_controlTarget = CAMERA;
+		}
 		update(elapsed);
 	}
 

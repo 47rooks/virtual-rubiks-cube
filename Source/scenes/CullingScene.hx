@@ -28,21 +28,6 @@ class CullingScene extends BaseScene
 	{
 		super(ui);
 		_models = new Array<Model>();
-		_controlTarget = MODEL;
-	}
-
-	function update(elapsed:Float)
-	{
-		_deltaTime = elapsed / 1000.0;
-
-		if (_ui.mouseTargetsCube)
-		{
-			_controlTarget = MODEL;
-		}
-		else
-		{
-			_controlTarget = CAMERA;
-		}
 	}
 
 	function addedToStage(e:Event)

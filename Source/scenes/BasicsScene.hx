@@ -150,23 +150,12 @@ class BasicsScene extends BaseScene
 	 * 
 	 * @param elapsed elapsed time since last call.
 	 */
-	function update(elapsed:Float):Void
+	override function update(elapsed:Float):Void
 	{
-		_deltaTime = elapsed / 1000.0;
-
 		// Poll inputs that require it
 		for (gp in _gamepads)
 		{
 			pollGamepad(gp);
-		}
-
-		if (_ui.mouseTargetsCube)
-		{
-			_controlTarget = MODEL;
-		}
-		else
-		{
-			_controlTarget = CAMERA;
 		}
 
 		// FIXME Add a configure scene method that sets up the right collection of object
