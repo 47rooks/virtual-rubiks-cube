@@ -66,6 +66,9 @@
                                 <optionbox id="cullingConfig" componentGroup="config"
                                     userData="Culling"
                                     text="Culling" />
+                                <optionbox id="framebufferConfig" componentGroup="config"
+                                    userData="Framebuffer"
+                                    text="Framebuffer" />
                             </group>
                         </vbox>
                     </frame>
@@ -462,6 +465,36 @@
                                                 text="Cull Both Faces"></optionbox>
                                         </vbox>
                                     </frame>
+                                </vbox>
+                            </frame>
+                        </vbox>
+                    </vbox>
+                </vbox>
+                <vbox id="framebufferControls" text="Framebuffer" styleName="controlBox"
+                    style="background-color: #ffffff;">
+                    <vbox width="100%">
+                        <vbox>
+                            <frame text="Postprocessing Effect" styleName="parameterTitle">
+                                <vbox>
+                                    <optionbox id="uiFramebufferNoEffect"
+                                        componentGroup="framebufferGroup"
+                                        selected="true"
+                                        text="No Effect"></optionbox>
+                                    <optionbox id="uiInversion"
+                                        componentGroup="framebufferGroup"
+                                        text="Invert colors"></optionbox>
+                                    <optionbox id="uiGrayscale"
+                                        componentGroup="framebufferGroup"
+                                        text="Grayscale"></optionbox>
+                                    <optionbox id="uiSharpen"
+                                        componentGroup="framebufferGroup"
+                                        text="Sharpen"></optionbox>
+                                    <optionbox id="uiBlur"
+                                        componentGroup="framebufferGroup"
+                                        text="Blur"></optionbox>
+                                    <optionbox id="uiEdgeDetection"
+                                        componentGroup="framebufferGroup"
+                                        text="Edge Detection"></optionbox>
                                 </vbox>
                             </frame>
                         </vbox>

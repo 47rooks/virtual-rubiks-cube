@@ -61,5 +61,12 @@
         "learnopenglReferences": ["Ch 25"],
         "codeReferences": [],
         "uiReferences": [{"scene": "Culling"}]
+    },
+    {
+        "title": "Framebuffer",
+        "description": "This example shows the use of a framebuffer to render the scene with a different background color to a texture and, then render a quad with that texture. It also shows several simple post-processing effects that may be applied during framebuffer rendering.",
+        "learnopenglReferences": ["Ch 26"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Framebuffer"}]
     }
 ]

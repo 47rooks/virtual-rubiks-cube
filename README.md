@@ -7,9 +7,19 @@ The aims of this example are:
 
 The stack used is lime, openfl and haxeui.
 
+# Bugs
+   * point lights sliders are broken in the UI in multiple scenes - the labelled-sliders aren't working.
+   * the light casters detail panes overflow the surrounding vbox in the accordion when selected.
+   * accordion sections are enabled for things like blending, culling, framebuffer when the configuration is no active. Not a huge deal but the controls cannot be effective then.
+
 # To Do
 
    * Immediate
+     * Update code that renders textures and vertices by Context3D to use lime directly.
+       * example code of how to do this is in the Framebuffer example
+     * both culling and framebuffer are much smaller scale scenes (unit cubes not 64) and the keyboard WASD movement does not account for that - add scaling
+     * refactor point lights to base scene
+     * the reset* class of functions is getting out of hand. A better solution is required that doesn't require so much duplication.
      * fix GLTF loader
        * handling of the materials
        * clean up code handling node/mesh recursion

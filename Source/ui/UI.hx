@@ -18,6 +18,7 @@ enum SceneType
 	STENCIL;
 	BLENDING;
 	CULLING;
+	FRAMEBUFFER;
 }
 
 /**
@@ -227,6 +228,10 @@ class UI extends VBox
 		{
 			return SceneType.CULLING;
 		}
+		else if (framebufferConfig.selected)
+		{
+			return SceneType.FRAMEBUFFER;
+		}
 
 		// Default case just return the Rubik's cube
 		return SceneType.BASIC;
@@ -321,6 +326,22 @@ class UI extends VBox
 
 	@:bind(uiCullBothFaces.selected)
 	public var cullBothFaces(default, null):Bool;
+
+	// Framebuffer properties
+	@:bind(uiInversion.selected)
+	public var inversion(default, null):Bool;
+
+	@:bind(uiGrayscale.selected)
+	public var grayscale(default, null):Bool;
+
+	@:bind(uiSharpen.selected)
+	public var sharpen(default, null):Bool;
+
+	@:bind(uiBlur.selected)
+	public var blur(default, null):Bool;
+
+	@:bind(uiEdgeDetection.selected)
+	public var edgeDetection(default, null):Bool;
 
 	public function new()
 	{
@@ -428,6 +449,15 @@ class UI extends VBox
 				title: "Culling",
 				footer: "",
 				content: "This example shows the basic face culling options."
+			}
+		});
+
+		ToolTipManager.instance.registerTooltip(framebufferConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Framebuffer",
+				footer: "",
+				content: "An example of use of a framebuffer to render the scene to a texture which is then displayed on a quad, so you have the full scene and a smaller image of it."
 			}
 		});
 	}
@@ -689,6 +719,25 @@ class UI extends VBox
 
 	@:bind(cullingConfig, UIEvent.CHANGE)
 	function cullingConfigFn(_)
+	{
+		resetLightingValues(true, true, true, false);
+		resetMaterialsValues(true, true, true, false);
+		resetSceneValues(true, true, true, true, false);
+
+		// Enable light casters and cube cloud
+		uiLightCasters.selected = true;
+
+		// Materials
+		useLightMaps.selected = true;
+
+		// Scene
+		uiSceneCustom.selected = true;
+
+		uiMouseTargetsCube.selected = true;
+	}
+
+	@:bind(framebufferConfig, UIEvent.CHANGE)
+	function framebufferConfigFn(_)
 	{
 		resetLightingValues(true, true, true, false);
 		resetMaterialsValues(true, true, true, false);

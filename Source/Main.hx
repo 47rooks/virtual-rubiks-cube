@@ -14,6 +14,7 @@ import scenes.BaseScene;
 import scenes.BasicsScene;
 import scenes.BlendingScene;
 import scenes.CullingScene;
+import scenes.FramebufferScene;
 import scenes.ModelLoadingScene;
 import scenes.StencilBufferScene;
 import ui.UI;
@@ -125,6 +126,10 @@ class Main extends Sprite
 				case CULLING:
 					{
 						newScene = new CullingScene(_ui);
+					}
+				case FRAMEBUFFER:
+					{
+						newScene = new FramebufferScene(_ui);
 					}
 			}
 
