@@ -8,7 +8,6 @@ The aims of this example are:
 The stack used is lime, openfl and haxeui.
 
 # Bugs
-   * point lights sliders are broken in the UI in multiple scenes - the labelled-sliders aren't working.
    * the light casters detail panes overflow the surrounding vbox in the accordion when selected.
    * accordion sections are enabled for things like blending, culling, framebuffer when the configuration is no active. Not a huge deal but the controls cannot be effective then.
 
