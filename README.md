@@ -9,6 +9,7 @@ The stack used is lime, openfl and haxeui.
 
 # Bugs
    * the light casters detail panes overflow the surrounding vbox in the accordion when selected.
+     * hack workaround of fixed height put in. If I get an alternative suggestion which will automatically handle this case I'll change this fix.
    * accordion sections are enabled for things like blending, culling, framebuffer when the configuration is no active. Not a huge deal but the controls cannot be effective then.
 
 # To Do

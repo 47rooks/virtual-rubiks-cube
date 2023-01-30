@@ -166,7 +166,7 @@
                         </vbox>
                         <optionbox id="uiLightCasters" componentGroup="lightGroup"
                             text="Light Casters" />
-                        <vbox height="700px" disabled="${!uiLightCasters.selected}"
+                        <vbox height="600" disabled="${!uiLightCasters.selected}"
                             hidden="${!uiLightCasters.selected}">
                             <frame height="100%" text="Light Casters" styleName="parameterTitle">
                                 <scrollview height="100%" contentLayoutName="vertical">
