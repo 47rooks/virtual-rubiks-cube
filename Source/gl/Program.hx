@@ -5,7 +5,9 @@ import haxe.ValueException;
 import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLTexture;
 import lime.utils.Float32Array;
+import lime.utils.Int32Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
@@ -25,11 +27,15 @@ typedef ProgramParameters =
 	 */
 	var vbo:VertexBuffer3D;
 
+	var vertexBufferData:Float32Array; // to be bound to the new vbo
+
 	/**
 	 * The index buffer object. Whether indexed drawing is required or not will be determined by the
 	 * specific program.
 	 */
 	var ibo:IndexBuffer3D;
+
+	var indexBufferData:Int32Array; // to be bound to the new ibo
 
 	/**
 	 * An array of textures.
@@ -37,6 +43,8 @@ typedef ProgramParameters =
 	 * a convention as to what textures are diffuse or specular or otherwise.
 	 */
 	var textures:Array<RectangleTexture>; // RectangleTexture should probably be TextureInfo
+
+	var limeTextures:Array<GLTexture>; // will be the new textures
 
 	/**
 	 * The model matrix to apply to the model to place it properly oriented and position in the world.

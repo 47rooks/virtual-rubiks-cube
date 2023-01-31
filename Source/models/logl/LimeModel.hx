@@ -72,8 +72,11 @@ class LimeModel
 		matrix.append(params.modelMatrix);
 		var meshParams = {
 			vbo: null,
+			vertexBufferData: null,
 			ibo: null,
+			indexBufferData: null,
 			textures: null,
+			limeTextures: params.limeTextures,
 			modelMatrix: matrix,
 			projectionMatrix: params.projectionMatrix,
 			cameraPosition: params.cameraPosition,

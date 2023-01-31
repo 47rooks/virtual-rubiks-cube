@@ -277,8 +277,11 @@ class Light
 		_program.use();
 		_program.render({
 			vbo: _glVertexBuffer,
+			vertexBufferData: null,
 			ibo: _glIndexBuffer,
+			indexBufferData: null,
 			textures: null,
+			limeTextures: null,
 			modelMatrix: _modelMatrix,
 			projectionMatrix: fullProjection,
 			cameraPosition: null,

@@ -175,8 +175,11 @@ class FramebufferScene extends BaseScene
 		var quad = new LimeQuadModel(_gl, _context, null, m, true);
 		quad.draw(_framebufferProgram, {
 			vbo: null,
+			vertexBufferData: null,
 			ibo: null,
+			indexBufferData: null,
 			textures: null,
+			limeTextures: [colorTex],
 			modelMatrix: _sceneRotation,
 			projectionMatrix: lookAtMat,
 			cameraPosition: cameraPos,
@@ -213,8 +216,11 @@ class FramebufferScene extends BaseScene
 		{
 			m.draw(_modelLoadingProgram, {
 				vbo: null,
+				vertexBufferData: null,
 				ibo: null,
+				indexBufferData: null,
 				textures: null,
+				limeTextures: null,
 				modelMatrix: _sceneRotation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,

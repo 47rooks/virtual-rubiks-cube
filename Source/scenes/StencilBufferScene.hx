@@ -98,8 +98,11 @@ class StencilBufferScene extends BaseScene
 
 		_models[3].draw(_modelLoadingProgram, {
 			vbo: null,
+			vertexBufferData: null,
 			ibo: null,
+			indexBufferData: null,
 			textures: null,
+			limeTextures: null,
 			modelMatrix: translation,
 			projectionMatrix: lookAtMat,
 			cameraPosition: cameraPos,
@@ -123,8 +126,11 @@ class StencilBufferScene extends BaseScene
 		{
 			m.draw(_modelLoadingProgram, {
 				vbo: null,
+				vertexBufferData: null,
 				ibo: null,
+				indexBufferData: null,
 				textures: null,
+				limeTextures: null,
 				modelMatrix: _sceneRotation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,
@@ -152,8 +158,11 @@ class StencilBufferScene extends BaseScene
 		{
 			m.draw(_outliningProgram, {
 				vbo: null,
+				vertexBufferData: null,
 				ibo: null,
+				indexBufferData: null,
 				textures: null,
+				limeTextures: null,
 				modelMatrix: scaleMatrix,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,

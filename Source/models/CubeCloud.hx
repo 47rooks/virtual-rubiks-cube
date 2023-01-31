@@ -86,8 +86,11 @@ class CubeCloud
 
 			_cubeProgram.render({
 				vbo: _cubeModel._glVertexBuffer,
+				vertexBufferData: null,
 				ibo: _cubeModel._glIndexBuffer,
+				indexBufferData: null,
 				textures: [_diffuseLightMapTexture, _specularLightMapTexture],
+				limeTextures: null,
 				modelMatrix: model,
 				projectionMatrix: fullProjection,
 				cameraPosition: cameraPosition,

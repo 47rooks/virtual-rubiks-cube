@@ -65,8 +65,11 @@ class ModelLoading
 		_modelLoadingProgram.use();
 		_model.draw(_modelLoadingProgram, {
 			vbo: null,
+			vertexBufferData: null,
 			ibo: null,
+			indexBufferData: null,
 			textures: null,
+			limeTextures: null,
 			modelMatrix: _modelRotation,
 			projectionMatrix: projectionMatrix,
 			cameraPosition: cameraPosition,

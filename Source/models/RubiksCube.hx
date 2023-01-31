@@ -914,8 +914,11 @@ class RubiksCube
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 			var params:ProgramParameters = {
 				vbo: c.cube._glVertexBuffer,
+				vertexBufferData: null,
 				ibo: c.cube._glIndexBuffer,
+				indexBufferData: null,
 				textures: [_faceTexture],
+				limeTextures: null,
 				modelMatrix: fullModel,
 				projectionMatrix: fullProjection,
 				cameraPosition: cameraPosition,

@@ -195,8 +195,11 @@ class BlendingScene extends BaseScene
 		{
 			m.draw(_modelLoadingProgram, {
 				vbo: null,
+				vertexBufferData: null,
 				ibo: null,
+				indexBufferData: null,
 				textures: null,
+				limeTextures: null,
 				modelMatrix: _sceneRotation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,
@@ -216,8 +219,11 @@ class BlendingScene extends BaseScene
 		{
 			m.draw(_blendingProgram, {
 				vbo: null,
+				vertexBufferData: null,
 				ibo: null,
+				indexBufferData: null,
 				textures: null,
+				limeTextures: null,
 				modelMatrix: _sceneRotation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,

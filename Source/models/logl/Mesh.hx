@@ -218,8 +218,11 @@ class Mesh
 		}
 		program.render({
 			vbo: _glVertexBuffer,
+			vertexBufferData: null,
 			ibo: _glIndexBuffer,
+			indexBufferData: null,
 			textures: [_textures[0].texture, _textures[1].texture],
+			limeTextures: null,
 			modelMatrix: modelMatrix,
 			projectionMatrix: fullProjection,
 			cameraPosition: params.cameraPosition,

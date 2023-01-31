@@ -1,6 +1,5 @@
 package models.logl;
 
-import gl.FramebufferProgram;
 import gl.Program;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLBuffer;
@@ -181,15 +180,14 @@ class LimeMesh
 		modelMatrix.appendScale(64, 64, 64);
 		var fullProjection = modelMatrix.clone();
 		fullProjection.append(params.projectionMatrix);
-		// if (_textures.length != 2 || _textures[0].texture == null || _textures[1].texture == null)
-		// {
-		// 	trace('problem with textures');
-		// }
-		cast(program, FramebufferProgram).setTexture(texture, _vertexBuffer, _vertexBufferData, _indexBuffer, _indexBufferData);
+
 		program.render({
 			vbo: null,
+			vertexBufferData: _vertexBufferData,
 			ibo: null,
+			indexBufferData: _indexBufferData,
 			textures: null,
+			limeTextures: params.limeTextures,
 			modelMatrix: modelMatrix,
 			projectionMatrix: fullProjection,
 			cameraPosition: params.cameraPosition,

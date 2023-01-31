@@ -70,8 +70,11 @@ class Model
 		matrix.append(params.modelMatrix);
 		var meshParams = {
 			vbo: null,
+			vertexBufferData: null,
 			ibo: null,
+			indexBufferData: null,
 			textures: null,
+			limeTextures: null,
 			modelMatrix: matrix,
 			projectionMatrix: params.projectionMatrix,
 			cameraPosition: params.cameraPosition,
