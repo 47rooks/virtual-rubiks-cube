@@ -2,8 +2,8 @@
 * Vertex shader for handling a basic quad, applying a model-view-projection matrix.
 */
 attribute vec3 aPosition;
-attribute vec2 aTexCoord;
 attribute vec3 aNormal;
+attribute vec2 aTexCoord;
 varying vec2 vTexCoord;
 
 /* Full model-view-projection matrix */

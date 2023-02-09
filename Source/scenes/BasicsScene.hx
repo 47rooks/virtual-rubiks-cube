@@ -72,7 +72,6 @@ class BasicsScene extends BaseScene
 	function addedToStage(e:Event):Void
 	{
 		_gl = stage.window.context.webgl;
-		_context = stage.context3D;
 
 		// Compute projection matrix
 		// Uncomment the createOrthoProjection() line and comment the next for an orthographic view.
@@ -83,12 +82,12 @@ class BasicsScene extends BaseScene
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
 		// GL  comment for now
-		_rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this, _gl, _context);
+		_rubiksCube = new RubiksCube(Math.ceil(stage.stageWidth / 2), Math.ceil(stage.stageHeight / 2), Math.ceil(256 / 2), this, _gl);
 
 		// Add lights
-		_light = new Light(_lightPosition, LIGHT_COLOR, _gl, _context);
+		_light = new Light(_lightPosition, LIGHT_COLOR, _gl);
 
-		_cubeCloud = new CubeCloud(_gl, _context);
+		_cubeCloud = new CubeCloud(_gl);
 
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
 		// compared to DeVries original. Strictly this should be programmatically scaled by RubiksCube.SIDE.
@@ -103,10 +102,10 @@ class BasicsScene extends BaseScene
 
 		for (i in 0...NUM_POINT_LIGHTS)
 		{
-			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), LIGHT_COLOR, _gl, _context);
+			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), LIGHT_COLOR, _gl);
 		}
 
-		_flashlight = new Flashlight(vector3DToFloat32Array(_camera.cameraPos), vector3DToFloat32Array(_camera.cameraFront), 30, _gl, _context);
+		_flashlight = new Flashlight(vector3DToFloat32Array(_camera.cameraPos), vector3DToFloat32Array(_camera.cameraFront), 30, _gl);
 
 		// Add completion event listener
 		addEventListener(OperationCompleteEvent.OPERATION_COMPLETE_EVENT, nextOperation);
@@ -202,23 +201,23 @@ class BasicsScene extends BaseScene
 		{
 			case RUBIKS:
 				{
-					_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), _ui);
+					_rubiksCube.render(_gl, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), _ui);
 				}
 			case RUBIKS_WITH_LIGHT:
 				{
-					_rubiksCube.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), _ui);
-					_light.render(_gl, _context, lookAtMat, _ui);
+					_rubiksCube.render(_gl, lookAtMat, LIGHT_COLOR, _lightPosition, vector3DToFloat32Array(_camera.cameraPos), _ui);
+					_light.render(_gl, lookAtMat, _ui);
 				}
 			case CUBE_CLOUD:
 				{
 					var cameraPos = vector3DToFloat32Array(_camera.cameraPos);
-					_cubeCloud.render(_gl, _context, lookAtMat, LIGHT_COLOR, _lightPosition, cameraPos, _pointLights, cameraPos,
+					_cubeCloud.render(_gl, lookAtMat, LIGHT_COLOR, _lightPosition, cameraPos, _pointLights, cameraPos,
 						vector3DToFloat32Array(_camera.cameraFront), _ui);
 					for (i in 0...NUM_POINT_LIGHTS)
 					{
 						if (_ui.pointLight(i).uiPointLightEnabled.selected)
 						{
-							_pointLights[i].render(_gl, _context, lookAtMat, _ui);
+							_pointLights[i].render(_gl, lookAtMat, _ui);
 						}
 					}
 				}

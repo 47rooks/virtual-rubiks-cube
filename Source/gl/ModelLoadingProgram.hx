@@ -5,8 +5,8 @@ import MatrixUtils.radians;
 import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
-import openfl.Assets;
-import openfl.display3D.Context3D;
+import lime.utils.Assets;
+import lime.utils.Float32Array;
 import scenes.ModelLoadingScene;
 
 /**
@@ -71,15 +71,15 @@ class ModelLoadingProgram extends Program
 	/**
 	 * Constructor
 	 * @param gl A WebGL render context
-	 * @param context An OpenFL 3D render context
 	 */
-	public function new(gl:WebGLRenderContext, context:Context3D):Void
+	public function new(gl:WebGLRenderContext):Void
 	{
+		super(gl);
+
 		var vertexSource = Assets.getText("assets/shaders/modelLoading.vert");
 		var fragmentSource = #if !desktop "precision mediump float;" + #end
 		Assets.getText("assets/shaders/modelLoading.frag");
 
-		super(gl, context);
 		createGLSLProgram(vertexSource, fragmentSource);
 		getShaderVarLocations();
 	}
@@ -233,17 +233,37 @@ class ModelLoadingProgram extends Program
 
 		// Lighting maps
 		_gl.uniform1i(_programDiffuseLightMapUniform, 0); // Diffuse lighting map
-		_context.setTextureAt(0, params.textures[0]);
+		_gl.activeTexture(_gl.TEXTURE0);
+		_gl.bindTexture(_gl.TEXTURE_2D, params.textures[0]);
 		_gl.uniform1i(_programSpecularLightMapUniform, 1); // Specular lighting map
-		_context.setTextureAt(1, params.textures[1]);
+		_gl.activeTexture(_gl.TEXTURE1);
+		_gl.bindTexture(_gl.TEXTURE_2D, params.textures[1]);
+		_gl.activeTexture(0);
+
 		_gl.uniform3fv(_programViewerPositionUniform, params.cameraPosition, 0);
 		_gl.uniform1f(_programSpecularShininessUniform, Math.pow(2, params.ui.specularShininess));
 
-		// Apply GL calls to submit the cube data to the GPU
-		_context.setVertexBufferAt(_programVertexAttribute, params.vbo, 0, FLOAT_3);
-		_context.setVertexBufferAt(_programNormalAttribute, params.vbo, 3, FLOAT_3);
-		_context.setVertexBufferAt(_programTextureAttribute, params.vbo, 6, FLOAT_2);
+		// Bind vertex bufferh
+		var vertexBuffer = _gl.createBuffer();
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, vertexBuffer);
+		_gl.bufferData(_gl.ARRAY_BUFFER, params.vertexBufferData, _gl.STATIC_DRAW);
 
-		_context.drawTriangles(params.ibo);
+		// Set up attribute pointers
+		var stride = 8 * Float32Array.BYTES_PER_ELEMENT;
+		_gl.enableVertexAttribArray(_programVertexAttribute);
+		_gl.vertexAttribPointer(_programVertexAttribute, 3, _gl.FLOAT, false, stride, 0);
+
+		_gl.enableVertexAttribArray(_programNormalAttribute);
+		_gl.vertexAttribPointer(_programNormalAttribute, 3, _gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
+
+		_gl.enableVertexAttribArray(_programTextureAttribute);
+		_gl.vertexAttribPointer(_programTextureAttribute, 2, _gl.FLOAT, false, stride, 6 * Float32Array.BYTES_PER_ELEMENT);
+
+		// Bind index data
+		var indexBuffer = _gl.createBuffer();
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, params.indexBufferData, _gl.STATIC_DRAW);
+
+		_gl.drawElements(_gl.TRIANGLES, params.indexBufferData.length, _gl.UNSIGNED_INT, 0);
 	}
 }

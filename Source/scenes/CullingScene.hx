@@ -37,9 +37,9 @@ class CullingScene extends BaseScene
 		// Compute projection matrix
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
-		_models.push(new CubeModel(_gl, _context));
+		_models.push(new CubeModel(_gl));
 
-		_cullingProgram = new ModelLoadingProgram(_gl, _context);
+		_cullingProgram = new ModelLoadingProgram(_gl);
 
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
 		// compared to DeVries original. Strictly this should be programmatically scaled by RubiksCube.SIDE.
@@ -53,7 +53,7 @@ class CullingScene extends BaseScene
 		];
 		for (i in 0...NUM_POINT_LIGHTS)
 		{
-			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl, _context);
+			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl);
 		}
 	}
 
@@ -69,7 +69,6 @@ class CullingScene extends BaseScene
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
 
 		_cullingProgram.use();
-		_context.setSamplerStateAt(0, REPEAT, NEAREST, MIPNONE);
 
 		// Draw floor before enabling the stencil buffer. If the floor were to write to the stencil
 		// buffer the outlining would not appear when looking down on the scene from above.
@@ -106,12 +105,9 @@ class CullingScene extends BaseScene
 		for (m in _models)
 		{
 			m.draw(_cullingProgram, {
-				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
 				indexBufferData: null,
 				textures: null,
-				limeTextures: null,
 				modelMatrix: translation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,

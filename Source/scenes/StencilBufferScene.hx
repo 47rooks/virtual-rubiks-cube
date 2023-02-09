@@ -13,7 +13,6 @@ import models.logl.CubeModel;
 import models.logl.Model;
 import models.logl.PlaneModel;
 import openfl.events.Event;
-import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
 import ui.UI;
 
@@ -52,13 +51,13 @@ class StencilBufferScene extends BaseScene
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
-		_models.push(new CubeModel(_gl, _context));
-		_models.push(new CubeModel(_gl, _context, 0.5, 0.25, 0.5));
-		_models.push(new CubeModel(_gl, _context, -0.75, 0.25, 0.5));
-		_models.push(new PlaneModel(_gl, _context));
+		_models.push(new CubeModel(_gl));
+		_models.push(new CubeModel(_gl, 0.5, 0.25, 0.5));
+		_models.push(new CubeModel(_gl, -0.75, 0.25, 0.5));
+		_models.push(new PlaneModel(_gl));
 
-		_modelLoadingProgram = new ModelLoadingProgram(_gl, _context);
-		_outliningProgram = new OutliningProgram(_gl, _context);
+		_modelLoadingProgram = new ModelLoadingProgram(_gl);
+		_outliningProgram = new OutliningProgram(_gl);
 
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
 		// compared to DeVries original. Strictly this should be programmatically scaled by RubiksCube.SIDE.
@@ -72,7 +71,7 @@ class StencilBufferScene extends BaseScene
 		];
 		for (i in 0...NUM_POINT_LIGHTS)
 		{
-			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl, _context);
+			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl);
 		}
 	}
 
@@ -88,7 +87,6 @@ class StencilBufferScene extends BaseScene
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
 
 		_modelLoadingProgram.use();
-		_context.setSamplerStateAt(0, REPEAT, NEAREST, MIPNONE);
 
 		// Draw floor before enabling the stencil buffer. If the floor were to write to the stencil
 		// buffer the outlining would not appear when looking down on the scene from above.
@@ -97,12 +95,9 @@ class StencilBufferScene extends BaseScene
 		translation.append(_sceneRotation);
 
 		_models[3].draw(_modelLoadingProgram, {
-			vbo: null,
 			vertexBufferData: null,
-			ibo: null,
 			indexBufferData: null,
 			textures: null,
-			limeTextures: null,
 			modelMatrix: translation,
 			projectionMatrix: lookAtMat,
 			cameraPosition: cameraPos,
@@ -125,12 +120,9 @@ class StencilBufferScene extends BaseScene
 		for (m in _models.slice(0, 3))
 		{
 			m.draw(_modelLoadingProgram, {
-				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
 				indexBufferData: null,
 				textures: null,
-				limeTextures: null,
 				modelMatrix: _sceneRotation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,
@@ -157,12 +149,9 @@ class StencilBufferScene extends BaseScene
 		for (m in _models.slice(0, 2))
 		{
 			m.draw(_outliningProgram, {
-				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
 				indexBufferData: null,
 				textures: null,
-				limeTextures: null,
 				modelMatrix: scaleMatrix,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,
@@ -191,7 +180,7 @@ class StencilBufferScene extends BaseScene
 		{
 			if (_ui.pointLight(i).uiPointLightEnabled.selected)
 			{
-				_pointLights[i].render(_gl, _context, lookAtMat, _ui);
+				_pointLights[i].render(_gl, lookAtMat, _ui);
 			}
 		}
 	}

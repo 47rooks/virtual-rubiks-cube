@@ -10,18 +10,18 @@ import Color.YELLOW;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import gl.LightMapsProgram;
+import gl.OpenGLUtils.glTextureFromImageClampToEdge;
 import gl.PhongLightingProgram;
 import gl.PhongMaterialsProgram;
 import gl.Program;
 import gl.SimpleCubeProgram;
+import lime.graphics.Image;
 import lime.graphics.WebGLRenderContext;
+import lime.graphics.opengl.GLTexture;
 import lime.math.RGBA;
+import lime.utils.Assets;
 import lime.utils.Float32Array;
 import models.Cube.ColorSpec;
-import openfl.Assets;
-import openfl.display.BitmapData;
-import openfl.display3D.Context3D;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
 import scenes.BasicsScene;
@@ -159,15 +159,15 @@ class RubiksCube
 	final GLSL_PROGRAMS:Map<String, Program>;
 
 	// Cube face texture image
-	var _faceImageData:BitmapData;
-	private var _faceTexture:RectangleTexture;
+	var _faceImageData:Image;
+	private var _faceTexture:GLTexture;
 
 	// Lighting map textures
-	var _diffuseLightMapImageData:BitmapData;
-	private var _diffuseLightMapTexture:RectangleTexture;
+	var _diffuseLightMapImageData:Image;
+	private var _diffuseLightMapTexture:GLTexture;
 
-	var _specularLightMapImageData:BitmapData;
-	private var _specularLightMapTexture:RectangleTexture;
+	var _specularLightMapImageData:Image;
+	private var _specularLightMapTexture:GLTexture;
 
 	// Cube data
 	var _x:Int;
@@ -200,9 +200,8 @@ class RubiksCube
 	 * @param z z position to place cube at
 	 * @param scene the owning Scene object, for event dispatch
 	 * @param gl The WebGL render context
-	 * @param context The OpenFL 3D render context
 	 */
-	public function new(x:Int, y:Int, z:Int, scene:BasicsScene, gl:WebGLRenderContext, context:Context3D)
+	public function new(x:Int, y:Int, z:Int, scene:BasicsScene, gl:WebGLRenderContext)
 	{
 		SIDE = 64; // FIXME this may need to be a constructor parameter
 		START_OFFSET = -(ROW_LEN * SIDE) / 2 + SIDE / 2;
@@ -212,19 +211,16 @@ class RubiksCube
 		_scene = scene;
 
 		// Load texture
-		_faceImageData = Assets.getBitmapData("assets/openfl.png");
-		_faceTexture = context.createRectangleTexture(_faceImageData.width, _faceImageData.height, BGRA, false);
-		_faceTexture.uploadFromBitmapData(_faceImageData);
+		_faceImageData = Assets.getImage("assets/openfl.png");
+		_faceTexture = glTextureFromImageClampToEdge(gl, _faceImageData);
 
-		_diffuseLightMapImageData = Assets.getBitmapData("assets/openflMetalDiffuse.png");
-		_diffuseLightMapTexture = context.createRectangleTexture(_diffuseLightMapImageData.width, _diffuseLightMapImageData.height, BGRA, false);
-		_diffuseLightMapTexture.uploadFromBitmapData(_diffuseLightMapImageData);
+		_diffuseLightMapImageData = Assets.getImage("assets/openflMetalDiffuse.png");
+		_diffuseLightMapTexture = glTextureFromImageClampToEdge(gl, _diffuseLightMapImageData);
 
-		_specularLightMapImageData = Assets.getBitmapData("assets/openflMetalSpecular.png");
-		_specularLightMapTexture = context.createRectangleTexture(_specularLightMapImageData.width, _specularLightMapImageData.height, BGRA, false);
-		_specularLightMapTexture.uploadFromBitmapData(_specularLightMapImageData);
+		_specularLightMapImageData = Assets.getImage("assets/openflMetalSpecular.png");
+		_specularLightMapTexture = glTextureFromImageClampToEdge(gl, _specularLightMapImageData);
 
-		_cubes = createCubes(context);
+		_cubes = createCubes();
 
 		// Initialize operation data
 		_operation = null;
@@ -240,10 +236,10 @@ class RubiksCube
 
 		// Define programs - this would be a initialized at load from other constants but Haxe won't allow it.
 		GLSL_PROGRAMS = [
-			GLSL_PROG_SIMPLE => new SimpleCubeProgram(gl, context),
-			GLSL_PROG_PHONG_LIGHT => new PhongLightingProgram(gl, context),
-			GLSL_PROG_MATERIALS => new PhongMaterialsProgram(gl, context),
-			GLSL_PROG_LIGHTMAP => new LightMapsProgram(gl, context)
+			GLSL_PROG_SIMPLE => new SimpleCubeProgram(gl),
+			GLSL_PROG_PHONG_LIGHT => new PhongLightingProgram(gl),
+			GLSL_PROG_MATERIALS => new PhongMaterialsProgram(gl),
+			GLSL_PROG_LIGHTMAP => new LightMapsProgram(gl)
 		];
 	}
 
@@ -253,7 +249,7 @@ class RubiksCube
 	 * @param context the GL render context to use
 	 * @return Map<String, CubeData>
 	 */
-	function createCubes(context:Context3D):Map<String, CubeData>
+	function createCubes():Map<String, CubeData>
 	{
 		var cubes = new Map<String, CubeData>();
 		for (i in 0...ROW_LEN)
@@ -268,7 +264,7 @@ class RubiksCube
 						continue;
 					}
 					var cs = createColorSpec(i, j, k, ROW_LEN);
-					var c:Cube = new Cube(cs, context);
+					var c:Cube = new Cube(cs);
 					var scaleMatrix = createScaleMatrix(SIDE, SIDE, SIDE);
 					var rotationMatrix = new Matrix3D();
 					rotationMatrix.identity();
@@ -864,8 +860,8 @@ class RubiksCube
 		return rv;
 	}
 
-	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
-			cameraPosition:Float32Array, ui:UI):Void
+	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array, cameraPosition:Float32Array,
+			ui:UI):Void
 	{
 		if (ui.sceneRubiks)
 		{
@@ -913,12 +909,9 @@ class RubiksCube
 			// Light
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 			var params:ProgramParameters = {
-				vbo: c.cube._glVertexBuffer,
-				vertexBufferData: null,
-				ibo: c.cube._glIndexBuffer,
-				indexBufferData: null,
+				vertexBufferData: c.cube.vertexData,
+				indexBufferData: c.cube.indexData,
 				textures: [_faceTexture],
-				limeTextures: null,
 				modelMatrix: fullModel,
 				projectionMatrix: fullProjection,
 				cameraPosition: cameraPosition,

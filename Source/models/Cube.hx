@@ -3,10 +3,8 @@ package models;
 import Color.WHITE;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
-import openfl.Vector;
-import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
+import lime.utils.Float32Array;
+import lime.utils.Int32Array;
 
 typedef ColorSpec =
 {
@@ -24,13 +22,10 @@ typedef ColorSpec =
 class Cube
 {
 	// Model data
-	public var vertexData:Vector<Float>;
-	public var indexData:Vector<UInt>;
+	public var vertexData:Float32Array;
+	public var indexData:Int32Array;
 
 	// GL interface variables
-	public var _glVertexBuffer:VertexBuffer3D;
-	public var _glIndexBuffer:IndexBuffer3D;
-
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programVertexAttribute:Int;
 	private var _programColorAttribute:Int;
@@ -40,9 +35,8 @@ class Cube
 	/**
 	 * Constructor
 	 * @param color a ColorSpec specifying colors for each face. If null, all faces will be all white.
-	 * @param context The OpenFL 3D render context.
 	 */
-	public function new(color:ColorSpec, context:Context3D)
+	public function new(color:ColorSpec)
 	{
 		if (color != null)
 		{
@@ -59,10 +53,10 @@ class Cube
 				right: WHITE
 			};
 		}
-		initializeBuffers(context);
+		initializeBuffers();
 	}
 
-	function initializeBuffers(context:Context3D):Void
+	function initializeBuffers():Void
 	{
 		final side = 1.0;
 
@@ -356,14 +350,11 @@ class Cube
 			1.0,
 			0.0
 		];
-		vertexData = new Vector<Float>(v);
-
-		_glVertexBuffer = context.createVertexBuffer(24, 12, STATIC_DRAW);
-		_glVertexBuffer.uploadFromVector(vertexData, 0, 288);
+		vertexData = new Float32Array(v);
 
 		// Index for each cube face using the the vertex data above
 
-		indexData = new Vector<UInt>([
+		indexData = new Int32Array([
 			 2,  3,    0, // Back
 			 0,  1,           2,
 			10, 11,   9, // Front
@@ -377,8 +368,5 @@ class Cube
 			21, 20,    23, // Top
 			21, 23,          22
 		]);
-
-		_glIndexBuffer = context.createIndexBuffer(36, STATIC_DRAW);
-		_glIndexBuffer.uploadFromVector(indexData, 0, 36);
 	}
 }

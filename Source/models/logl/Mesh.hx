@@ -3,11 +3,10 @@ package models.logl;
 import gl.Program;
 import haxe.ValueException;
 import lime.graphics.WebGLRenderContext;
-import openfl.Vector;
-import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.display3D.textures.RectangleTexture;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.utils.Float32Array;
+import lime.utils.Int32Array;
 import openfl.geom.Matrix3D;
 
 /**
@@ -84,39 +83,38 @@ typedef Texture =
 	var texturePath:String;
 
 	/**
-	 * A reference to the loaded OpenFL RectangleTexture.
+	 * A reference to the loaded Lime GLTexture.
 	 */
-	var texture:RectangleTexture;
+	var texture:GLTexture;
 }
 
 /**
- * This class is a shim to OpenFL from the gltf haxelib loader. In theory a
+ * This class is a shim to Lime from the gltf haxelib loader. In theory a
  * variant of this class should be able to convert from an OBJ loader too,
  * and likewise for other formats.
  */
 class Mesh
 {
-	var _context:Context3D;
 	var _gl:WebGLRenderContext;
 	var _vertices:Array<Vertex>;
 	var _indices:Array<UnsignedInt>;
 	var _textures:Array<Texture>;
+	var _glTextures:Array<GLTexture>;
 
-	// Internal buffer structs
-	public var _glVertexBuffer:VertexBuffer3D;
-	public var _glIndexBuffer:IndexBuffer3D;
+	var _vertexBuffer:GLBuffer;
+	var _vertexBufferData:Float32Array;
+	var _indexBuffer:GLBuffer;
+	var _indexBufferData:Int32Array;
 
 	/**
 	 * Constructor
-	 * @param context OpenFL Context3D context object
 	 * @param gl Lime WebGL rendering context
 	 * @param vertices list of vertex attributes for this mesh
 	 * @param indices list of indices for indexed drawing
 	 * @param textures the textures used by the mesh
 	 */
-	public function new(context:Context3D, gl:WebGLRenderContext, vertices:Array<Vertex>, indices:Array<UnsignedInt>, textures:Array<Texture>)
+	public function new(gl:WebGLRenderContext, vertices:Array<Vertex>, indices:Array<UnsignedInt>, textures:Array<Texture>)
 	{
-		_context = context;
 		_gl = gl;
 		_vertices = vertices;
 		_indices = indices;
@@ -131,38 +129,41 @@ class Mesh
 	 */
 	function setupMesh()
 	{
-		if (_glVertexBuffer != null)
-		{
-			return;
-		}
-
 		// Create vertex buffer
-		var vertexData = new Vector<Float>();
-		for (v in _vertices)
+		_vertexBufferData = new Float32Array(_vertices.length * 8);
+		for (v in 0..._vertices.length)
 		{
-			for (p in v.position)
+			for (p in 0..._vertices[v].position.length)
 			{
-				vertexData.push(p);
+				_vertexBufferData[v * 8 + p] = _vertices[v].position[p];
 			}
-			for (n in v.normal)
+			for (n in 0..._vertices[v].normal.length)
 			{
-				vertexData.push(n);
+				_vertexBufferData[v * 8 + 3 + n] = _vertices[v].normal[n];
 			}
-			for (t in v.texCoords)
+			for (t in 0..._vertices[v].texCoords.length)
 			{
-				vertexData.push(t);
+				_vertexBufferData[v * 8 + 6 + t] = _vertices[v].texCoords[t];
 			}
 		}
-		_glVertexBuffer = _context.createVertexBuffer(_vertices.length, 8, STATIC_DRAW);
-		_glVertexBuffer.uploadFromVector(vertexData, 0, _vertices.length * 8);
+		_vertexBuffer = _gl.createBuffer();
+
 		// Create index buffer
-		var indexData = new Vector<UInt>();
-		for (i in _indices)
+		_indexBufferData = new Int32Array(_indices.length);
+		for (i in 0..._indices.length)
 		{
-			indexData.push(i);
+			_indexBufferData[i] = _indices[i];
 		}
-		_glIndexBuffer = _context.createIndexBuffer(indexData.length, STATIC_DRAW);
-		_glIndexBuffer.uploadFromVector(indexData, 0, indexData.length);
+		_indexBuffer = _gl.createBuffer();
+
+		_glTextures = new Array<GLTexture>();
+		if (_textures != null)
+		{
+			for (t in _textures)
+			{
+				_glTextures.push(t.texture);
+			}
+		}
 	}
 
 	/**
@@ -212,17 +213,11 @@ class Mesh
 		modelMatrix.appendScale(64, 64, 64);
 		var fullProjection = modelMatrix.clone();
 		fullProjection.append(params.projectionMatrix);
-		if (_textures.length != 2 || _textures[0].texture == null || _textures[1].texture == null)
-		{
-			trace('problem with textures');
-		}
+
 		program.render({
-			vbo: _glVertexBuffer,
-			vertexBufferData: null,
-			ibo: _glIndexBuffer,
-			indexBufferData: null,
-			textures: [_textures[0].texture, _textures[1].texture],
-			limeTextures: null,
+			vertexBufferData: _vertexBufferData,
+			indexBufferData: _indexBufferData,
+			textures: params.textures != null ? params.textures : _glTextures,
 			modelMatrix: modelMatrix,
 			projectionMatrix: fullProjection,
 			cameraPosition: params.cameraPosition,

@@ -7,7 +7,6 @@ import haxe.ValueException;
 import lime.graphics.WebGLRenderContext;
 import lime.math.RGBA;
 import openfl.display.Sprite;
-import openfl.display3D.Context3D;
 import openfl.events.Event;
 import openfl.events.GameInputEvent;
 import openfl.events.KeyboardEvent;
@@ -103,7 +102,6 @@ abstract class BaseScene extends Sprite
 
 	// Graphics Contexts
 	var _gl:WebGLRenderContext;
-	var _context:Context3D;
 
 	// Control target - which object is controlled by the inputs
 	var _controlTarget:ControlTarget;
@@ -193,7 +191,6 @@ abstract class BaseScene extends Sprite
 	public function sceneAddedToStage(e:Event):Void
 	{
 		_gl = stage.window.context.webgl;
-		_context = stage.context3D;
 
 		// Register initial scene render completed handler
 		// addEventListener(SceneEvent.SCENE_INITIAL_RENDER_END, _ui.clearSceneLoadingMessage);

@@ -75,7 +75,7 @@
                     <frame text="Mouse Controls" styleName="parameterTitle">
                         <hbox>
                             <checkbox id="uiMouseTargetsCube" selected="true"></checkbox>
-                            <label text=""></label>
+                            <label text="Model"></label>
                         </hbox>
                     </frame>
                 </vbox>

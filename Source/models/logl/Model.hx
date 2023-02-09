@@ -3,8 +3,7 @@ package models.logl;
 import MatrixUtils.createTranslationMatrix;
 import gl.Program;
 import lime.graphics.WebGLRenderContext;
-import models.logl.Mesh.Texture;
-import openfl.display3D.Context3D;
+import models.logl.Mesh;
 
 final MATERIAL_DIFFUSE = "texture_diffuse";
 final MATERIAL_SPECULAR = "texture_specular";
@@ -14,7 +13,6 @@ final MATERIAL_SPECULAR = "texture_specular";
  */
 class Model
 {
-	var _context:Context3D;
 	var _gl:WebGLRenderContext;
 	var _meshes:Array<Mesh>;
 	var _loadedTextures:Array<Texture>;
@@ -29,15 +27,13 @@ class Model
 	/**
 	 * Constructor
 	 * @param gl the Lime WebGL render context
-	 * @param context the OpenFL Context3D
 	 * @param x x position coordinate
 	 * @param y y position coordinate
 	 * @param z z position coordinate
 	 */
-	public function new(gl:WebGLRenderContext, context:Context3D, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
+	public function new(gl:WebGLRenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
 	{
 		_gl = gl;
-		_context = context;
 		_x = x;
 		_y = y;
 		_z = z;
@@ -69,12 +65,9 @@ class Model
 		var matrix = createTranslationMatrix(_x, _y, _z);
 		matrix.append(params.modelMatrix);
 		var meshParams = {
-			vbo: null,
 			vertexBufferData: null,
-			ibo: null,
 			indexBufferData: null,
-			textures: null,
-			limeTextures: null,
+			textures: params.textures,
 			modelMatrix: matrix,
 			projectionMatrix: params.projectionMatrix,
 			cameraPosition: params.cameraPosition,

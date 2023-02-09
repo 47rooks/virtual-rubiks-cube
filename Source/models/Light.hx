@@ -6,10 +6,6 @@ import gl.LightProgram;
 import lime.graphics.WebGLRenderContext;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
-import openfl.Vector;
-import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix3D;
 import ui.UI;
 
@@ -28,12 +24,8 @@ class Light
 	private var _color:RGBA;
 
 	// Model data
-	var vertexData:Vector<Float>;
-	var indexData:Vector<UInt>;
-
-	// GL interface variables
-	private var _glVertexBuffer:VertexBuffer3D;
-	private var _glIndexBuffer:IndexBuffer3D;
+	var vertexData:Float32Array;
+	var indexData:Float32Array;
 
 	var _modelMatrix:Matrix3D;
 
@@ -44,23 +36,22 @@ class Light
 	 * @param position The world position for the light
 	 * @param color The color of the light
 	 * @param gl The WebGL render context
-	 * @param context The OpenFL 3D render context
 	 */
-	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext, context:Context3D)
+	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext)
 	{
 		_x = position[0];
 		_y = position[1];
 		_z = position[2];
 
 		_color = color;
-		initializeBuffers(gl, context);
+		initializeBuffers(gl);
 
-		_program = new LightProgram(gl, context);
+		_program = new LightProgram(gl);
 	}
 
-	function initializeBuffers(gl:WebGLRenderContext, context:Context3D):Void
+	function initializeBuffers(gl:WebGLRenderContext):Void
 	{
-		vertexData = new Vector<Float>([ // X, Y, Z     R, G, B, A
+		vertexData = new Float32Array([ // X, Y, Z     R, G, B, A
 			side / 2, // BTR   BACK
 			side / 2,
 			-side / 2,
@@ -231,13 +222,10 @@ class Light
 			_color.a,
 		]);
 
-		_glVertexBuffer = context.createVertexBuffer(24, 7);
-		_glVertexBuffer.uploadFromVector(vertexData, 0, 168);
-
 		// Index for each cube face using the the vertex data above
 		// Cross check indexes with De Vries and make sure that we have the same points
 		// ocurring in the same order.
-		indexData = new Vector<UInt>([
+		indexData = new Float32Array([
 			 0,  3,    2, // Back
 			 2,  1,           0,
 			 9, 11,  10, // Front
@@ -252,9 +240,6 @@ class Light
 			22, 23,          21
 		]);
 
-		_glIndexBuffer = context.createIndexBuffer(36);
-		_glIndexBuffer.uploadFromVector(indexData, 0, 36);
-
 		_modelMatrix = new Matrix3D();
 		_modelMatrix.append(createScaleMatrix(LIGHT_SIZE, LIGHT_SIZE, LIGHT_SIZE));
 		_modelMatrix.append(createTranslationMatrix(_x, _y, _z));
@@ -263,9 +248,11 @@ class Light
 	/**
 	 * Render the light's current state.
 	 * 
+	 * @param gl The WebGL render context
 	 * @param projectionMatrix projection matrix to apply
+	 * @param ui the UI instance
 	 */
-	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, ui:UI):Void
+	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, ui:UI):Void
 	{
 		// Create model/view/projection matrix from components
 		var fullProjection = new Matrix3D();
@@ -276,12 +263,9 @@ class Light
 
 		_program.use();
 		_program.render({
-			vbo: _glVertexBuffer,
-			vertexBufferData: null,
-			ibo: _glIndexBuffer,
-			indexBufferData: null,
+			vertexBufferData: vertexData,
+			indexBufferData: indexData,
 			textures: null,
-			limeTextures: null,
 			modelMatrix: _modelMatrix,
 			projectionMatrix: fullProjection,
 			cameraPosition: null,

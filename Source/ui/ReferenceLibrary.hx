@@ -4,7 +4,7 @@ import haxe.ui.containers.ListView;
 import haxe.ui.containers.TableView;
 import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
-import openfl.Assets;
+import lime.utils.Assets;
 
 typedef LibEntry =
 {

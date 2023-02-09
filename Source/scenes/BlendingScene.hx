@@ -73,9 +73,9 @@ class BlendingScene extends BaseScene
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
 		// Basic scene floor and blocks
-		_models.push(new CubeModel(_gl, _context, 1.5, 0.0, 0.0));
-		_models.push(new CubeModel(_gl, _context, -1.5, 0.0, -1.0));
-		_models.push(new PlaneModel(_gl, _context));
+		_models.push(new CubeModel(_gl, 1.5, 0.0, 0.0));
+		_models.push(new CubeModel(_gl, -1.5, 0.0, -1.0));
+		_models.push(new PlaneModel(_gl));
 
 		// Vegetation quads
 		var rotMatrix = createRotationMatrix(-90, Vector3D.X_AXIS);
@@ -83,12 +83,12 @@ class BlendingScene extends BaseScene
 		{
 			var m = rotMatrix.clone();
 			m.appendTranslation(loc[0], loc[1], loc[2]);
-			_grassModels.push(new QuadModel(_gl, _context, 'assets/grass.png', m));
-			_windowModels.push(new QuadModel(_gl, _context, 'assets/window.png', m));
+			_grassModels.push(new QuadModel(_gl, 'assets/grass.png', m));
+			_windowModels.push(new QuadModel(_gl, 'assets/window.png', m));
 		}
 
-		_blendingProgram = new BlendingProgram(_gl, _context);
-		_modelLoadingProgram = new ModelLoadingProgram(_gl, _context);
+		_blendingProgram = new BlendingProgram(_gl);
+		_modelLoadingProgram = new ModelLoadingProgram(_gl);
 
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
 		// compared to DeVries original. Strictly this should be programmatically scaled by RubiksCube.SIDE.
@@ -102,7 +102,7 @@ class BlendingScene extends BaseScene
 		];
 		for (i in 0...NUM_POINT_LIGHTS)
 		{
-			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl, _context);
+			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl);
 		}
 	}
 
@@ -172,14 +172,12 @@ class BlendingScene extends BaseScene
 			/* Restore default blendfunc so the Context3D doesn't get confused
 			 */
 
-			_context.setBlendFactors(SOURCE_ALPHA, ONE_MINUS_SOURCE_ALPHA);
+			_gl.blendFunc(_gl.SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA);
 		}
 	}
 
 	function renderInternal(models2D:Array<Model>)
 	{
-		// _context.setBlendFactors(SOURCE_ALPHA, ONE_MINUS_SOURCE_ALPHA);
-
 		var cameraPos = vector3DToFloat32Array(_camera.cameraPos);
 
 		// Render the objects for this frame
@@ -188,18 +186,14 @@ class BlendingScene extends BaseScene
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
 
 		_modelLoadingProgram.use();
-		_context.setSamplerStateAt(0, REPEAT, NEAREST, MIPNONE);
 
 		// Draw initial correct model size
 		for (m in _models)
 		{
 			m.draw(_modelLoadingProgram, {
-				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
 				indexBufferData: null,
 				textures: null,
-				limeTextures: null,
 				modelMatrix: _sceneRotation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,
@@ -218,12 +212,9 @@ class BlendingScene extends BaseScene
 		for (m in models2D)
 		{
 			m.draw(_blendingProgram, {
-				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
 				indexBufferData: null,
 				textures: null,
-				limeTextures: null,
 				modelMatrix: _sceneRotation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,

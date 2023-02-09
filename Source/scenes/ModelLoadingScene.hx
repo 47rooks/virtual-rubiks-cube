@@ -71,7 +71,7 @@ class ModelLoadingScene extends BaseScene
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
-		_modelLoading = new ModelLoading(_gl, _context);
+		_modelLoading = new ModelLoading(_gl);
 
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
 		// compared to DeVries original. Strictly this should be programmatically scaled by RubiksCube.SIDE.
@@ -85,7 +85,7 @@ class ModelLoadingScene extends BaseScene
 		];
 		for (i in 0...NUM_POINT_LIGHTS)
 		{
-			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), LIGHT_COLOR, _gl, _context);
+			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), LIGHT_COLOR, _gl);
 		}
 	}
 
@@ -99,7 +99,7 @@ class ModelLoadingScene extends BaseScene
 		var lookAtMat = _camera.getViewMatrix();
 		lookAtMat.append(projectionTransform);
 
-		_modelLoading.render(_gl, _context, lookAtMat, _lightPosition, _pointLights, cameraPos, vector3DToFloat32Array(_camera.cameraFront), _ui);
+		_modelLoading.render(_gl, lookAtMat, _lightPosition, _pointLights, cameraPos, vector3DToFloat32Array(_camera.cameraFront), _ui);
 
 		// Rendering the point light objects
 		// FIXME might reposition the lights - well point light 1 - it's in the way
@@ -107,7 +107,7 @@ class ModelLoadingScene extends BaseScene
 		{
 			if (_ui.pointLight(i).uiPointLightEnabled.selected)
 			{
-				_pointLights[i].render(_gl, _context, lookAtMat, _ui);
+				_pointLights[i].render(_gl, lookAtMat, _ui);
 			}
 		}
 	}

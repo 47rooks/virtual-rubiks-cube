@@ -3,13 +3,13 @@ package models;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import gl.LightCastersProgram;
+import gl.OpenGLUtils.glTextureFromImageClampToEdge;
 import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
+import lime.graphics.opengl.GLTexture;
 import lime.math.RGBA;
+import lime.utils.Assets;
 import lime.utils.Float32Array;
-import openfl.Assets;
-import openfl.display3D.Context3D;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
 import ui.UI;
@@ -26,16 +26,16 @@ class CubeCloud
 	var _cubeProgram:LightCastersProgram;
 
 	// Lighting map textures
-	private var _diffuseLightMapTexture:RectangleTexture;
+	private var _diffuseLightMapTexture:GLTexture;
 
-	private var _specularLightMapTexture:RectangleTexture;
+	private var _specularLightMapTexture:GLTexture;
 
-	public function new(gl:WebGLRenderContext, context:Context3D)
+	public function new(gl:WebGLRenderContext)
 	{
-		initializeCubePositions(gl, context);
+		initializeCubePositions(gl);
 	}
 
-	private function initializeCubePositions(gl:WebGLRenderContext, context:Context3D):Void
+	private function initializeCubePositions(gl:WebGLRenderContext):Void
 	{
 		_cubesPositions = new Array<Float32Array>();
 		_cubesPositions[0] = new Float32Array([0.0, 0.0, 0.0]);
@@ -49,24 +49,22 @@ class CubeCloud
 		_cubesPositions[8] = new Float32Array([1.5, 0.2, -1.5]);
 		_cubesPositions[9] = new Float32Array([-1.3, 1.0, -1.5]);
 
-		_cubeModel = new Cube(null, context);
-		_cubeProgram = new LightCastersProgram(gl, context);
+		_cubeModel = new Cube(null);
+		_cubeProgram = new LightCastersProgram(gl);
 
 		// Load texture - FIXME note this is duplicate code - same texture is loaded in
-		var diffuseLightMapImageData = Assets.getBitmapData("assets/openflMetalDiffuse.png");
-		_diffuseLightMapTexture = context.createRectangleTexture(diffuseLightMapImageData.width, diffuseLightMapImageData.height, BGRA, false);
-		_diffuseLightMapTexture.uploadFromBitmapData(diffuseLightMapImageData);
+		var diffuseLightMapImageData = Assets.getImage("assets/openflMetalDiffuse.png");
+		_diffuseLightMapTexture = glTextureFromImageClampToEdge(gl, diffuseLightMapImageData);
 
-		var specularLightMapImageData = Assets.getBitmapData("assets/openflMetalSpecular.png");
-		_specularLightMapTexture = context.createRectangleTexture(specularLightMapImageData.width, specularLightMapImageData.height, BGRA, false);
-		_specularLightMapTexture.uploadFromBitmapData(specularLightMapImageData);
+		var specularLightMapImageData = Assets.getImage("assets/openflMetalSpecular.png");
+		_specularLightMapTexture = glTextureFromImageClampToEdge(gl, specularLightMapImageData);
 	}
 
 	public function update(elapsed:Float) {}
 
 	/* FIXME lightPosition is not used - remove */
-	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array,
-			cameraPosition:Float32Array, pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
+	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array, cameraPosition:Float32Array,
+			pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
 		var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
@@ -85,12 +83,9 @@ class CubeCloud
 			fullProjection.append(projectionMatrix);
 
 			_cubeProgram.render({
-				vbo: _cubeModel._glVertexBuffer,
-				vertexBufferData: null,
-				ibo: _cubeModel._glIndexBuffer,
-				indexBufferData: null,
+				vertexBufferData: _cubeModel.vertexData,
+				indexBufferData: _cubeModel.indexData,
 				textures: [_diffuseLightMapTexture, _specularLightMapTexture],
-				limeTextures: null,
 				modelMatrix: model,
 				projectionMatrix: fullProjection,
 				cameraPosition: cameraPosition,

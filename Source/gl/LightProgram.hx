@@ -4,8 +4,8 @@ import MatrixUtils.matrix3DToFloat32Array;
 import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
-import openfl.Assets;
-import openfl.display3D.Context3D;
+import lime.utils.Assets;
+import lime.utils.Float32Array;
 
 /**
  * GL program class for a simple light.
@@ -27,15 +27,15 @@ class LightProgram extends Program
 	/**
 	 * Constructor
 	 * @param gl An WebGL render context
-	 * @param context The OpenFL 3D render context
 	 */
-	public function new(gl:WebGLRenderContext, context:Context3D):Void
+	public function new(gl:WebGLRenderContext):Void
 	{
+		super(gl);
+
 		var vertexSource = Assets.getText("assets/shaders/light.vert");
 		var fragmentSource = #if !desktop "precision mediump float;" + #end
 		Assets.getText("assets/shaders/light.frag");
 
-		super(gl, context);
 		createGLSLProgram(vertexSource, fragmentSource);
 		getShaderVarLocations();
 	}
@@ -81,9 +81,19 @@ class LightProgram extends Program
 		_gl.uniform3f(_program3CompLightColorUniform, params.ui.lightAmbientColor.r, params.ui.lightAmbientColor.g, params.ui.lightAmbientColor.b);
 
 		// Apply GL calls to submit the cube data to the GPU
-		_context.setVertexBufferAt(_programVertexAttribute, params.vbo, 0, FLOAT_3);
-		_context.setVertexBufferAt(_programColorAttribute, params.vbo, 4, FLOAT_4);
+		// Set up attribute pointers
+		var stride = 7 * Float32Array.BYTES_PER_ELEMENT;
+		_gl.enableVertexAttribArray(_programVertexAttribute);
+		_gl.vertexAttribPointer(_programVertexAttribute, 3, _gl.FLOAT, false, stride, 0);
 
-		_context.drawTriangles(params.ibo);
+		_gl.enableVertexAttribArray(_programColorAttribute);
+		_gl.vertexAttribPointer(_programColorAttribute, 4, _gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
+
+		// Bind index data
+		var indexBuffer = _gl.createBuffer();
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, params.indexBufferData, _gl.STATIC_DRAW);
+
+		_gl.drawElements(_gl.TRIANGLES, params.indexBufferData.length, _gl.UNSIGNED_INT, 0);
 	}
 }

@@ -4,7 +4,6 @@ import lime.graphics.WebGLRenderContext;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
 import models.Light;
-import openfl.display3D.Context3D;
 import openfl.geom.Matrix3D;
 import ui.UI;
 
@@ -27,16 +26,15 @@ class PointLight
 	 * @param position position of the light in world coordinates
 	 * @param color display color of the light
 	 * @param gl The WebGL render context
-	 * @param context The OpenFL 3D render context.
 	 */
-	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext, context:Context3D)
+	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext)
 	{
 		this.position = position;
-		_model = new Light(position, color, gl, context);
+		_model = new Light(position, color, gl);
 	}
 
-	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, ui:UI):Void
+	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, ui:UI):Void
 	{
-		_model.render(gl, context, projectionMatrix, ui);
+		_model.render(gl, projectionMatrix, ui);
 	}
 }

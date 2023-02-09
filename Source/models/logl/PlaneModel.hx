@@ -1,13 +1,13 @@
 package models.logl;
 
+import gl.OpenGLUtils.glTextureFromImageRepeat;
 import lime.graphics.WebGLRenderContext;
+import lime.utils.Assets;
 import models.logl.Mesh.Texture;
 import models.logl.Mesh.UnsignedInt;
 import models.logl.Mesh.Vertex;
 import models.logl.Model.MATERIAL_DIFFUSE;
 import models.logl.Model.MATERIAL_SPECULAR;
-import openfl.Assets;
-import openfl.display3D.Context3D;
 
 /**
  * PlaneModel is a basic plan with a single object general Mesh
@@ -15,9 +15,9 @@ import openfl.display3D.Context3D;
  */
 class PlaneModel extends Model
 {
-	public function new(gl:WebGLRenderContext, context:Context3D, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
+	public function new(gl:WebGLRenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
 	{
-		super(gl, context, x, y, z);
+		super(gl, x, y, z);
 
         // @formatter:off
 		var verts = [
@@ -63,7 +63,7 @@ class PlaneModel extends Model
 			3, 4, 5
 		];
 
-		_meshes.push(new Mesh(_context, _gl, vertices, indices, loadTextures()));
+		_meshes.push(new Mesh(_gl, vertices, indices, loadTextures()));
 	}
 
 	function loadTextures():Array<Texture>
@@ -74,9 +74,8 @@ class PlaneModel extends Model
 
 		for (imgPath in ["assets/metal.png", "assets/metal.png"])
 		{
-			var tData = Assets.getBitmapData(imgPath);
-			var texture = _context.createRectangleTexture(tData.width, tData.height, BGRA, false);
-			texture.uploadFromBitmapData(tData);
+			var img = Assets.getImage(imgPath);
+			var texture = glTextureFromImageRepeat(_gl, img);
 			rv.push({
 				textureId: textureID,
 				textureType: textureID == 0 ? MATERIAL_DIFFUSE : MATERIAL_SPECULAR,

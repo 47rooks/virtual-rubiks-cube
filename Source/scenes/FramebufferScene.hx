@@ -11,8 +11,8 @@ import lime.graphics.opengl.GLTexture;
 import lime.utils.Assets;
 import lime.utils.Float32Array;
 import models.logl.CubeModel;
-import models.logl.LimeQuadModel;
 import models.logl.Model;
+import models.logl.QuadModel;
 import openfl.events.Event;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
@@ -66,11 +66,11 @@ class FramebufferScene extends BaseScene
 
 		for (l in _locs)
 		{
-			_models.push(new CubeModel(_gl, _context, l[0], l[1], l[2]));
+			_models.push(new CubeModel(_gl, l[0], l[1], l[2]));
 		}
 
-		_modelLoadingProgram = new ModelLoadingProgram(_gl, _context);
-		_framebufferProgram = new FramebufferProgram(_gl, _context);
+		_modelLoadingProgram = new ModelLoadingProgram(_gl);
+		_framebufferProgram = new FramebufferProgram(_gl);
 		_grass = Assets.getImage("assets/grass.png");
 
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
@@ -85,7 +85,7 @@ class FramebufferScene extends BaseScene
 		];
 		for (i in 0...NUM_POINT_LIGHTS)
 		{
-			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl, _context);
+			_pointLights[i] = new PointLight(new Float32Array(pointLightPositions[i]), Color.WHITE, _gl);
 		}
 	}
 
@@ -139,15 +139,8 @@ class FramebufferScene extends BaseScene
 			return;
 		}
 
-		// var colorTex = getTextureFromImage(_grass);
+		var grassTex = getTextureFromImage(_grass);
 
-		// Render to a texture with Context3D
-
-		// var sceneAsTexture = _context.createRectangleTexture(1280, 960, BGRA, false);
-		// _context.setRenderToTexture(sceneAsTexture, true, 2, 1);
-		// _context.clear(0.0, 0.0, 0.0, 0.0, 1, 1);
-		/* Lime way of doing things */
-		// _gl.clearColor(0.0, 0.0, 0.0, 0.0);
 		_gl.clearColor(0.53, 0.81, 0.92, 0);
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
 		_gl.disable(_gl.STENCIL_TEST);
@@ -159,27 +152,19 @@ class FramebufferScene extends BaseScene
 		renderCubeCloud(cameraPos, lookAtMat, lightDirection);
 		// _gl.enable(_gl.DEPTH_TEST);
 
-		/* Lime way of doing things */
 		// Revert to the original framebuffer
 		_gl.bindFramebuffer(_gl.FRAMEBUFFER, 0);
 
-		// _context.setRenderToBackBuffer();
-		// _gl.disable(_gl.DEPTH_TEST);
 		// Create a quad model and render to that
 		_framebufferProgram.use();
 		var m = createRotationMatrix(-90, Vector3D.X_AXIS);
 		m.appendTranslation(0.0, 0.0, 0.501);
-		// var quad = new QuadModel(_gl, _context, 'assets/grass.png', m);
-		// var quad = new LimeQuadModel(_gl, _context, sceneAsTexture, m);
 
-		var quad = new LimeQuadModel(_gl, _context, null, m, true);
+		var quad = new QuadModel(_gl, null, m, true);
 		quad.draw(_framebufferProgram, {
-			vbo: null,
 			vertexBufferData: null,
-			ibo: null,
 			indexBufferData: null,
-			textures: null,
-			limeTextures: [colorTex],
+			textures: [colorTex],
 			modelMatrix: _sceneRotation,
 			projectionMatrix: lookAtMat,
 			cameraPosition: cameraPos,
@@ -190,7 +175,7 @@ class FramebufferScene extends BaseScene
 			flashlightPos: cameraPos,
 			flashlightDir: vector3DToFloat32Array(_camera.cameraFront),
 			ui: _ui
-		}, colorTex);
+		});
 
 		_gl.enable(_gl.DEPTH_TEST);
 		// FB _gl.deleteFramebuffer(framebuffer);
@@ -215,12 +200,9 @@ class FramebufferScene extends BaseScene
 		for (m in _models)
 		{
 			m.draw(_modelLoadingProgram, {
-				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
 				indexBufferData: null,
 				textures: null,
-				limeTextures: null,
 				modelMatrix: _sceneRotation,
 				projectionMatrix: lookAtMat,
 				cameraPosition: cameraPos,

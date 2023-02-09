@@ -4,8 +4,8 @@ import MatrixUtils.matrix3DToFloat32Array;
 import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLUniformLocation;
-import openfl.Assets;
-import openfl.display3D.Context3D;
+import lime.utils.Assets;
+import lime.utils.Float32Array;
 
 /**
  * The Outlining program outputs the same color to every fragment within the area of the model.
@@ -33,15 +33,15 @@ class OutliningProgram extends Program
 	/**
 	 * Constructor
 	 * @param gl A WebGL render context
-	 * @param context An OpenFL 3D render context
 	 */
-	public function new(gl:WebGLRenderContext, context:Context3D):Void
+	public function new(gl:WebGLRenderContext):Void
 	{
+		super(gl);
+
 		var vertexSource = Assets.getText("assets/shaders/modelLoading.vert");
 		var fragmentSource = #if !desktop "precision mediump float;" + #end
 		Assets.getText("assets/shaders/singleColorShader.frag");
 
-		super(gl, context);
 		createGLSLProgram(vertexSource, fragmentSource);
 		getShaderVarLocations();
 	}
@@ -78,11 +78,21 @@ class OutliningProgram extends Program
 		// Add projection and pass in to shader
 		_gl.uniformMatrix4fv(_programMatrixUniform, false, matrix3DToFloat32Array(params.projectionMatrix));
 
-		// Apply GL calls to submit the cube data to the GPU
-		_context.setVertexBufferAt(_programVertexAttribute, params.vbo, 0, FLOAT_3);
-		_context.setVertexBufferAt(_programNormalAttribute, params.vbo, 3, FLOAT_3);
-		_context.setVertexBufferAt(_programTextureAttribute, params.vbo, 6, FLOAT_2);
+		// Bind vertex buffer
+		var vertexBuffer = _gl.createBuffer();
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, vertexBuffer);
+		_gl.bufferData(_gl.ARRAY_BUFFER, params.vertexBufferData, _gl.STATIC_DRAW);
 
-		_context.drawTriangles(params.ibo);
+		// Set up attribute pointers
+		_gl.vertexAttribPointer(_programVertexAttribute, 3, _gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 0);
+		_gl.vertexAttribPointer(_programNormalAttribute, 3, _gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		_gl.vertexAttribPointer(_programTextureAttribute, 2, _gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+
+		// Bind index data
+		var indexBuffer = _gl.createBuffer();
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, params.indexBufferData, _gl.STATIC_DRAW);
+
+		_gl.drawElements(_gl.TRIANGLES, 6, _gl.UNSIGNED_INT, 0);
 	}
 }

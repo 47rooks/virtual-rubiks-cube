@@ -1,5 +1,7 @@
 /*
- * Simple fragment shader to output color for a 2D texture on a quad. It supports several post-processing effects.
+ * Simple fragment shader to output color for a 2D texture on a quad. It supports the following post-processing effects.
+ *
+ *     Grayscale, color inversion (1-rgb).
  */
 varying vec2 vTexCoord;
 
@@ -23,6 +25,5 @@ void main(void)
         }
     } else {
         gl_FragColor = vec4(texColor.r, texColor.g, texColor.b, 1.0);
-
     }
 }

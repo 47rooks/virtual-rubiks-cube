@@ -1,15 +1,16 @@
 package models.logl;
 
+import MatrixUtils.createTranslationMatrix;
+import gl.OpenGLUtils.glTextureFromImageClampToEdge;
 import gl.Program;
 import lime.graphics.WebGLRenderContext;
+import lime.graphics.opengl.GLTexture;
+import lime.utils.Assets;
 import models.logl.Mesh.Texture;
 import models.logl.Mesh.UnsignedInt;
 import models.logl.Mesh.Vertex;
 import models.logl.Model.MATERIAL_DIFFUSE;
 import models.logl.Model.MATERIAL_SPECULAR;
-import openfl.Assets;
-import openfl.display3D.Context3D;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 
 /**
@@ -19,18 +20,17 @@ import openfl.geom.Matrix3D;
 class QuadModel extends Model
 {
 	var _modelMatrix:Matrix3D;
+	var _texture:GLTexture;
 
 	/**
 	 * Constructor
 	 * @param gl the Lime WebGL render context
-	 * @param context the OpenFL Context3D
 	 * @param texturePath an Assets path to the texture image file
-	 * @param texture an OpenFL RectangleTexture
 	 * @param modelMatrix the model matrix location and orienting this model in the world
 	 */
-	public function new(gl:WebGLRenderContext, context:Context3D, texturePath:String = null, texture:RectangleTexture = null, modelMatrix:Matrix3D = null)
+	public function new(gl:WebGLRenderContext, texturePath:String = null, modelMatrix:Matrix3D = null, yFlipTexture:Bool = false)
 	{
-		super(gl, context);
+		super(gl);
 
         // @formatter:off
 		var verts = [
@@ -60,6 +60,15 @@ class QuadModel extends Model
 			0.0, 1.0,
 			1.0, 1.0
 		];
+		var flippedTexcoords = [
+			// U, V
+			1.0, 1.0,
+			0.0, 1.0,
+			0.0, 0.0,
+			1.0, 1.0,
+			0.0, 0.0,
+			1.0, 0.0
+		];
         // @formatter:on
 		var vertices = new Array<Vertex>();
 		for (i in 0...Math.ceil(verts.length / 3))
@@ -67,7 +76,7 @@ class QuadModel extends Model
 			vertices.push({
 				position: verts.slice(i * 3, i * 3 + 3),
 				normal: norms.slice(i * 3, i * 3 + 3),
-				texCoords: texcoords.slice(i * 2, i * 2 + 2)
+				texCoords: (yFlipTexture) ? flippedTexcoords.slice(i * 2, i * 2 + 2) : texcoords.slice(i * 2, i * 2 + 2)
 			});
 		}
 
@@ -86,27 +95,8 @@ class QuadModel extends Model
 		{
 			t = loadTexture(texturePath);
 		}
-		else if (texture != null)
-		{
-			trace('adding texture');
-			var textureID = 0;
 
-			t = new Array<Texture>();
-			t.push({
-				textureId: textureID,
-				textureType: textureID == 0 ? MATERIAL_DIFFUSE : MATERIAL_SPECULAR,
-				texturePath: 'NONE',
-				texture: texture
-			});
-			textureID++;
-			t.push({
-				textureId: textureID,
-				textureType: textureID == 0 ? MATERIAL_DIFFUSE : MATERIAL_SPECULAR,
-				texturePath: 'NONE',
-				texture: texture
-			});
-		}
-		_meshes.push(new Mesh(_context, _gl, vertices, indices, t));
+		_meshes.push(new Mesh(_gl, vertices, indices, t));
 	}
 
 	function loadTexture(imgPath:String):Array<Texture>
@@ -115,9 +105,8 @@ class QuadModel extends Model
 
 		var textureID = 0;
 
-		var tData = Assets.getBitmapData(imgPath);
-		var texture = _context.createRectangleTexture(tData.width, tData.height, BGRA, false);
-		texture.uploadFromBitmapData(tData);
+		var img = Assets.getImage(imgPath);
+		var texture = glTextureFromImageClampToEdge(_gl, img);
 		rv.push({
 			textureId: textureID,
 			textureType: textureID == 0 ? MATERIAL_DIFFUSE : MATERIAL_SPECULAR,
@@ -140,7 +129,26 @@ class QuadModel extends Model
 	{
 		var m = _modelMatrix.clone();
 		m.append(params.modelMatrix);
-		params.modelMatrix = m;
-		super.draw(program, params);
+		var matrix = createTranslationMatrix(_x, _y, _z);
+		matrix.append(m);
+		var meshParams = {
+			vertexBufferData: null,
+			indexBufferData: null,
+			textures: params.textures,
+			modelMatrix: matrix,
+			projectionMatrix: params.projectionMatrix,
+			cameraPosition: params.cameraPosition,
+			lightColor: null,
+			lightPosition: null,
+			directionalLight: params.directionalLight,
+			pointLights: params.pointLights,
+			flashlightPos: params.flashlightPos,
+			flashlightDir: params.flashlightDir,
+			ui: params.ui
+		}
+		for (m in _meshes)
+		{
+			m.draw(program, meshParams);
+		}
 	}
 }

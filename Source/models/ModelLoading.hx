@@ -6,7 +6,6 @@ import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
 import models.logl.GLTFModel;
 import models.logl.Model;
-import openfl.display3D.Context3D;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
 import ui.UI;
@@ -15,7 +14,6 @@ class ModelLoading
 {
 	// Graphics Contexts
 	var _gl:WebGLRenderContext;
-	var _context:Context3D;
 
 	var _initialized:Bool = false;
 
@@ -29,14 +27,13 @@ class ModelLoading
 
 	final ROTATION_SENSITIVTY = 0.5;
 
-	public function new(gl:WebGLRenderContext, context:Context3D)
+	public function new(gl:WebGLRenderContext)
 	{
 		_gl = gl;
-		_context = context;
 		_modelRotation = new Matrix3D();
 	}
 
-	private function initialize(gl:WebGLRenderContext, context:Context3D):Void
+	private function initialize(gl:WebGLRenderContext):Void
 	{
 		if (_initialized)
 		{
@@ -44,8 +41,8 @@ class ModelLoading
 		}
 
 		// Model loading
-		_model = new GLTFModel(_gl, _context, 'assets/gltf/backpack.gltf2', 'assets/gltf/backpack.bin');
-		_modelLoadingProgram = new ModelLoadingProgram(_gl, _context);
+		_model = new GLTFModel(_gl, 'assets/gltf/backpack.gltf2', 'assets/gltf/backpack.bin');
+		_modelLoadingProgram = new ModelLoadingProgram(_gl);
 
 		_initialized = true;
 	}
@@ -54,22 +51,19 @@ class ModelLoading
 	{
 		if (ui.sceneModelLoading)
 		{
-			initialize(_gl, _context);
+			initialize(_gl);
 		}
 	}
 
-	public function render(gl:WebGLRenderContext, context:Context3D, projectionMatrix:Matrix3D, cameraPosition:Float32Array, pointLights:Array<PointLight>,
+	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, cameraPosition:Float32Array, pointLights:Array<PointLight>,
 			flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
 		_modelLoadingProgram.use();
 		_model.draw(_modelLoadingProgram, {
-			vbo: null,
 			vertexBufferData: null,
-			ibo: null,
 			indexBufferData: null,
 			textures: null,
-			limeTextures: null,
 			modelMatrix: _modelRotation,
 			projectionMatrix: projectionMatrix,
 			cameraPosition: cameraPosition,

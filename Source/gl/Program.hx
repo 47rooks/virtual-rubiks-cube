@@ -8,10 +8,6 @@ import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLTexture;
 import lime.utils.Float32Array;
 import lime.utils.Int32Array;
-import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.geom.Matrix3D;
 import ui.UI;
 
@@ -22,29 +18,23 @@ import ui.UI;
 typedef ProgramParameters =
 {
 	/**
-	 * The Vertex Buffer Object. The attributes present for each vertex will be determined by the
-	 * specific program.
+	 * The vertex buffer data. The attributes present for each vertex will be determined by the
+	 * specific program. This is bound to the VAO in the program.
 	 */
-	var vbo:VertexBuffer3D;
-
-	var vertexBufferData:Float32Array; // to be bound to the new vbo
+	var vertexBufferData:Float32Array;
 
 	/**
-	 * The index buffer object. Whether indexed drawing is required or not will be determined by the
-	 * specific program.
+	 * The index buffer data. Whether indexed drawing is required or not will be determined by the
+	 * specific program. This is bound to the EBO in the program.
 	 */
-	var ibo:IndexBuffer3D;
-
-	var indexBufferData:Int32Array; // to be bound to the new ibo
+	var indexBufferData:Int32Array;
 
 	/**
 	 * An array of textures.
 	 * FIXME ultimately this should be an array of TextureInfo objects so that we can follow
 	 * a convention as to what textures are diffuse or specular or otherwise.
 	 */
-	var textures:Array<RectangleTexture>; // RectangleTexture should probably be TextureInfo
-
-	var limeTextures:Array<GLTexture>; // will be the new textures
+	var textures:Array<GLTexture>;
 
 	/**
 	 * The model matrix to apply to the model to place it properly oriented and position in the world.
@@ -107,7 +97,6 @@ abstract class Program
 {
 	// Graphics contexts
 	var _gl:WebGLRenderContext;
-	var _context:Context3D;
 
 	// GL variables
 	public var _glProgram:GLProgram;
@@ -115,12 +104,10 @@ abstract class Program
 	/**
 	 * Constructor
 	 * @param gl A WebGL render context
-	 * @param context The OpenFL 3D render context.
 	 */
-	public function new(gl:WebGLRenderContext, context:Context3D)
+	public function new(gl:WebGLRenderContext)
 	{
 		_gl = gl;
-		_context = context;
 	}
 
 	/**

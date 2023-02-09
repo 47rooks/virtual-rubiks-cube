@@ -1,5 +1,6 @@
 package models.logl;
 
+import gl.OpenGLUtils.glTextureFromImageClampToEdge;
 import gltf.GLTF;
 import gltf.schema.TGLTF;
 import gltf.schema.TGLTFID;
@@ -7,13 +8,12 @@ import gltf.types.MeshPrimitive;
 import gltf.types.Node;
 import haxe.io.Path;
 import lime.graphics.WebGLRenderContext;
+import lime.utils.Assets;
 import models.logl.Mesh.Texture;
 import models.logl.Mesh.UnsignedInt;
 import models.logl.Mesh.Vertex;
 import models.logl.Model.MATERIAL_DIFFUSE;
 import models.logl.Model.MATERIAL_SPECULAR;
-import openfl.Assets;
-import openfl.display3D.Context3D;
 
 /**
  * A model loaded from a GLTF artifact.
@@ -27,13 +27,12 @@ class GLTFModel extends Model
 	/**
 	 * Constructor
 	 * @param gl the Lime WebGL render context
-	 * @param context the OpenFL Context3D
 	 * @param gltfFilePath an Assets path to the model JSON file
 	 * @param gltfBinFilePath an Assets path to the model .bin file
 	 */
-	public function new(gl:WebGLRenderContext, context:Context3D, gltfFilePath:String, gltfBinFilePath:String)
+	public function new(gl:WebGLRenderContext, gltfFilePath:String, gltfBinFilePath:String)
 	{
-		super(gl, context);
+		super(gl);
 
 		loadModel(gltfFilePath, gltfBinFilePath);
 	}
@@ -149,7 +148,7 @@ class GLTFModel extends Model
 		textures.push(specularMaps);
 		// trace('diffusetx=${diffuseMaps.textureId}, ${diffuseMaps.textureType}, ${diffuseMaps.texturePath}');
 		// trace('speculartx=${specularMaps.textureId}, ${specularMaps.textureType}, ${specularMaps.texturePath}');
-		return new Mesh(_context, _gl, vertexData, indexData, textures);
+		return new Mesh(_gl, vertexData, indexData, textures);
 	}
 
 	/**
@@ -174,9 +173,8 @@ class GLTFModel extends Model
 			}
 			if (!alreadyLoaded)
 			{
-				var tData = Assets.getBitmapData(path);
-				var texture = _context.createRectangleTexture(tData.width, tData.height, BGRA, false);
-				texture.uploadFromBitmapData(tData);
+				var img = Assets.getImage(path);
+				var texture = glTextureFromImageClampToEdge(_gl, img);
 				_loadedTextures.push({
 					textureId: textureID,
 					textureType: textureID == 0 ? MATERIAL_DIFFUSE : MATERIAL_SPECULAR,
