@@ -5,9 +5,9 @@ import MatrixUtils.createRotationMatrix;
 import MatrixUtils.vector3DToFloat32Array;
 import gl.FramebufferProgram;
 import gl.ModelLoadingProgram;
+import gl.OpenGLUtils.glTextureFromImageClampToEdge;
 import lights.PointLight;
 import lime.graphics.Image;
-import lime.graphics.opengl.GLTexture;
 import lime.utils.Assets;
 import lime.utils.Float32Array;
 import models.logl.CubeModel;
@@ -139,7 +139,7 @@ class FramebufferScene extends BaseScene
 			return;
 		}
 
-		var grassTex = getTextureFromImage(_grass);
+		var grassTex = glTextureFromImageClampToEdge(_gl, _grass);
 
 		_gl.clearColor(0.53, 0.81, 0.92, 0);
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
@@ -179,19 +179,6 @@ class FramebufferScene extends BaseScene
 
 		_gl.enable(_gl.DEPTH_TEST);
 		// FB _gl.deleteFramebuffer(framebuffer);
-	}
-
-	private function getTextureFromImage(image:Image):GLTexture
-	{
-		var glTexture = _gl.createTexture();
-		_gl.bindTexture(_gl.TEXTURE_2D, glTexture);
-		_gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_WRAP_S, _gl.CLAMP_TO_EDGE);
-		_gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_WRAP_T, _gl.CLAMP_TO_EDGE);
-		_gl.texImage2D(_gl.TEXTURE_2D, 0, _gl.RGBA, image.buffer.width, image.buffer.height, 0, _gl.RGBA, _gl.UNSIGNED_BYTE, image.data);
-		_gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MAG_FILTER, _gl.LINEAR);
-		_gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MIN_FILTER, _gl.LINEAR);
-		_gl.bindTexture(_gl.TEXTURE_2D, null);
-		return glTexture;
 	}
 
 	private function renderCubeCloud(cameraPos:Float32Array, lookAtMat:Matrix3D, lightDirection:Float32Array):Void
