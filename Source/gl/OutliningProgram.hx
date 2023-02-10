@@ -50,13 +50,10 @@ class OutliningProgram extends Program
 	{
 		// Get references to GLSL attributes
 		_programVertexAttribute = _gl.getAttribLocation(_glProgram, "aPosition");
-		_gl.enableVertexAttribArray(_programVertexAttribute);
 
 		_programNormalAttribute = _gl.getAttribLocation(_glProgram, "aNormal");
-		_gl.enableVertexAttribArray(_programNormalAttribute);
 
 		_programTextureAttribute = _gl.getAttribLocation(_glProgram, "aTexCoord");
-		_gl.enableVertexAttribArray(_programTextureAttribute);
 
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");
@@ -84,15 +81,21 @@ class OutliningProgram extends Program
 		_gl.bufferData(_gl.ARRAY_BUFFER, params.vertexBufferData, _gl.STATIC_DRAW);
 
 		// Set up attribute pointers
-		_gl.vertexAttribPointer(_programVertexAttribute, 3, _gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 0);
-		_gl.vertexAttribPointer(_programNormalAttribute, 3, _gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		_gl.vertexAttribPointer(_programTextureAttribute, 2, _gl.FLOAT, false, 8 * Float32Array.BYTES_PER_ELEMENT, 6 * Float32Array.BYTES_PER_ELEMENT);
+		var stride = 8 * Float32Array.BYTES_PER_ELEMENT;
+		_gl.enableVertexAttribArray(_programVertexAttribute);
+		_gl.vertexAttribPointer(_programVertexAttribute, 3, _gl.FLOAT, false, stride, 0);
+
+		_gl.enableVertexAttribArray(_programNormalAttribute);
+		_gl.vertexAttribPointer(_programNormalAttribute, 3, _gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
+
+		_gl.enableVertexAttribArray(_programTextureAttribute);
+		_gl.vertexAttribPointer(_programTextureAttribute, 2, _gl.FLOAT, false, stride, 6 * Float32Array.BYTES_PER_ELEMENT);
 
 		// Bind index data
 		var indexBuffer = _gl.createBuffer();
 		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, params.indexBufferData, _gl.STATIC_DRAW);
 
-		_gl.drawElements(_gl.TRIANGLES, 6, _gl.UNSIGNED_INT, 0);
+		_gl.drawElements(_gl.TRIANGLES, params.indexBufferData.length, _gl.UNSIGNED_INT, 0);
 	}
 }

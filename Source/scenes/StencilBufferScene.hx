@@ -87,7 +87,6 @@ class StencilBufferScene extends BaseScene
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
 
 		_modelLoadingProgram.use();
-
 		// Draw floor before enabling the stencil buffer. If the floor were to write to the stencil
 		// buffer the outlining would not appear when looking down on the scene from above.
 		// Offset floor a little downward to prevent z-fighting between the bottom of the cubes and the floor.
@@ -141,7 +140,7 @@ class StencilBufferScene extends BaseScene
 		_gl.stencilMask(0x00); // disable stencil buffer writes
 		_gl.disable(_gl.DEPTH_TEST);
 
-		// Scale models or two cubes a little and redraw
+		// Scale models of the two cubes a little and redraw
 		// use a simple program - doesn't need textures, just draws one color
 		_outliningProgram.use();
 		var scaleMatrix = createScaleMatrix(1.1, 1.1, 1.1);

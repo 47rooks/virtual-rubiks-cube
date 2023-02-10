@@ -246,7 +246,6 @@ abstract class BaseScene extends Sprite
 		_gl.disable(_gl.STENCIL_TEST);
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT | _gl.STENCIL_BUFFER_BIT);
 		_gl.depthFunc(_gl.LESS);
-		_gl.depthMask(true);
 		_gl.enable(_gl.DEPTH_TEST);
 
 		// Render current scene
