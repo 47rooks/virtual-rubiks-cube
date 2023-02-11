@@ -266,6 +266,7 @@ class Light
 			vbo: null,
 			vertexBufferData: vertexData,
 			ibo: null,
+			numIndexes: 0,
 			indexBufferData: indexData,
 			textures: null,
 			modelMatrix: _modelMatrix,

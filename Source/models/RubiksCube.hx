@@ -220,7 +220,7 @@ class RubiksCube
 		_specularLightMapImageData = Assets.getImage("assets/openflMetalSpecular.png");
 		_specularLightMapTexture = glTextureFromImageClampToEdge(gl, _specularLightMapImageData);
 
-		_cubes = createCubes();
+		_cubes = createCubes(gl);
 
 		// Initialize operation data
 		_operation = null;
@@ -246,10 +246,10 @@ class RubiksCube
 	/**
 	 * Create the required number of cubes with correct colors and positioning data.
 	 * 
-	 * @param context the GL render context to use
+	 * @param gl the GL render context to use
 	 * @return Map<String, CubeData>
 	 */
-	function createCubes():Map<String, CubeData>
+	function createCubes(gl:WebGLRenderContext):Map<String, CubeData>
 	{
 		var cubes = new Map<String, CubeData>();
 		for (i in 0...ROW_LEN)
@@ -264,7 +264,7 @@ class RubiksCube
 						continue;
 					}
 					var cs = createColorSpec(i, j, k, ROW_LEN);
-					var c:Cube = new Cube(cs);
+					var c:Cube = new Cube(gl, cs);
 					var scaleMatrix = createScaleMatrix(SIDE, SIDE, SIDE);
 					var rotationMatrix = new Matrix3D();
 					rotationMatrix.identity();
@@ -909,10 +909,11 @@ class RubiksCube
 			// Light
 			var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);
 			var params:ProgramParameters = {
-				vbo: null,
-				vertexBufferData: c.cube.vertexData,
-				ibo: null,
-				indexBufferData: c.cube.indexData,
+				vbo: c.cube.vbo,
+				vertexBufferData: null,
+				ibo: c.cube.ibo,
+				numIndexes: c.cube.indexData.length,
+				indexBufferData: null,
 				textures: [_faceTexture],
 				modelMatrix: fullModel,
 				projectionMatrix: fullProjection,

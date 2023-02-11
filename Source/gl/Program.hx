@@ -35,6 +35,11 @@ typedef ProgramParameters =
 	var ibo:GLBuffer;
 
 	/**
+	 * Number of indexes in the ibo to render.
+	 */
+	var numIndexes:Int;
+
+	/**
 	 * The index buffer data. Whether indexed drawing is required or not will be determined by the
 	 * specific program. This is bound to the EBO in the program.
 	 */

@@ -1,6 +1,8 @@
 package models;
 
 import Color.WHITE;
+import lime.graphics.WebGLRenderContext;
+import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
@@ -24,6 +26,8 @@ class Cube
 	// Model data
 	public var vertexData:Float32Array;
 	public var indexData:Int32Array;
+	public var vbo:GLBuffer;
+	public var ibo:GLBuffer;
 
 	// GL interface variables
 	private var _programMatrixUniform:GLUniformLocation;
@@ -34,9 +38,10 @@ class Cube
 
 	/**
 	 * Constructor
+	 * @param gl The WebGL render context
 	 * @param color a ColorSpec specifying colors for each face. If null, all faces will be all white.
 	 */
-	public function new(color:ColorSpec)
+	public function new(gl:WebGLRenderContext, color:ColorSpec)
 	{
 		if (color != null)
 		{
@@ -53,10 +58,10 @@ class Cube
 				right: WHITE
 			};
 		}
-		initializeBuffers();
+		initializeBuffers(gl);
 	}
 
-	function initializeBuffers():Void
+	function initializeBuffers(gl:WebGLRenderContext):Void
 	{
 		final side = 1.0;
 
@@ -351,6 +356,10 @@ class Cube
 			0.0
 		];
 		vertexData = new Float32Array(v);
+		vbo = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+		gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 		// Index for each cube face using the the vertex data above
 
@@ -368,5 +377,9 @@ class Cube
 			21, 20,    23, // Top
 			21, 23,          22
 		]);
+		ibo = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, ibo);
+		gl.bufferData(gl.ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 	}
 }

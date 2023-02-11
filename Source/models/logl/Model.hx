@@ -68,6 +68,7 @@ class Model
 			vbo: null,
 			vertexBufferData: null,
 			ibo: null,
+			numIndexes: 0,
 			indexBufferData: null,
 			textures: params.textures,
 			modelMatrix: matrix,

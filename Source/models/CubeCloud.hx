@@ -49,7 +49,7 @@ class CubeCloud
 		_cubesPositions[8] = new Float32Array([1.5, 0.2, -1.5]);
 		_cubesPositions[9] = new Float32Array([-1.3, 1.0, -1.5]);
 
-		_cubeModel = new Cube(null);
+		_cubeModel = new Cube(gl, null);
 		_cubeProgram = new LightCastersProgram(gl);
 
 		// Load texture - FIXME note this is duplicate code - same texture is loaded in
@@ -83,10 +83,11 @@ class CubeCloud
 			fullProjection.append(projectionMatrix);
 
 			_cubeProgram.render({
-				vbo: null,
-				vertexBufferData: _cubeModel.vertexData,
-				ibo: null,
-				indexBufferData: _cubeModel.indexData,
+				vbo: _cubeModel.vbo,
+				vertexBufferData: null,
+				ibo: _cubeModel.ibo,
+				numIndexes: _cubeModel.indexData.length,
+				indexBufferData: null,
 				textures: [_diffuseLightMapTexture, _specularLightMapTexture],
 				modelMatrix: model,
 				projectionMatrix: fullProjection,

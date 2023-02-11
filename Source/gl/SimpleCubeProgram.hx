@@ -3,7 +3,6 @@ package gl;
 import MatrixUtils.matrix3DToFloat32Array;
 import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
-import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.utils.Assets;
 import lime.utils.Float32Array;
@@ -18,8 +17,6 @@ class SimpleCubeProgram extends Program
 	var _fragmentSource:String;
 
 	// GL variables
-	private var _vertexBuffer:GLBuffer;
-	private var _indexBuffer:GLBuffer;
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programModelMatrixUniform:GLUniformLocation;
 	private var _programTextureAttribute:Int;
@@ -51,9 +48,6 @@ class SimpleCubeProgram extends Program
 	 */
 	public function getShaderVarLocations():Void
 	{
-		_vertexBuffer = _gl.createBuffer();
-		_indexBuffer = _gl.createBuffer();
-
 		// Get references to GLSL attributes
 		_programVertexAttribute = _gl.getAttribLocation(_glProgram, "aPosition");
 		_gl.enableVertexAttribArray(_programVertexAttribute);
@@ -98,9 +92,7 @@ class SimpleCubeProgram extends Program
 		_gl.bindTexture(_gl.TEXTURE_2D, params.textures[0]);
 
 		// Bind vertex buffer
-		var vertexBuffer = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ARRAY_BUFFER, vertexBuffer);
-		_gl.bufferData(_gl.ARRAY_BUFFER, params.vertexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, params.vbo);
 
 		// Set up attribute pointers
 		var stride = 12 * Float32Array.BYTES_PER_ELEMENT;
@@ -114,10 +106,8 @@ class SimpleCubeProgram extends Program
 		_gl.vertexAttribPointer(_programColorAttribute, 4, _gl.FLOAT, false, stride, 5 * Float32Array.BYTES_PER_ELEMENT);
 
 		// Bind index data
-		var indexBuffer = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, params.indexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, params.ibo);
 
-		_gl.drawElements(_gl.TRIANGLES, params.indexBufferData.length, _gl.UNSIGNED_INT, 0);
+		_gl.drawElements(_gl.TRIANGLES, params.numIndexes, _gl.UNSIGNED_INT, 0);
 	}
 }

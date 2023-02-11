@@ -108,6 +108,7 @@ class CullingScene extends BaseScene
 				vbo: null,
 				vertexBufferData: null,
 				ibo: null,
+				numIndexes: 0,
 				indexBufferData: null,
 				textures: null,
 				modelMatrix: translation,

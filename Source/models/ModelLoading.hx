@@ -64,6 +64,7 @@ class ModelLoading
 			vbo: null,
 			vertexBufferData: null,
 			ibo: null,
+			numIndexes: 0,
 			indexBufferData: null,
 			textures: null,
 			modelMatrix: _modelRotation,
