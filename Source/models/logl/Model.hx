@@ -65,7 +65,9 @@ class Model
 		var matrix = createTranslationMatrix(_x, _y, _z);
 		matrix.append(params.modelMatrix);
 		var meshParams = {
+			vbo: null,
 			vertexBufferData: null,
+			ibo: null,
 			indexBufferData: null,
 			textures: params.textures,
 			modelMatrix: matrix,

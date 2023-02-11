@@ -167,7 +167,9 @@ class FramebufferScene extends BaseScene
 		var quad = new NDCQuad(_gl);
 		_nDCQuadProgram.use();
 		quad.draw(_nDCQuadProgram, {
+			vbo: null,
 			vertexBufferData: null,
+			ibo: null,
 			indexBufferData: null,
 			textures: [colorTex],
 			modelMatrix: null,
@@ -192,7 +194,9 @@ class FramebufferScene extends BaseScene
 		for (m in _models)
 		{
 			m.draw(_modelLoadingProgram, {
+				vbo: null,
 				vertexBufferData: null,
+				ibo: null,
 				indexBufferData: null,
 				textures: null,
 				modelMatrix: _sceneRotation,

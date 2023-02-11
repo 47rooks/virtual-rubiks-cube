@@ -3,6 +3,7 @@ package gl;
 import MatrixUtils.matrix3DToFloat32Array;
 import gl.Program.ProgramParameters;
 import lime.graphics.WebGLRenderContext;
+import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.utils.Assets;
 import lime.utils.Float32Array;
@@ -17,6 +18,8 @@ class SimpleCubeProgram extends Program
 	var _fragmentSource:String;
 
 	// GL variables
+	private var _vertexBuffer:GLBuffer;
+	private var _indexBuffer:GLBuffer;
 	private var _programMatrixUniform:GLUniformLocation;
 	private var _programModelMatrixUniform:GLUniformLocation;
 	private var _programTextureAttribute:Int;
@@ -48,6 +51,9 @@ class SimpleCubeProgram extends Program
 	 */
 	public function getShaderVarLocations():Void
 	{
+		_vertexBuffer = _gl.createBuffer();
+		_indexBuffer = _gl.createBuffer();
+
 		// Get references to GLSL attributes
 		_programVertexAttribute = _gl.getAttribLocation(_glProgram, "aPosition");
 		_gl.enableVertexAttribArray(_programVertexAttribute);

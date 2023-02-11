@@ -83,7 +83,9 @@ class CubeCloud
 			fullProjection.append(projectionMatrix);
 
 			_cubeProgram.render({
+				vbo: null,
 				vertexBufferData: _cubeModel.vertexData,
+				ibo: null,
 				indexBufferData: _cubeModel.indexData,
 				textures: [_diffuseLightMapTexture, _specularLightMapTexture],
 				modelMatrix: model,

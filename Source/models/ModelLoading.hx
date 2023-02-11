@@ -61,7 +61,9 @@ class ModelLoading
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);
 		_modelLoadingProgram.use();
 		_model.draw(_modelLoadingProgram, {
+			vbo: null,
 			vertexBufferData: null,
+			ibo: null,
 			indexBufferData: null,
 			textures: null,
 			modelMatrix: _modelRotation,

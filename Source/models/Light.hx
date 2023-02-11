@@ -263,7 +263,9 @@ class Light
 
 		_program.use();
 		_program.render({
+			vbo: null,
 			vertexBufferData: vertexData,
+			ibo: null,
 			indexBufferData: indexData,
 			textures: null,
 			modelMatrix: _modelMatrix,

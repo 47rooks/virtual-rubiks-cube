@@ -132,7 +132,9 @@ class QuadModel extends Model
 		var matrix = createTranslationMatrix(_x, _y, _z);
 		matrix.append(m);
 		var meshParams = {
+			vbo: null,
 			vertexBufferData: null,
+			ibo: null,
 			indexBufferData: null,
 			textures: params.textures,
 			modelMatrix: matrix,

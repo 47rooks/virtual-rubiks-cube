@@ -64,7 +64,9 @@ class NDCQuad extends Model
 	override public function draw(program:Program, params:ProgramParameters):Void
 	{
 		var meshParams = {
+			vbo: null,
 			vertexBufferData: null,
+			ibo: null,
 			indexBufferData: null,
 			textures: params.textures,
 			modelMatrix: null,

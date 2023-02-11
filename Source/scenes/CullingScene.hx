@@ -105,7 +105,9 @@ class CullingScene extends BaseScene
 		for (m in _models)
 		{
 			m.draw(_cullingProgram, {
+				vbo: null,
 				vertexBufferData: null,
+				ibo: null,
 				indexBufferData: null,
 				textures: null,
 				modelMatrix: translation,

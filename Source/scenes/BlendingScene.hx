@@ -191,7 +191,9 @@ class BlendingScene extends BaseScene
 		for (m in _models)
 		{
 			m.draw(_modelLoadingProgram, {
+				vbo: null,
 				vertexBufferData: null,
+				ibo: null,
 				indexBufferData: null,
 				textures: null,
 				modelMatrix: _sceneRotation,
@@ -212,7 +214,9 @@ class BlendingScene extends BaseScene
 		for (m in models2D)
 		{
 			m.draw(_blendingProgram, {
+				vbo: null,
 				vertexBufferData: null,
+				ibo: null,
 				indexBufferData: null,
 				textures: null,
 				modelMatrix: _sceneRotation,

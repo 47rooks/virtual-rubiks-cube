@@ -94,7 +94,9 @@ class StencilBufferScene extends BaseScene
 		translation.append(_sceneRotation);
 
 		_models[3].draw(_modelLoadingProgram, {
+			vbo: null,
 			vertexBufferData: null,
+			ibo: null,
 			indexBufferData: null,
 			textures: null,
 			modelMatrix: translation,
@@ -119,7 +121,9 @@ class StencilBufferScene extends BaseScene
 		for (m in _models.slice(0, 3))
 		{
 			m.draw(_modelLoadingProgram, {
+				vbo: null,
 				vertexBufferData: null,
+				ibo: null,
 				indexBufferData: null,
 				textures: null,
 				modelMatrix: _sceneRotation,
@@ -148,7 +152,9 @@ class StencilBufferScene extends BaseScene
 		for (m in _models.slice(0, 2))
 		{
 			m.draw(_outliningProgram, {
+				vbo: null,
 				vertexBufferData: null,
+				ibo: null,
 				indexBufferData: null,
 				textures: null,
 				modelMatrix: scaleMatrix,

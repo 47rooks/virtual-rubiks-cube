@@ -4,6 +4,7 @@ import gl.OpenGLUtils.glCreateProgram;
 import haxe.ValueException;
 import lights.PointLight;
 import lime.graphics.WebGLRenderContext;
+import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLTexture;
 import lime.utils.Float32Array;
@@ -18,10 +19,20 @@ import ui.UI;
 typedef ProgramParameters =
 {
 	/**
+	 * Vertex buffer object
+	 */
+	var vbo:GLBuffer;
+
+	/**
 	 * The vertex buffer data. The attributes present for each vertex will be determined by the
 	 * specific program. This is bound to the VAO in the program.
 	 */
 	var vertexBufferData:Float32Array;
+
+	/**
+	 * Index buffer object
+	 */
+	var ibo:GLBuffer;
 
 	/**
 	 * The index buffer data. Whether indexed drawing is required or not will be determined by the

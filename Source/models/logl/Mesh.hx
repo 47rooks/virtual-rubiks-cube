@@ -216,7 +216,9 @@ class Mesh
 			var fullProjection = modelMatrix.clone();
 			fullProjection.append(params.projectionMatrix);
 			program.render({
+				vbo: null,
 				vertexBufferData: _vertexBufferData,
+				ibo: null,
 				indexBufferData: _indexBufferData,
 				textures: params.textures != null ? params.textures : _glTextures,
 				modelMatrix: modelMatrix,
@@ -237,7 +239,9 @@ class Mesh
 			// quads because they do not need most
 			// of the parameters. This should be refactored somehow.
 			program.render({
+				vbo: null,
 				vertexBufferData: _vertexBufferData,
+				ibo: null,
 				indexBufferData: _indexBufferData,
 				textures: params.textures != null ? params.textures : _glTextures,
 				modelMatrix: null,
