@@ -24,10 +24,9 @@ typedef ColorSpec =
 class Cube
 {
 	// Model data
-	public var vertexData:Float32Array;
-	public var indexData:Int32Array;
 	public var vbo:GLBuffer;
 	public var ibo:GLBuffer;
+	public var numIndexes:Int;
 
 	// GL interface variables
 	private var _programMatrixUniform:GLUniformLocation;
@@ -355,7 +354,7 @@ class Cube
 			1.0,
 			0.0
 		];
-		vertexData = new Float32Array(v);
+		var vertexData = new Float32Array(v);
 		vbo = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
 		gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
@@ -363,7 +362,7 @@ class Cube
 
 		// Index for each cube face using the the vertex data above
 
-		indexData = new Int32Array([
+		var indexData = new Int32Array([
 			 2,  3,    0, // Back
 			 0,  1,           2,
 			10, 11,   9, // Front
@@ -381,5 +380,6 @@ class Cube
 		gl.bindBuffer(gl.ARRAY_BUFFER, ibo);
 		gl.bufferData(gl.ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);
+		numIndexes = indexData.length;
 	}
 }

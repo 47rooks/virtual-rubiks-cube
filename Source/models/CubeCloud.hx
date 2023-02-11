@@ -86,7 +86,7 @@ class CubeCloud
 				vbo: _cubeModel.vbo,
 				vertexBufferData: null,
 				ibo: _cubeModel.ibo,
-				numIndexes: _cubeModel.indexData.length,
+				numIndexes: _cubeModel.numIndexes,
 				indexBufferData: null,
 				textures: [_diffuseLightMapTexture, _specularLightMapTexture],
 				modelMatrix: model,

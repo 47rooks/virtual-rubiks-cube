@@ -64,9 +64,7 @@ class NDCQuadProgram extends Program
 
 		// Apply GL calls to submit the cube data to the GPU
 		// Bind vertex buffer
-		var vertexBuffer = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ARRAY_BUFFER, vertexBuffer);
-		_gl.bufferData(_gl.ARRAY_BUFFER, params.vertexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, params.vbo);
 
 		// Set up attribute pointers
 		var stride = 8 * Float32Array.BYTES_PER_ELEMENT;
@@ -77,14 +75,12 @@ class NDCQuadProgram extends Program
 		_gl.vertexAttribPointer(_programTextureAttribute, 2, _gl.FLOAT, false, stride, 6 * Float32Array.BYTES_PER_ELEMENT);
 
 		// Bind index data
-		var indexBuffer = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, params.indexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, params.ibo);
 
 		// Postprocessing variables
 		_gl.uniform1i(_programInversionEffectUniform, params.ui.uiInversion.selected ? 1 : 0);
 		_gl.uniform1i(_programGrayscaleEffectUniform, params.ui.uiGrayscale.selected ? 1 : 0);
 
-		_gl.drawElements(_gl.TRIANGLES, params.indexBufferData.length, _gl.UNSIGNED_INT, 0);
+		_gl.drawElements(_gl.TRIANGLES, params.numIndexes, _gl.UNSIGNED_INT, 0);
 	}
 }

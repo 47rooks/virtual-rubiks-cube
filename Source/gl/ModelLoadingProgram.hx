@@ -243,10 +243,8 @@ class ModelLoadingProgram extends Program
 		_gl.uniform3fv(_programViewerPositionUniform, params.cameraPosition, 0);
 		_gl.uniform1f(_programSpecularShininessUniform, Math.pow(2, params.ui.specularShininess));
 
-		// Bind vertex bufferh
-		var vertexBuffer = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ARRAY_BUFFER, vertexBuffer);
-		_gl.bufferData(_gl.ARRAY_BUFFER, params.vertexBufferData, _gl.STATIC_DRAW);
+		// Bind vertex buffer
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, params.vbo);
 
 		// Set up attribute pointers
 		var stride = 8 * Float32Array.BYTES_PER_ELEMENT;
@@ -260,10 +258,8 @@ class ModelLoadingProgram extends Program
 		_gl.vertexAttribPointer(_programTextureAttribute, 2, _gl.FLOAT, false, stride, 6 * Float32Array.BYTES_PER_ELEMENT);
 
 		// Bind index data
-		var indexBuffer = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, params.indexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, params.ibo);
 
-		_gl.drawElements(_gl.TRIANGLES, params.indexBufferData.length, _gl.UNSIGNED_INT, 0);
+		_gl.drawElements(_gl.TRIANGLES, params.numIndexes, _gl.UNSIGNED_INT, 0);
 	}
 }

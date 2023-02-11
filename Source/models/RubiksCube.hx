@@ -912,7 +912,7 @@ class RubiksCube
 				vbo: c.cube.vbo,
 				vertexBufferData: null,
 				ibo: c.cube.ibo,
-				numIndexes: c.cube.indexData.length,
+				numIndexes: c.cube.numIndexes,
 				indexBufferData: null,
 				textures: [_faceTexture],
 				modelMatrix: fullModel,

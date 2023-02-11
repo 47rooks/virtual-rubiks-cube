@@ -4,6 +4,7 @@ import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import gl.LightProgram;
 import lime.graphics.WebGLRenderContext;
+import lime.graphics.opengl.GLBuffer;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
 import openfl.geom.Matrix3D;
@@ -23,9 +24,10 @@ class Light
 
 	private var _color:RGBA;
 
-	// Model data
-	var vertexData:Float32Array;
-	var indexData:Float32Array;
+	// GL variables
+	var vbo:GLBuffer;
+	var ibo:GLBuffer;
+	var numIndexes:Int;
 
 	var _modelMatrix:Matrix3D;
 
@@ -51,7 +53,7 @@ class Light
 
 	function initializeBuffers(gl:WebGLRenderContext):Void
 	{
-		vertexData = new Float32Array([ // X, Y, Z     R, G, B, A
+		var vertexData = new Float32Array([ // X, Y, Z     R, G, B, A
 			side / 2, // BTR   BACK
 			side / 2,
 			-side / 2,
@@ -221,11 +223,15 @@ class Light
 			_color.b,
 			_color.a,
 		]);
+		vbo = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+		gl.bufferData(gl.ARRAY_BUFFER, vertexData, gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
 		// Index for each cube face using the the vertex data above
 		// Cross check indexes with De Vries and make sure that we have the same points
 		// ocurring in the same order.
-		indexData = new Float32Array([
+		var indexData = new Float32Array([
 			 0,  3,    2, // Back
 			 2,  1,           0,
 			 9, 11,  10, // Front
@@ -239,6 +245,11 @@ class Light
 			23, 20,    21, // Top
 			22, 23,          21
 		]);
+		ibo = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, ibo);
+		gl.bufferData(gl.ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);
+		numIndexes = indexData.length;
 
 		_modelMatrix = new Matrix3D();
 		_modelMatrix.append(createScaleMatrix(LIGHT_SIZE, LIGHT_SIZE, LIGHT_SIZE));
@@ -263,11 +274,11 @@ class Light
 
 		_program.use();
 		_program.render({
-			vbo: null,
-			vertexBufferData: vertexData,
-			ibo: null,
-			numIndexes: 0,
-			indexBufferData: indexData,
+			vbo: vbo,
+			vertexBufferData: null,
+			ibo: ibo,
+			numIndexes: numIndexes,
+			indexBufferData: null,
 			textures: null,
 			modelMatrix: _modelMatrix,
 			projectionMatrix: fullProjection,

@@ -101,10 +101,8 @@ class Mesh
 	var _textures:Array<Texture>;
 	var _glTextures:Array<GLTexture>;
 
-	var _vertexBuffer:GLBuffer;
-	var _vertexBufferData:Float32Array;
-	var _indexBuffer:GLBuffer;
-	var _indexBufferData:Int32Array;
+	var vbo:GLBuffer;
+	var ibo:GLBuffer;
 
 	/**
 	 * Constructor
@@ -130,31 +128,38 @@ class Mesh
 	function setupMesh()
 	{
 		// Create vertex buffer
-		_vertexBufferData = new Float32Array(_vertices.length * 8);
+		var vertexBufferData = new Float32Array(_vertices.length * 8);
 		for (v in 0..._vertices.length)
 		{
 			for (p in 0..._vertices[v].position.length)
 			{
-				_vertexBufferData[v * 8 + p] = _vertices[v].position[p];
+				vertexBufferData[v * 8 + p] = _vertices[v].position[p];
 			}
 			for (n in 0..._vertices[v].normal.length)
 			{
-				_vertexBufferData[v * 8 + 3 + n] = _vertices[v].normal[n];
+				vertexBufferData[v * 8 + 3 + n] = _vertices[v].normal[n];
 			}
 			for (t in 0..._vertices[v].texCoords.length)
 			{
-				_vertexBufferData[v * 8 + 6 + t] = _vertices[v].texCoords[t];
+				vertexBufferData[v * 8 + 6 + t] = _vertices[v].texCoords[t];
 			}
 		}
-		_vertexBuffer = _gl.createBuffer();
+		vbo = _gl.createBuffer();
+		vbo = _gl.createBuffer();
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, vbo);
+		_gl.bufferData(_gl.ARRAY_BUFFER, vertexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, null);
 
 		// Create index buffer
-		_indexBufferData = new Int32Array(_indices.length);
+		var indexBufferData = new Int32Array(_indices.length);
 		for (i in 0..._indices.length)
 		{
-			_indexBufferData[i] = _indices[i];
+			indexBufferData[i] = _indices[i];
 		}
-		_indexBuffer = _gl.createBuffer();
+		ibo = _gl.createBuffer();
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, ibo);
+		_gl.bufferData(_gl.ARRAY_BUFFER, indexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, null);
 
 		_glTextures = new Array<GLTexture>();
 		if (_textures != null)
@@ -216,11 +221,11 @@ class Mesh
 			var fullProjection = modelMatrix.clone();
 			fullProjection.append(params.projectionMatrix);
 			program.render({
-				vbo: null,
-				vertexBufferData: _vertexBufferData,
-				ibo: null,
-				numIndexes: 0,
-				indexBufferData: _indexBufferData,
+				vbo: vbo,
+				vertexBufferData: null,
+				ibo: ibo,
+				numIndexes: _indices.length,
+				indexBufferData: null,
 				textures: params.textures != null ? params.textures : _glTextures,
 				modelMatrix: modelMatrix,
 				projectionMatrix: fullProjection,
@@ -240,11 +245,11 @@ class Mesh
 			// quads because they do not need most
 			// of the parameters. This should be refactored somehow.
 			program.render({
-				vbo: null,
-				vertexBufferData: _vertexBufferData,
-				ibo: null,
-				numIndexes: 0,
-				indexBufferData: _indexBufferData,
+				vbo: vbo,
+				vertexBufferData: null,
+				ibo: ibo,
+				numIndexes: _indices.length,
+				indexBufferData: null,
 				textures: params.textures != null ? params.textures : _glTextures,
 				modelMatrix: null,
 				projectionMatrix: null,

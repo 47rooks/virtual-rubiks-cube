@@ -80,7 +80,9 @@ class LightProgram extends Program
 		_gl.uniform1i(_program3CompLightEnabledUniform, params.ui.componentLightEnabled ? 1 : 0);
 		_gl.uniform3f(_program3CompLightColorUniform, params.ui.lightAmbientColor.r, params.ui.lightAmbientColor.g, params.ui.lightAmbientColor.b);
 
-		// Apply GL calls to submit the cube data to the GPU
+		// Bind vertex buffer
+		_gl.bindBuffer(_gl.ARRAY_BUFFER, params.vbo);
+
 		// Set up attribute pointers
 		var stride = 7 * Float32Array.BYTES_PER_ELEMENT;
 		_gl.enableVertexAttribArray(_programVertexAttribute);
@@ -90,10 +92,8 @@ class LightProgram extends Program
 		_gl.vertexAttribPointer(_programColorAttribute, 4, _gl.FLOAT, false, stride, 3 * Float32Array.BYTES_PER_ELEMENT);
 
 		// Bind index data
-		var indexBuffer = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, params.indexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, params.ibo);
 
-		_gl.drawElements(_gl.TRIANGLES, params.indexBufferData.length, _gl.UNSIGNED_INT, 0);
+		_gl.drawElements(_gl.TRIANGLES, params.numIndexes, _gl.UNSIGNED_INT, 0);
 	}
 }
