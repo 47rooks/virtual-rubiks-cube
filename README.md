@@ -13,7 +13,6 @@ The stack used is lime, openfl and haxeui.
 # To Do
 
    * Immediate
-     * Stencilbuffer example seems to be off since switching over to lime for textures etc. It looks like outline is at the back when it used not to be. I suspect depth testing is wrong now. Compare with Learn OpenGL and fix.
      * both culling and framebuffer are much smaller scale scenes (unit cubes not 64) and the keyboard WASD movement does not account for that - add scaling
      * refactor point lights to base scene
      * the reset* class of functions is getting out of hand. A better solution is required that doesn't require so much duplication.
