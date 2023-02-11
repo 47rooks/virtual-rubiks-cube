@@ -5,14 +5,16 @@ import MatrixUtils.createRotationMatrix;
 import MatrixUtils.vector3DToFloat32Array;
 import gl.FramebufferProgram;
 import gl.ModelLoadingProgram;
+import gl.NDCQuadProgram;
 import gl.OpenGLUtils.glTextureFromImageClampToEdge;
+import haxe.ValueException;
 import lights.PointLight;
 import lime.graphics.Image;
 import lime.utils.Assets;
 import lime.utils.Float32Array;
 import models.logl.CubeModel;
 import models.logl.Model;
-import models.logl.QuadModel;
+import models.logl.NDCQuad;
 import openfl.events.Event;
 import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
@@ -27,6 +29,8 @@ class FramebufferScene extends BaseScene
 	var _models:Array<Model>;
 	var _framebufferProgram:FramebufferProgram;
 	var _modelLoadingProgram:ModelLoadingProgram;
+	var _nDCQuadProgram:NDCQuadProgram;
+
 	var _locs:Array<Array<Float>>;
 	var _grass:Image;
 
@@ -71,6 +75,7 @@ class FramebufferScene extends BaseScene
 
 		_modelLoadingProgram = new ModelLoadingProgram(_gl);
 		_framebufferProgram = new FramebufferProgram(_gl);
+		_nDCQuadProgram = new NDCQuadProgram(_gl);
 		_grass = Assets.getImage("assets/grass.png");
 
 		// There are four point lights with positions scaled by 64.0 (which is the scale of the cube size)
@@ -103,8 +108,6 @@ class FramebufferScene extends BaseScene
 		_modelLoadingProgram.use();
 
 		renderCubeCloud(cameraPos, lookAtMat, lightDirection);
-
-		/* Lime way of doing things */
 
 		// Create a framebuffer
 		var framebuffer = _gl.createFramebuffer();
@@ -141,7 +144,7 @@ class FramebufferScene extends BaseScene
 
 		var grassTex = glTextureFromImageClampToEdge(_gl, _grass);
 
-		_gl.clearColor(0.53, 0.81, 0.92, 0);
+		_gl.clearColor(0.53, 0.81, 0.92, 1.0);
 		_gl.clear(_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
 		_gl.disable(_gl.STENCIL_TEST);
 		_gl.depthFunc(_gl.LESS);
@@ -150,7 +153,6 @@ class FramebufferScene extends BaseScene
 
 		// Now render the scene again - this time to the framebuffer we just created
 		renderCubeCloud(cameraPos, lookAtMat, lightDirection);
-		// _gl.enable(_gl.DEPTH_TEST);
 
 		// Revert to the original framebuffer
 		_gl.bindFramebuffer(_gl.FRAMEBUFFER, 0);
@@ -160,25 +162,28 @@ class FramebufferScene extends BaseScene
 		var m = createRotationMatrix(-90, Vector3D.X_AXIS);
 		m.appendTranslation(0.0, 0.0, 0.501);
 
-		var quad = new QuadModel(_gl, null, m, true);
-		quad.draw(_framebufferProgram, {
+		_gl.disable(_gl.DEPTH_TEST);
+
+		var quad = new NDCQuad(_gl);
+		_nDCQuadProgram.use();
+		quad.draw(_nDCQuadProgram, {
 			vertexBufferData: null,
 			indexBufferData: null,
 			textures: [colorTex],
-			modelMatrix: _sceneRotation,
-			projectionMatrix: lookAtMat,
-			cameraPosition: cameraPos,
+			modelMatrix: null,
+			projectionMatrix: null,
+			cameraPosition: null,
 			lightColor: null,
 			lightPosition: null,
-			directionalLight: lightDirection,
+			directionalLight: null,
 			pointLights: null,
-			flashlightPos: cameraPos,
-			flashlightDir: vector3DToFloat32Array(_camera.cameraFront),
+			flashlightPos: null,
+			flashlightDir: null,
 			ui: _ui
 		});
 
 		_gl.enable(_gl.DEPTH_TEST);
-		// FB _gl.deleteFramebuffer(framebuffer);
+		_gl.deleteFramebuffer(framebuffer);
 	}
 
 	private function renderCubeCloud(cameraPos:Float32Array, lookAtMat:Matrix3D, lightDirection:Float32Array):Void

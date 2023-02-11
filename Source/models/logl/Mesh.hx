@@ -207,27 +207,50 @@ class Mesh
 		// 	_context.setTextureAt(i, _textures[i].texture);
 		// }
 		// FIXME Hacked in passing the textures. Not generalized
-		var modelMatrix = new Matrix3D();
-		modelMatrix.identity();
-		modelMatrix.append(params.modelMatrix);
-		modelMatrix.appendScale(64, 64, 64);
-		var fullProjection = modelMatrix.clone();
-		fullProjection.append(params.projectionMatrix);
-
-		program.render({
-			vertexBufferData: _vertexBufferData,
-			indexBufferData: _indexBufferData,
-			textures: params.textures != null ? params.textures : _glTextures,
-			modelMatrix: modelMatrix,
-			projectionMatrix: fullProjection,
-			cameraPosition: params.cameraPosition,
-			lightColor: null,
-			lightPosition: null,
-			directionalLight: params.directionalLight,
-			pointLights: params.pointLights,
-			flashlightPos: params.flashlightPos,
-			flashlightDir: params.flashlightDir,
-			ui: params.ui
-		});
+		if (params.modelMatrix != null)
+		{
+			var modelMatrix = new Matrix3D();
+			modelMatrix.identity();
+			modelMatrix.append(params.modelMatrix);
+			modelMatrix.appendScale(64, 64, 64);
+			var fullProjection = modelMatrix.clone();
+			fullProjection.append(params.projectionMatrix);
+			program.render({
+				vertexBufferData: _vertexBufferData,
+				indexBufferData: _indexBufferData,
+				textures: params.textures != null ? params.textures : _glTextures,
+				modelMatrix: modelMatrix,
+				projectionMatrix: fullProjection,
+				cameraPosition: params.cameraPosition,
+				lightColor: null,
+				lightPosition: null,
+				directionalLight: params.directionalLight,
+				pointLights: params.pointLights,
+				flashlightPos: params.flashlightPos,
+				flashlightDir: params.flashlightDir,
+				ui: params.ui
+			});
+		}
+		else
+		{
+			// FIXME This is hack to support NDC
+			// quads because they do not need most
+			// of the parameters. This should be refactored somehow.
+			program.render({
+				vertexBufferData: _vertexBufferData,
+				indexBufferData: _indexBufferData,
+				textures: params.textures != null ? params.textures : _glTextures,
+				modelMatrix: null,
+				projectionMatrix: null,
+				cameraPosition: null,
+				lightColor: null,
+				lightPosition: null,
+				directionalLight: null,
+				pointLights: null,
+				flashlightPos: null,
+				flashlightDir: null,
+				ui: params.ui
+			});
+		}
 	}
 }
