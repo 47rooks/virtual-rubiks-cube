@@ -377,9 +377,9 @@ class Cube
 			21, 23,          22
 		]);
 		ibo = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, ibo);
-		gl.bufferData(gl.ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
-		gl.bindBuffer(gl.ARRAY_BUFFER, null);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 		numIndexes = indexData.length;
 	}
 }

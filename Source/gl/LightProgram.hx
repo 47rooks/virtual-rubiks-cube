@@ -49,10 +49,8 @@ class LightProgram extends Program
 	{
 		// Get references to GLSL attributes
 		_programVertexAttribute = _gl.getAttribLocation(_glProgram, "aPosition");
-		_gl.enableVertexAttribArray(_programVertexAttribute);
 
 		_programColorAttribute = _gl.getAttribLocation(_glProgram, "aColor");
-		_gl.enableVertexAttribArray(_programColorAttribute);
 
 		// Transformation matrices
 		_programMatrixUniform = _gl.getUniformLocation(_glProgram, "uMatrix");

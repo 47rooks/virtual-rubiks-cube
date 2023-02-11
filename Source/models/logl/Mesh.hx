@@ -157,9 +157,9 @@ class Mesh
 			indexBufferData[i] = _indices[i];
 		}
 		ibo = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ARRAY_BUFFER, ibo);
-		_gl.bufferData(_gl.ARRAY_BUFFER, indexBufferData, _gl.STATIC_DRAW);
-		_gl.bindBuffer(_gl.ARRAY_BUFFER, null);
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, ibo);
+		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, indexBufferData, _gl.STATIC_DRAW);
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, null);
 
 		_glTextures = new Array<GLTexture>();
 		if (_textures != null)

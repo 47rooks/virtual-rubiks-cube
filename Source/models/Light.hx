@@ -7,6 +7,7 @@ import lime.graphics.WebGLRenderContext;
 import lime.graphics.opengl.GLBuffer;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
+import lime.utils.Int32Array;
 import openfl.geom.Matrix3D;
 import ui.UI;
 
@@ -231,7 +232,7 @@ class Light
 		// Index for each cube face using the the vertex data above
 		// Cross check indexes with De Vries and make sure that we have the same points
 		// ocurring in the same order.
-		var indexData = new Float32Array([
+		var indexData = new Int32Array([
 			 0,  3,    2, // Back
 			 2,  1,           0,
 			 9, 11,  10, // Front
@@ -246,9 +247,9 @@ class Light
 			22, 23,          21
 		]);
 		ibo = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, ibo);
-		gl.bufferData(gl.ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
-		gl.bindBuffer(gl.ARRAY_BUFFER, null);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 		numIndexes = indexData.length;
 
 		_modelMatrix = new Matrix3D();
