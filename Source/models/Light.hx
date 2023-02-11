@@ -27,7 +27,7 @@ class Light
 
 	// GL variables
 	var vbo:GLBuffer;
-	var ibo:GLBuffer;
+	var ebo:GLBuffer;
 	var numIndexes:Int;
 
 	var _modelMatrix:Matrix3D;
@@ -246,8 +246,8 @@ class Light
 			23, 20,    21, // Top
 			22, 23,          21
 		]);
-		ibo = gl.createBuffer();
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+		ebo = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 		numIndexes = indexData.length;
@@ -277,7 +277,7 @@ class Light
 		_program.render({
 			vbo: vbo,
 			vertexBufferData: null,
-			ibo: ibo,
+			ebo: ebo,
 			numIndexes: numIndexes,
 			indexBufferData: null,
 			textures: null,

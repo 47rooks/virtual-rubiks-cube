@@ -193,7 +193,7 @@ class BlendingScene extends BaseScene
 			m.draw(_modelLoadingProgram, {
 				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
+				ebo: null,
 				numIndexes: 0,
 				indexBufferData: null,
 				textures: null,
@@ -217,7 +217,7 @@ class BlendingScene extends BaseScene
 			m.draw(_blendingProgram, {
 				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
+				ebo: null,
 				numIndexes: 0,
 				indexBufferData: null,
 				textures: null,

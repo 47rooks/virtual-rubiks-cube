@@ -25,7 +25,7 @@ class Cube
 {
 	// Model data
 	public var vbo:GLBuffer;
-	public var ibo:GLBuffer;
+	public var ebo:GLBuffer;
 	public var numIndexes:Int;
 
 	// GL interface variables
@@ -376,8 +376,8 @@ class Cube
 			21, 20,    23, // Top
 			21, 23,          22
 		]);
-		ibo = gl.createBuffer();
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+		ebo = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexData, gl.STATIC_DRAW);
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
 		numIndexes = indexData.length;

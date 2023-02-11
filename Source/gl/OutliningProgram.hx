@@ -90,7 +90,7 @@ class OutliningProgram extends Program
 		_gl.vertexAttribPointer(_programTextureAttribute, 2, _gl.FLOAT, false, stride, 6 * Float32Array.BYTES_PER_ELEMENT);
 
 		// Bind index data
-		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, params.ibo);
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, params.ebo);
 
 		_gl.drawElements(_gl.TRIANGLES, params.numIndexes, _gl.UNSIGNED_INT, 0);
 	}

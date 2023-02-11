@@ -107,7 +107,7 @@ class CullingScene extends BaseScene
 			m.draw(_cullingProgram, {
 				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
+				ebo: null,
 				numIndexes: 0,
 				indexBufferData: null,
 				textures: null,

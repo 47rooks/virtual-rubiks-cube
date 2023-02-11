@@ -89,7 +89,7 @@ class BlendingProgram extends Program
 		_gl.uniform1f(_programAlphaThresholdValueUniform, params.ui.blendAlphaValueThreshold);
 
 		// Bind index data
-		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, params.ibo);
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, params.ebo);
 
 		_gl.drawElements(_gl.TRIANGLES, params.numIndexes, _gl.UNSIGNED_INT, 0);
 	}

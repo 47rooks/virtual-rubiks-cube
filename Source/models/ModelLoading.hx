@@ -63,7 +63,7 @@ class ModelLoading
 		_model.draw(_modelLoadingProgram, {
 			vbo: null,
 			vertexBufferData: null,
-			ibo: null,
+			ebo: null,
 			numIndexes: 0,
 			indexBufferData: null,
 			textures: null,

@@ -85,7 +85,7 @@ class CubeCloud
 			_cubeProgram.render({
 				vbo: _cubeModel.vbo,
 				vertexBufferData: null,
-				ibo: _cubeModel.ibo,
+				ebo: _cubeModel.ebo,
 				numIndexes: _cubeModel.numIndexes,
 				indexBufferData: null,
 				textures: [_diffuseLightMapTexture, _specularLightMapTexture],

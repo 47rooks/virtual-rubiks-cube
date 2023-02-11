@@ -30,9 +30,9 @@ typedef ProgramParameters =
 	var vertexBufferData:Float32Array;
 
 	/**
-	 * Index buffer object
+	 * Element buffer object
 	 */
-	var ibo:GLBuffer;
+	var ebo:GLBuffer;
 
 	/**
 	 * Number of indexes in the ibo to render.

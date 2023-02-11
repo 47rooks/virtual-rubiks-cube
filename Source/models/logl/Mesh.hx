@@ -102,7 +102,7 @@ class Mesh
 	var _glTextures:Array<GLTexture>;
 
 	var vbo:GLBuffer;
-	var ibo:GLBuffer;
+	var ebo:GLBuffer;
 
 	/**
 	 * Constructor
@@ -156,8 +156,8 @@ class Mesh
 		{
 			indexBufferData[i] = _indices[i];
 		}
-		ibo = _gl.createBuffer();
-		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, ibo);
+		ebo = _gl.createBuffer();
+		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, ebo);
 		_gl.bufferData(_gl.ELEMENT_ARRAY_BUFFER, indexBufferData, _gl.STATIC_DRAW);
 		_gl.bindBuffer(_gl.ELEMENT_ARRAY_BUFFER, null);
 
@@ -223,7 +223,7 @@ class Mesh
 			program.render({
 				vbo: vbo,
 				vertexBufferData: null,
-				ibo: ibo,
+				ebo: ebo,
 				numIndexes: _indices.length,
 				indexBufferData: null,
 				textures: params.textures != null ? params.textures : _glTextures,
@@ -247,7 +247,7 @@ class Mesh
 			program.render({
 				vbo: vbo,
 				vertexBufferData: null,
-				ibo: ibo,
+				ebo: ebo,
 				numIndexes: _indices.length,
 				indexBufferData: null,
 				textures: params.textures != null ? params.textures : _glTextures,

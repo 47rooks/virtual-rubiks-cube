@@ -172,7 +172,7 @@ class FramebufferScene extends BaseScene
 		quad.draw(_nDCQuadProgram, {
 			vbo: null,
 			vertexBufferData: null,
-			ibo: null,
+			ebo: null,
 			numIndexes: 0,
 			indexBufferData: null,
 			textures: [_colorTex],
@@ -199,7 +199,7 @@ class FramebufferScene extends BaseScene
 			m.draw(_modelLoadingProgram, {
 				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
+				ebo: null,
 				numIndexes: 0,
 				indexBufferData: null,
 				textures: null,

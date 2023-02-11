@@ -96,7 +96,7 @@ class StencilBufferScene extends BaseScene
 		_models[3].draw(_modelLoadingProgram, {
 			vbo: null,
 			vertexBufferData: null,
-			ibo: null,
+			ebo: null,
 			numIndexes: 0,
 			indexBufferData: null,
 			textures: null,
@@ -124,7 +124,7 @@ class StencilBufferScene extends BaseScene
 			m.draw(_modelLoadingProgram, {
 				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
+				ebo: null,
 				numIndexes: 0,
 				indexBufferData: null,
 				textures: null,
@@ -156,7 +156,7 @@ class StencilBufferScene extends BaseScene
 			m.draw(_outliningProgram, {
 				vbo: null,
 				vertexBufferData: null,
-				ibo: null,
+				ebo: null,
 				numIndexes: 0,
 				indexBufferData: null,
 				textures: null,

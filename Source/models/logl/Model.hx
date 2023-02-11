@@ -67,7 +67,7 @@ class Model
 		var meshParams = {
 			vbo: null,
 			vertexBufferData: null,
-			ibo: null,
+			ebo: null,
 			numIndexes: 0,
 			indexBufferData: null,
 			textures: params.textures,

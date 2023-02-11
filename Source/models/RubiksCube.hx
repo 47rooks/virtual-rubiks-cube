@@ -911,7 +911,7 @@ class RubiksCube
 			var params:ProgramParameters = {
 				vbo: c.cube.vbo,
 				vertexBufferData: null,
-				ibo: c.cube.ibo,
+				ebo: c.cube.ebo,
 				numIndexes: c.cube.numIndexes,
 				indexBufferData: null,
 				textures: [_faceTexture],
