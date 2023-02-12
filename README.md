@@ -37,5 +37,6 @@ The stack used is lime, openfl and haxeui.
    * refactor and simplify RubiksCube.updateLocations()
    * add error logging handler
    * handle window resize
+   * Consider use of VAO to stop have to bind vertexAttribPointers on every render call
 
 
