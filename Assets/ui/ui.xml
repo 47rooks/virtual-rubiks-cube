@@ -477,34 +477,32 @@
                     </vbox>
                 </vbox>
                 <vbox id="framebufferControls" text="Framebuffer" styleName="controlBox"
-                    style="background-color: #ffffff;">
-                    <vbox width="100%">
+                    style="background-color: #ffffff;" height="100%"
+                    width="100%">
+                    <frame text="Postprocessing Effect" styleName="parameterTitle" height="100%"
+                        width="100%">
                         <vbox>
-                            <frame text="Postprocessing Effect" styleName="parameterTitle">
-                                <vbox>
-                                    <optionbox id="uiFramebufferNoEffect"
-                                        componentGroup="framebufferGroup"
-                                        selected="true"
-                                        text="No Effect"></optionbox>
-                                    <optionbox id="uiInversion"
-                                        componentGroup="framebufferGroup"
-                                        text="Invert colors"></optionbox>
-                                    <optionbox id="uiGrayscale"
-                                        componentGroup="framebufferGroup"
-                                        text="Grayscale"></optionbox>
-                                    <optionbox id="uiSharpen"
-                                        componentGroup="framebufferGroup"
-                                        text="Sharpen"></optionbox>
-                                    <optionbox id="uiBlur"
-                                        componentGroup="framebufferGroup"
-                                        text="Blur"></optionbox>
-                                    <optionbox id="uiEdgeDetection"
-                                        componentGroup="framebufferGroup"
-                                        text="Edge Detection"></optionbox>
-                                </vbox>
-                            </frame>
+                            <optionbox id="uiFramebufferNoEffect"
+                                componentGroup="framebufferGroup"
+                                selected="true"
+                                text="No Effect"></optionbox>
+                            <optionbox id="uiInversion"
+                                componentGroup="framebufferGroup"
+                                text="Invert colors"></optionbox>
+                            <optionbox id="uiGrayscale"
+                                componentGroup="framebufferGroup"
+                                text="Grayscale"></optionbox>
+                            <optionbox id="uiSharpen"
+                                componentGroup="framebufferGroup"
+                                text="Sharpen"></optionbox>
+                            <optionbox id="uiBlur"
+                                componentGroup="framebufferGroup"
+                                text="Blur"></optionbox>
+                            <optionbox id="uiEdgeDetection"
+                                componentGroup="framebufferGroup"
+                                text="Edge Detection"></optionbox>
                         </vbox>
-                    </vbox>
+                    </frame>
                 </vbox>
                 <vbox id="sceneControls" text="Scene" styleName="sceneBox">
                     <group id="sceneGroup">

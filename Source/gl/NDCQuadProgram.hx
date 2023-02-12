@@ -22,6 +22,9 @@ class NDCQuadProgram extends Program
 	/* Postprocessing Effects */
 	private var _programInversionEffectUniform:GLUniformLocation;
 	private var _programGrayscaleEffectUniform:GLUniformLocation;
+	private var _programSharpenEffectUniform:GLUniformLocation;
+	private var _programBlurEffectUniform:GLUniformLocation;
+	private var _programEdgeDetectionEffectUniform:GLUniformLocation;
 
 	/**
 	 * Constructor
@@ -52,6 +55,9 @@ class NDCQuadProgram extends Program
 		// Postprocessing effects
 		_programInversionEffectUniform = _gl.getUniformLocation(_glProgram, "uInversion");
 		_programGrayscaleEffectUniform = _gl.getUniformLocation(_glProgram, "uGrayscale");
+		_programSharpenEffectUniform = _gl.getUniformLocation(_glProgram, "uSharpen");
+		_programBlurEffectUniform = _gl.getUniformLocation(_glProgram, "uBlur");
+		_programEdgeDetectionEffectUniform = _gl.getUniformLocation(_glProgram, "uEdgeDetection");
 	}
 
 	public function render(params:ProgramParameters)
@@ -80,6 +86,9 @@ class NDCQuadProgram extends Program
 		// Postprocessing variables
 		_gl.uniform1i(_programInversionEffectUniform, params.ui.uiInversion.selected ? 1 : 0);
 		_gl.uniform1i(_programGrayscaleEffectUniform, params.ui.uiGrayscale.selected ? 1 : 0);
+		_gl.uniform1i(_programSharpenEffectUniform, params.ui.uiSharpen.selected ? 1 : 0);
+		_gl.uniform1i(_programBlurEffectUniform, params.ui.uiBlur.selected ? 1 : 0);
+		_gl.uniform1i(_programEdgeDetectionEffectUniform, params.ui.uiEdgeDetection.selected ? 1 : 0);
 
 		_gl.drawElements(_gl.TRIANGLES, params.numIndexes, _gl.UNSIGNED_INT, 0);
 	}
