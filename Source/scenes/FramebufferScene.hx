@@ -159,6 +159,17 @@ class FramebufferScene extends BaseScene
 		_gl.enable(_gl.DEPTH_TEST);
 
 		// Now render the scene again - this time to the framebuffer we just created
+		if (_ui.uiRearFacing.selected)
+		{
+			// Rotate camera to get rear-facing view
+			_camera.yaw += 180;
+			_camera.calculateFront();
+			var rearFacing = _camera.getViewMatrix();
+			rearFacing.append(projectionTransform);
+			lookAtMat = rearFacing;
+			_camera.yaw -= 180;
+			_camera.calculateFront();
+		}
 		renderCubeCloud(cameraPos, lookAtMat, lightDirection);
 
 		// Revert to the original framebuffer

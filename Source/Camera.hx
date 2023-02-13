@@ -50,7 +50,8 @@ class Camera
 	 */
 	public var fov(default, null) = 45.0;
 
-	var _yaw:Float;
+	public var yaw:Float;
+
 	var _pitch:Float;
 
 	/**
@@ -65,7 +66,7 @@ class Camera
 		cameraPos = pos;
 		_worldUp = cameraUp;
 		cameraFront = new Vector3D(0, 0, -1);
-		_yaw = yaw;
+		this.yaw = yaw;
 		_pitch = pitch;
 	}
 
@@ -119,7 +120,7 @@ class Camera
 		var deltaX = xOffset * LOOK_AROUND_SENSITIVTY;
 		var deltaY = yOffset * LOOK_AROUND_SENSITIVTY;
 
-		_yaw += deltaX;
+		yaw += deltaX;
 		_pitch += deltaY;
 
 		if (_pitch > 89)
@@ -131,12 +132,7 @@ class Camera
 			_pitch = -89;
 		}
 
-		var direction = new Vector3D();
-		direction.x = Math.cos(radians(_yaw)) * Math.cos(radians(_pitch));
-		direction.y = Math.sin(radians(_pitch));
-		direction.z = Math.sin(radians(_yaw)) * Math.cos(radians(_pitch));
-		direction.normalize();
-		cameraFront = direction;
+		calculateFront();
 	}
 
 	// FIXME
@@ -158,7 +154,7 @@ class Camera
 				deltaY -= delta * 10;
 		}
 
-		_yaw += deltaX;
+		yaw += deltaX;
 		_pitch += deltaY;
 
 		if (_pitch > 89)
@@ -170,10 +166,21 @@ class Camera
 			_pitch = -89;
 		}
 
+		calculateFront();
+	}
+
+	/**
+	 * Update the front matrix.
+	 * This should probably be a proper update all matrices and state kind of call, but
+	 * in this somewhat hack implementation of a camera this is all that's needed to
+	 * be able to look behind, as needed by the framebuffer demo.
+	 */
+	public function calculateFront():Void
+	{
 		var direction = new Vector3D();
-		direction.x = Math.cos(radians(_yaw)) * Math.cos(radians(_pitch));
+		direction.x = Math.cos(radians(yaw)) * Math.cos(radians(_pitch));
 		direction.y = Math.sin(radians(_pitch));
-		direction.z = Math.sin(radians(_yaw)) * Math.cos(radians(_pitch));
+		direction.z = Math.sin(radians(yaw)) * Math.cos(radians(_pitch));
 		direction.normalize();
 		cameraFront = direction;
 	}
