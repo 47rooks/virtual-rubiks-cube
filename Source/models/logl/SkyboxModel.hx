@@ -46,68 +46,15 @@ class SkyboxModel extends Model
 			 side / 2,    side / 2,  side / 2,
 			-side / 2,    side / 2,  side / 2,
 			-side / 2,    side / 2, -side / 2];
-		// var norms = [
-		// 	// Nx, Ny, Nz
-		// 	 0.0,  0.0, -1.0, // Back
-		// 	 0.0,  0.0, -1.0,
-		// 	 0.0,  0.0, -1.0,
-		// 	 0.0,  0.0, -1.0,
-		// 	-1.0,  0.0,  0.0, // Left
-		// 	-1.0,  0.0,  0.0,
-		// 	-1.0,  0.0,  0.0,
-		// 	-1.0,  0.0,  0.0,
-		// 	 0.0,  0.0,  1.0, // Front
-		// 	 0.0,  0.0,  1.0,
-		// 	 0.0,  0.0,  1.0,
-		// 	 0.0,  0.0,  1.0,
-		// 	 1.0,  0.0,  0.0, // Right
-		// 	 1.0,  0.0,  0.0,
-		// 	 1.0,  0.0,  0.0,
-		// 	 1.0,  0.0,  0.0,
-		// 	 0.0, -1.0,  0.0, // Bottom
-		// 	 0.0, -1.0,  0.0,
-		// 	 0.0, -1.0,  0.0,
-		// 	 0.0, -1.0,  0.0,
-		// 	 0.0,  1.0,  0.0, // Top
-		// 	 0.0,  1.0,  0.0,
-		// 	 0.0,  1.0,  0.0,
-		// 	 0.0,  1.0,  0.0
-		// ];
-		// var texcoords = [
-		// 	// U, V
-		// 	0.0, 0.0,
-		// 	1.0, 0.0,
-		// 	1.0, 1.0,
-		// 	0.0, 1.0,
-		// 	0.0, 0.0,
-		// 	1.0, 0.0,
-		// 	1.0, 1.0,
-		// 	0.0, 1.0,
-		// 	0.0, 0.0,
-		// 	1.0, 0.0,
-		// 	1.0, 1.0,
-		// 	0.0, 1.0,
-		// 	1.0, 0.0,
-		// 	0.0, 0.0,
-		// 	0.0, 1.0,
-		// 	1.0, 1.0,
-		// 	0.0, 0.0,
-		// 	0.0, 1.0,
-		// 	1.0, 1.0,
-		// 	1.0, 0.0,
-		// 	0.0, 0.0,
-		// 	1.0, 0.0,
-		// 	1.0, 1.0,
-		// 	0.0, 1.0
-		// ];
+
 		// @formatter:on
 		var vertices = new Array<Vertex>();
 		for (i in 0...Math.ceil(verts.length / 3))
 		{
 			vertices.push({
 				position: verts.slice(i * 3, i * 3 + 3),
-				normal: [], // norms.slice(i * 3, i * 3 + 3),
-				texCoords: [] // texcoords.slice(i * 2, i * 2 + 2)
+				normal: [],
+				texCoords: []
 			});
 		}
 
@@ -148,7 +95,6 @@ class SkyboxModel extends Model
 		for (i => path in faces)
 		{
 			var img = Assets.getImage(path);
-			trace('img ${i}.data = ${img.data}, ${path}, w=${img.buffer.width} h=${img.buffer.height}');
 			_gl.texImage2D(_gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _gl.RGBA, img.buffer.width, img.buffer.height, 0, _gl.RGBA, _gl.UNSIGNED_BYTE,
 				img.buffer.data);
 		}
