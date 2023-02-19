@@ -22,7 +22,7 @@ class PhongMaterialsProgram extends Program
 	/* Model matrix */
 	private var _programModelMatrixUniform:GLUniformLocation;
 	/* Image uniform used for the case where the cube face displays an image */
-	private var _programImageUniform:Int;
+	private var _programImageUniform:GLUniformLocation;
 	/* Vertex attributes for vertex coordinates, texture, color and normals. */
 	private var _programVertexAttribute:Int;
 	private var _programTextureAttribute:Int;
@@ -93,7 +93,7 @@ class PhongMaterialsProgram extends Program
 		_programModelMatrixUniform = _gl.getUniformLocation(_glProgram, "uModel");
 
 		// Face texture
-		_programImageUniform = 0; // "uImage0" uniform but Context3D just uses ints
+		_programImageUniform = _gl.getUniformLocation(_glProgram, "uImage0");
 
 		// Phong Materials
 		_programAmbientMaterialUniform = _gl.getUniformLocation(_glProgram, "uMaterial.ambient");

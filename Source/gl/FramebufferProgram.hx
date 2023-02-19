@@ -17,7 +17,7 @@ class FramebufferProgram extends Program
 	private var _programProjectionMatrixUniform:GLUniformLocation;
 
 	/* Image uniform used for the case where the cube face displays an image */
-	private var _programImageUniform:Int;
+	private var _programImageUniform:GLUniformLocation;
 
 	/* Vertex attributes for vertex coordinates, texture, color and normals. */
 	private var _programVertexAttribute:Int;

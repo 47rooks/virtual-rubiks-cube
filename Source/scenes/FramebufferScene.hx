@@ -110,7 +110,7 @@ class FramebufferScene extends BaseScene
 		_gl.texParameteri(_gl.TEXTURE_2D, _gl.TEXTURE_MAG_FILTER, _gl.LINEAR);
 
 		// Unbind the texture buffer
-		_gl.bindTexture(_gl.TEXTURE_2D, 0);
+		_gl.bindTexture(_gl.TEXTURE_2D, null);
 
 		// Attach the color buffer
 		_gl.framebufferTexture2D(_gl.FRAMEBUFFER, _gl.COLOR_ATTACHMENT0, _gl.TEXTURE_2D, _colorTex, 0);
@@ -119,7 +119,7 @@ class FramebufferScene extends BaseScene
 		var depthStencilBuffer = _gl.createRenderbuffer();
 		_gl.bindRenderbuffer(_gl.RENDERBUFFER, depthStencilBuffer);
 		_gl.renderbufferStorage(_gl.RENDERBUFFER, _gl.DEPTH_STENCIL, 1280, 960);
-		_gl.bindRenderbuffer(_gl.RENDERBUFFER, 0);
+		_gl.bindRenderbuffer(_gl.RENDERBUFFER, null);
 		// Attach the depth/stencil buffer
 		_gl.framebufferRenderbuffer(_gl.FRAMEBUFFER, _gl.DEPTH_STENCIL_ATTACHMENT, _gl.RENDERBUFFER, depthStencilBuffer);
 
@@ -127,10 +127,10 @@ class FramebufferScene extends BaseScene
 		if (_gl.checkFramebufferStatus(_gl.FRAMEBUFFER) != _gl.FRAMEBUFFER_COMPLETE)
 		{
 			trace('framebuffer not complete');
-			_gl.bindFramebuffer(_gl.FRAMEBUFFER, 0);
+			_gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
 			return;
 		}
-		_gl.bindFramebuffer(_gl.FRAMEBUFFER, 0);
+		_gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
 	}
 
 	function close() {}
@@ -167,13 +167,15 @@ class FramebufferScene extends BaseScene
 			var rearFacing = _camera.getViewMatrix();
 			rearFacing.append(projectionTransform);
 			lookAtMat = rearFacing;
+
+			// Reset camera orientation
 			_camera.yaw -= 180;
 			_camera.calculateFront();
 		}
 		renderCubeCloud(cameraPos, lookAtMat, lightDirection);
 
 		// Revert to the original framebuffer
-		_gl.bindFramebuffer(_gl.FRAMEBUFFER, 0);
+		_gl.bindFramebuffer(_gl.FRAMEBUFFER, null);
 
 		_gl.disable(_gl.DEPTH_TEST);
 

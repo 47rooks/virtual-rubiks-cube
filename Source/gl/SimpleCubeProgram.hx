@@ -24,7 +24,7 @@ class SimpleCubeProgram extends Program
 	private var _programColorAttribute:Int;
 
 	// Context3D variables
-	private var _programImageUniform:Int;
+	private var _programImageUniform:GLUniformLocation;
 
 	/**
 	 * Constructor
@@ -63,7 +63,7 @@ class SimpleCubeProgram extends Program
 		_programModelMatrixUniform = _gl.getUniformLocation(_glProgram, "uModel");
 
 		// Face texture
-		_programImageUniform = _gl.getUniformLocation(_glProgram, "uImage0"); // "uImage0" uniform but Context3D just uses ints
+		_programImageUniform = _gl.getUniformLocation(_glProgram, "uImage0");
 	}
 
 	/**

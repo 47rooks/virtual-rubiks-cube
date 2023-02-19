@@ -369,7 +369,6 @@ abstract class BaseScene extends Sprite
 	 */
 	function gameInputOnChange(e:Event):Void
 	{
-		trace('evt target=${e.target}');
 		var gic = cast(e.target, GameInputControl);
 		trace('ctl=${gic.id} value = ${gic.value}');
 		switch (GamepadControl.fromStr(gic.id))

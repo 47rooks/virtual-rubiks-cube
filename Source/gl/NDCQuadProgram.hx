@@ -13,7 +13,7 @@ class NDCQuadProgram extends Program
 {
 	// GL variables
 	/* Image uniform used for the case where the cube face displays an image */
-	private var _programImageUniform:Int;
+	private var _programImageUniform:GLUniformLocation;
 
 	/* Vertex attributes for vertex and texture coordinates. */
 	private var _programVertexAttribute:Int;

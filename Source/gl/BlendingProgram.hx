@@ -17,7 +17,7 @@ class BlendingProgram extends Program
 	private var _programProjectionMatrixUniform:GLUniformLocation;
 
 	/* Image uniform used for the case where the cube face displays an image */
-	private var _programImageUniform:Int;
+	private var _programImageUniform:GLUniformLocation;
 
 	/* Vertex attributes for vertex coordinates, texture, color and normals. */
 	private var _programVertexAttribute:Int;
@@ -59,6 +59,8 @@ class BlendingProgram extends Program
 		// alpha threshold for discarding fragments
 		_programThresholdAlphaUniform = _gl.getUniformLocation(_glProgram, "uThresholdAlpha");
 		_programAlphaThresholdValueUniform = _gl.getUniformLocation(_glProgram, "uAlphaThresholdValue");
+
+		_programImageUniform = _gl.getUniformLocation(_glProgram, "texture1");
 	}
 
 	public function render(params:ProgramParameters)
