@@ -88,6 +88,24 @@ function createLookAtMatrix(cameraPos:Vector3D, target:Vector3D, up:Vector3D):Ma
 }
 
 /**
+ * Given an input matrix return copy of it without the translation portion.
+ * @param m matrix to remove the translation from. The matrix is expected to
+ * be row major (Matrix3D).
+ * @return Matrix3D
+ */
+function removeTranslation(m:Matrix3D):Matrix3D
+{
+	var rv = m.clone();
+
+	for (i in 0...16)
+	{
+		if ((i >= 12 && i <= 14))
+			rv.rawData[i] = 0.0;
+	}
+	return rv;
+}
+
+/**
  * Create an orthographic projection matrix for the specified frustum
  * 
  * @param left left extent of the near plane of the frustum

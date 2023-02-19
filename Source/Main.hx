@@ -13,6 +13,7 @@ import openfl.ui.Mouse;
 import scenes.BaseScene;
 import scenes.BasicsScene;
 import scenes.BlendingScene;
+import scenes.CubemapScene;
 import scenes.CullingScene;
 import scenes.FramebufferScene;
 import scenes.ModelLoadingScene;
@@ -130,6 +131,10 @@ class Main extends Sprite
 				case FRAMEBUFFER:
 					{
 						newScene = new FramebufferScene(_ui);
+					}
+				case CUBEMAP:
+					{
+						newScene = new CubemapScene(_ui);
 					}
 			}
 

@@ -49,7 +49,7 @@ class ModelLoading
 
 	public function update(elapsed:Float, ui:UI)
 	{
-		if (ui.sceneModelLoading)
+		if (ui.sceneModelLoading || ui.sceneCustom)
 		{
 			initialize(_gl);
 		}

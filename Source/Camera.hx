@@ -45,6 +45,9 @@ class Camera
 	var _cameraRight:Vector3D;
 	var _worldUp:Vector3D;
 
+	// Camera speed
+	public var move_speed:Float;
+
 	/**
 	 * Field of View, in degrees.
 	 */
@@ -68,6 +71,7 @@ class Camera
 		cameraFront = new Vector3D(0, 0, -1);
 		this.yaw = yaw;
 		_pitch = pitch;
+		move_speed = MOVE_SPEED;
 	}
 
 	/**
@@ -86,7 +90,7 @@ class Camera
 	 */
 	public function move(direction:CameraMovement, deltaTime:Float):Void
 	{
-		var speed = MOVE_SPEED * deltaTime;
+		var speed = move_speed * deltaTime;
 		switch (direction)
 		{
 			case FORWARD:

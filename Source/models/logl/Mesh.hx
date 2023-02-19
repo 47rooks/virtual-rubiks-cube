@@ -145,7 +145,6 @@ class Mesh
 			}
 		}
 		vbo = _gl.createBuffer();
-		vbo = _gl.createBuffer();
 		_gl.bindBuffer(_gl.ARRAY_BUFFER, vbo);
 		_gl.bufferData(_gl.ARRAY_BUFFER, vertexBufferData, _gl.STATIC_DRAW);
 		_gl.bindBuffer(_gl.ARRAY_BUFFER, null);
@@ -216,8 +215,8 @@ class Mesh
 		{
 			var modelMatrix = new Matrix3D();
 			modelMatrix.identity();
-			modelMatrix.append(params.modelMatrix);
 			modelMatrix.appendScale(64, 64, 64);
+			modelMatrix.append(params.modelMatrix);
 			var fullProjection = modelMatrix.clone();
 			fullProjection.append(params.projectionMatrix);
 			program.render({

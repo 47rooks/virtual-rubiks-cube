@@ -8,7 +8,7 @@ I've used the following artifacts under https://github.com/JoeyDeVries/LearnOpen
    * metal.png (unmodified) for the floor.
    * grass.png (unmodified) for the simple transparency example.
    * window.png (unmodified) for the blending example.
-
+   * right.jpg, left.jpg, top.jpg, bottom.jpg, front.jpg, back.jpg (all unmodified) in the Cubemap example.
 ## Berk Gedik, Survival Guitar Backpack
 
 Strictly the version included here is a derivative of the derivative DeVries created for Learn OpenGL. Regardless the original work was released under CC Attribution. It can be accessed here https://sketchfab.com/3d-models/survival-guitar-backpack-799f8c4511f84fab8c3f12887f7e6b36. My changes were to convert OBJ/MTL to GLTF2 format.

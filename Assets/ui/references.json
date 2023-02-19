@@ -68,5 +68,12 @@
         "learnopenglReferences": ["Ch 26"],
         "codeReferences": [],
         "uiReferences": [{"scene": "Framebuffer"}]
+    },
+    {
+        "title": "Cubemap",
+        "description": "This example shows the use of a cubemap to implement a skybox. It also shows how to create reflection and refraction in the scene.",
+        "learnopenglReferences": ["Ch 27"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Framebuffer"}]
     }
 ]

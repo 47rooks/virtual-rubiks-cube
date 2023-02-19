@@ -69,6 +69,9 @@
                                 <optionbox id="framebufferConfig" componentGroup="config"
                                     userData="Framebuffer"
                                     text="Framebuffer" />
+                                <optionbox id="cubemapConfig" componentGroup="config"
+                                    userData="Cubemap"
+                                    text="Cubemap" />
                             </group>
                         </vbox>
                     </frame>
@@ -438,7 +441,7 @@
                     </vbox>
                 </vbox>
                 <vbox id="cullingControls" text="Culling" styleName="controlBox"
-                    style="background-color: #ffffff;">
+                    style="background-color: #ffffff;" disabled="true">
                     <vbox width="100%">
                         <checkbox id="uiCullingEnabled"
                             text="Enable face culling" selected="true" />
@@ -506,6 +509,7 @@
                         </vbox>
                     </frame>
                 </vbox>
+                <import resource="cubemap.xml" />
                 <vbox id="sceneControls" text="Scene" styleName="sceneBox">
                     <group id="sceneGroup">
                         <vbox>

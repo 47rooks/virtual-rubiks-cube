@@ -19,6 +19,7 @@ enum SceneType
 	BLENDING;
 	CULLING;
 	FRAMEBUFFER;
+	CUBEMAP;
 }
 
 /**
@@ -199,6 +200,9 @@ class UI extends VBox
 	@:bind(uiSceneModelLoading.selected)
 	public var sceneModelLoading(default, null):Bool;
 
+	@:bind(uiSceneCustom.selected)
+	public var sceneCustom(default, null):Bool;
+
 	/**
 	 * The scene type to display. This identifies the scene class rather than what is
 	 * referred to as scene in the UI. This is slight confused and could do with 
@@ -231,6 +235,10 @@ class UI extends VBox
 		else if (framebufferConfig.selected)
 		{
 			return SceneType.FRAMEBUFFER;
+		}
+		else if (cubemapConfig.selected)
+		{
+			return SceneType.CUBEMAP;
 		}
 
 		// Default case just return the Rubik's cube
@@ -458,6 +466,15 @@ class UI extends VBox
 				title: "Framebuffer",
 				footer: "",
 				content: "An example of use of a framebuffer to render the scene to a texture which is then displayed on a quad, so you have the full scene and a smaller image of it."
+			}
+		});
+
+		ToolTipManager.instance.registerTooltip(cubemapConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Cubemap",
+				footer: "",
+				content: "An example of a skybox created with a cubemap."
 			}
 		});
 	}
@@ -738,6 +755,25 @@ class UI extends VBox
 
 	@:bind(framebufferConfig, UIEvent.CHANGE)
 	function framebufferConfigFn(_)
+	{
+		resetLightingValues(true, true, true, false);
+		resetMaterialsValues(true, true, true, false);
+		resetSceneValues(true, true, true, true, false);
+
+		// Enable light casters and cube cloud
+		uiLightCasters.selected = true;
+
+		// Materials
+		useLightMaps.selected = true;
+
+		// Scene
+		uiSceneCustom.selected = true;
+
+		uiMouseTargetsCube.selected = true;
+	}
+
+	@:bind(cubemapConfig, UIEvent.CHANGE)
+	function cubemapConfigFn(_)
 	{
 		resetLightingValues(true, true, true, false);
 		resetMaterialsValues(true, true, true, false);

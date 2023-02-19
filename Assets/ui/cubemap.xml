@@ -1,0 +1,19 @@
+<vbox id="cubemapControls" text="Cubemap" styleName="controlBox"
+    style="background-color: #ffffff;" height="100%"
+    width="100%">
+    <frame text="Environment Mapping" styleName="parameterTitle" height="100%"
+        width="100%">
+        <vbox>
+            <optionbox id="uiCubemapNoEnv"
+                componentGroup="cubemapGroup"
+                selected="true"
+                text="No Effect"></optionbox>
+            <optionbox id="uiCubemapReflection"
+                componentGroup="cubemapGroup"
+                text="Reflection"></optionbox>
+            <optionbox id="uiCubemapRefraction"
+                componentGroup="cubemapGroup"
+                text="Refraction"></optionbox>
+        </vbox>
+    </frame>
+</vbox>
