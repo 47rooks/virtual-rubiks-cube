@@ -3,7 +3,7 @@ package models.logl;
 import MatrixUtils.createTranslationMatrix;
 import gl.OpenGLUtils.glTextureFromImageClampToEdge;
 import gl.Program;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLTexture;
 import lime.utils.Assets;
 import models.logl.Mesh.Texture;
@@ -28,7 +28,7 @@ class QuadModel extends Model
 	 * @param texturePath an Assets path to the texture image file
 	 * @param modelMatrix the model matrix location and orienting this model in the world
 	 */
-	public function new(gl:WebGLRenderContext, texturePath:String = null, modelMatrix:Matrix3D = null, yFlipTexture:Bool = false)
+	public function new(gl:WebGL2RenderContext, texturePath:String = null, modelMatrix:Matrix3D = null, yFlipTexture:Bool = false)
 	{
 		super(gl);
 

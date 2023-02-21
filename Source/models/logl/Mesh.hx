@@ -2,7 +2,7 @@ package models.logl;
 
 import gl.Program;
 import haxe.ValueException;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.utils.Float32Array;
@@ -95,7 +95,7 @@ typedef Texture =
  */
 class Mesh
 {
-	var _gl:WebGLRenderContext;
+	var _gl:WebGL2RenderContext;
 	var _vertices:Array<Vertex>;
 	var _indices:Array<UnsignedInt>;
 	var _textures:Array<Texture>;
@@ -111,7 +111,7 @@ class Mesh
 	 * @param indices list of indices for indexed drawing
 	 * @param textures the textures used by the mesh
 	 */
-	public function new(gl:WebGLRenderContext, vertices:Array<Vertex>, indices:Array<UnsignedInt>, textures:Array<Texture>)
+	public function new(gl:WebGL2RenderContext, vertices:Array<Vertex>, indices:Array<UnsignedInt>, textures:Array<Texture>)
 	{
 		_gl = gl;
 		_vertices = vertices;

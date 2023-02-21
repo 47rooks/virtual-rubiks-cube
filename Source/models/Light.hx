@@ -3,7 +3,7 @@ package models;
 import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import gl.LightProgram;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLBuffer;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
@@ -40,7 +40,7 @@ class Light
 	 * @param color The color of the light
 	 * @param gl The WebGL render context
 	 */
-	public function new(position:Float32Array, color:RGBA, gl:WebGLRenderContext)
+	public function new(position:Float32Array, color:RGBA, gl:WebGL2RenderContext)
 	{
 		_x = position[0];
 		_y = position[1];
@@ -52,7 +52,7 @@ class Light
 		_program = new LightProgram(gl);
 	}
 
-	function initializeBuffers(gl:WebGLRenderContext):Void
+	function initializeBuffers(gl:WebGL2RenderContext):Void
 	{
 		var vertexData = new Float32Array([ // X, Y, Z     R, G, B, A
 			side / 2, // BTR   BACK
@@ -264,7 +264,7 @@ class Light
 	 * @param projectionMatrix projection matrix to apply
 	 * @param ui the UI instance
 	 */
-	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, ui:UI):Void
+	public function render(gl:WebGL2RenderContext, projectionMatrix:Matrix3D, ui:UI):Void
 	{
 		// Create model/view/projection matrix from components
 		var fullProjection = new Matrix3D();

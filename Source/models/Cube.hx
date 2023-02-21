@@ -1,7 +1,7 @@
 package models;
 
 import Color.WHITE;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.math.RGBA;
@@ -40,7 +40,7 @@ class Cube
 	 * @param gl The WebGL render context
 	 * @param color a ColorSpec specifying colors for each face. If null, all faces will be all white.
 	 */
-	public function new(gl:WebGLRenderContext, color:ColorSpec)
+	public function new(gl:WebGL2RenderContext, color:ColorSpec)
 	{
 		if (color != null)
 		{
@@ -60,7 +60,7 @@ class Cube
 		initializeBuffers(gl);
 	}
 
-	function initializeBuffers(gl:WebGLRenderContext):Void
+	function initializeBuffers(gl:WebGL2RenderContext):Void
 	{
 		final side = 1.0;
 

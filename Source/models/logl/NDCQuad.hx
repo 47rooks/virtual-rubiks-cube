@@ -1,7 +1,7 @@
 package models.logl;
 
 import gl.Program;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import models.logl.Mesh.UnsignedInt;
 import models.logl.Mesh.Vertex;
 
@@ -10,7 +10,7 @@ import models.logl.Mesh.Vertex;
  */
 class NDCQuad extends Model
 {
-	public function new(gl:WebGLRenderContext)
+	public function new(gl:WebGL2RenderContext)
 	{
 		super(gl);
 

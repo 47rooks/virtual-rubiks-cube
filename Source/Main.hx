@@ -1,7 +1,6 @@
 package;
 
 import haxe.ui.Toolkit;
-import lime.graphics.WebGLRenderContext;
 import openfl.Lib;
 import openfl.display.OpenGLRenderer;
 import openfl.display.Sprite;
@@ -176,7 +175,6 @@ class Main extends Sprite
 	{
 		var renderer:OpenGLRenderer = cast event.renderer;
 		renderer.setShader(null);
-		var gl:WebGLRenderContext = renderer.gl;
 
 		// Make sure that at least one update() call occurs before render. This prevents calling the render
 		// before the scene has had a chance to setup anything that is deferred to update().

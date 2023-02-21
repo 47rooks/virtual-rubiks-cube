@@ -1,6 +1,6 @@
 package lights;
 
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.utils.Float32Array;
 
 /**
@@ -15,7 +15,7 @@ class Flashlight
 
 	public var cutoff(default, null):Float;
 
-	public function new(initialPosition:Float32Array, initialDirection:Float32Array, initialCutoff:Float, gl:WebGLRenderContext)
+	public function new(initialPosition:Float32Array, initialDirection:Float32Array, initialCutoff:Float, gl:WebGL2RenderContext)
 	{
 		direction = initialDirection;
 		cutoff = initialCutoff;

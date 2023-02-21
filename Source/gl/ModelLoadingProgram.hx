@@ -3,7 +3,7 @@ package gl;
 import MatrixUtils.matrix3DToFloat32Array;
 import MatrixUtils.radians;
 import gl.Program.ProgramParameters;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.utils.Assets;
 import lime.utils.Float32Array;
@@ -72,7 +72,7 @@ class ModelLoadingProgram extends Program
 	 * Constructor
 	 * @param gl A WebGL render context
 	 */
-	public function new(gl:WebGLRenderContext):Void
+	public function new(gl:WebGL2RenderContext):Void
 	{
 		super(gl);
 

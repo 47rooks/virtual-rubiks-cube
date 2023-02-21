@@ -1,7 +1,7 @@
 package models.logl;
 
 import gl.Program;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import models.logl.Mesh.Texture;
 import models.logl.Mesh.UnsignedInt;
 import models.logl.Mesh.Vertex;
@@ -19,7 +19,7 @@ class SkyboxMesh extends Mesh
 	 * @param indices list of indices for indexed drawing
 	 * @param textures the textures used by the mesh
 	 */
-	public function new(gl:WebGLRenderContext, vertices:Array<Vertex>, indices:Array<UnsignedInt>, textures:Array<Texture>)
+	public function new(gl:WebGL2RenderContext, vertices:Array<Vertex>, indices:Array<UnsignedInt>, textures:Array<Texture>)
 	{
 		super(gl, vertices, indices, textures);
 	}

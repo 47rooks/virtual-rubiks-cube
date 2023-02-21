@@ -3,7 +3,7 @@ package gl;
 import gl.OpenGLUtils.glCreateProgram;
 import haxe.ValueException;
 import lights.PointLight;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLTexture;
@@ -112,7 +112,7 @@ typedef ProgramParameters =
 abstract class Program
 {
 	// Graphics contexts
-	var _gl:WebGLRenderContext;
+	var _gl:WebGL2RenderContext;
 
 	// GL variables
 	public var _glProgram:GLProgram;
@@ -121,7 +121,7 @@ abstract class Program
 	 * Constructor
 	 * @param gl A WebGL render context
 	 */
-	public function new(gl:WebGLRenderContext)
+	public function new(gl:WebGL2RenderContext)
 	{
 		_gl = gl;
 	}

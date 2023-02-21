@@ -1,7 +1,7 @@
 package models.logl;
 
 import gl.OpenGLUtils.glTextureFromImageClampToEdge;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.utils.Assets;
 import models.logl.Mesh.Texture;
 import models.logl.Mesh.UnsignedInt;
@@ -15,7 +15,7 @@ import models.logl.Model.MATERIAL_SPECULAR;
  */
 class CubeModel extends Model
 {
-	public function new(gl:WebGLRenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
+	public function new(gl:WebGL2RenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
 	{
 		super(gl, x, y, z);
 

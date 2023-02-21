@@ -7,7 +7,7 @@ import gltf.schema.TGLTFID;
 import gltf.types.MeshPrimitive;
 import gltf.types.Node;
 import haxe.io.Path;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.utils.Assets;
 import models.logl.Mesh.Texture;
 import models.logl.Mesh.UnsignedInt;
@@ -30,7 +30,7 @@ class GLTFModel extends Model
 	 * @param gltfFilePath an Assets path to the model JSON file
 	 * @param gltfBinFilePath an Assets path to the model .bin file
 	 */
-	public function new(gl:WebGLRenderContext, gltfFilePath:String, gltfBinFilePath:String)
+	public function new(gl:WebGL2RenderContext, gltfFilePath:String, gltfBinFilePath:String)
 	{
 		super(gl);
 

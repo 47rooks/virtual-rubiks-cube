@@ -4,7 +4,7 @@ import Camera.CameraLookTo;
 import Camera.CameraMovement;
 import MatrixUtils.createPerspectiveProjection;
 import haxe.ValueException;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.math.RGBA;
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -101,7 +101,7 @@ abstract class BaseScene extends Sprite
 	var _ui:UI;
 
 	// Graphics Contexts
-	var _gl:WebGLRenderContext;
+	var _gl:WebGL2RenderContext;
 
 	// Control target - which object is controlled by the inputs
 	var _controlTarget:ControlTarget;
@@ -190,7 +190,7 @@ abstract class BaseScene extends Sprite
 
 	public function sceneAddedToStage(e:Event):Void
 	{
-		_gl = stage.window.context.webgl;
+		_gl = cast(stage.window.context.webgl, WebGL2RenderContext);
 
 		// Register initial scene render completed handler
 		// addEventListener(SceneEvent.SCENE_INITIAL_RENDER_END, _ui.clearSceneLoadingMessage);

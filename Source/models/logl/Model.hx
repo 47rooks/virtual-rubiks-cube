@@ -2,7 +2,7 @@ package models.logl;
 
 import MatrixUtils.createTranslationMatrix;
 import gl.Program;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import models.logl.Mesh;
 
 final MATERIAL_DIFFUSE = "texture_diffuse";
@@ -13,7 +13,7 @@ final MATERIAL_SPECULAR = "texture_specular";
  */
 class Model
 {
-	var _gl:WebGLRenderContext;
+	var _gl:WebGL2RenderContext;
 	var _meshes:Array<Mesh>;
 	var _loadedTextures:Array<Texture>;
 
@@ -31,7 +31,7 @@ class Model
 	 * @param y y position coordinate
 	 * @param z z position coordinate
 	 */
-	public function new(gl:WebGLRenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
+	public function new(gl:WebGL2RenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
 	{
 		_gl = gl;
 		_x = x;

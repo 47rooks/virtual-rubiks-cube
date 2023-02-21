@@ -1,6 +1,6 @@
 # Using Lime to learn OpenGL
 
-OpenFL has a render context Context3D which provides limited access to OpenGL operations. There are limited options for binding GLSL variables. There is greater support for AGAL shaders but if you want to use GLSL and if you want more control over GL rendering another approach is required. It is possible to access and use the GL render context from lime. So all this code uses the Lime WebGLRenderContext to do OpenGL operations.
+OpenFL has a render context Context3D which provides limited access to OpenGL operations. There are limited options for binding GLSL variables. There is greater support for AGAL shaders but if you want to use GLSL and if you want more control over GL rendering another approach is required. It is possible to access and use the GL render context from lime. So all this code uses the Lime WebGL2RenderContext to do OpenGL operations.
 
 The UI is done in HaxeUI using the OpenFL backend. This means that there are two renderers in use.
 

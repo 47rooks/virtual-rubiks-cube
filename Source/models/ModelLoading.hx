@@ -2,7 +2,7 @@ package models;
 
 import gl.ModelLoadingProgram;
 import lights.PointLight;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.utils.Float32Array;
 import models.logl.GLTFModel;
 import models.logl.Model;
@@ -13,7 +13,7 @@ import ui.UI;
 class ModelLoading
 {
 	// Graphics Contexts
-	var _gl:WebGLRenderContext;
+	var _gl:WebGL2RenderContext;
 
 	var _initialized:Bool = false;
 
@@ -27,13 +27,13 @@ class ModelLoading
 
 	final ROTATION_SENSITIVTY = 0.5;
 
-	public function new(gl:WebGLRenderContext)
+	public function new(gl:WebGL2RenderContext)
 	{
 		_gl = gl;
 		_modelRotation = new Matrix3D();
 	}
 
-	private function initialize(gl:WebGLRenderContext):Void
+	private function initialize(gl:WebGL2RenderContext):Void
 	{
 		if (_initialized)
 		{
@@ -55,7 +55,7 @@ class ModelLoading
 		}
 	}
 
-	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, cameraPosition:Float32Array, pointLights:Array<PointLight>,
+	public function render(gl:WebGL2RenderContext, projectionMatrix:Matrix3D, cameraPosition:Float32Array, pointLights:Array<PointLight>,
 			flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
 		var lightDirection = new Float32Array([-0.2, -1.0, -0.3]);

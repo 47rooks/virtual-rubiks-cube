@@ -5,7 +5,7 @@
 package gl;
 
 import lime.graphics.Image;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLTexture;
@@ -18,7 +18,7 @@ import lime.graphics.opengl.GLTexture;
  * @param type type of shader to compile, usually gl.VERTEX_SHADER or gl.FRAGMENT_SHADER
  * @return GLShader
  */
-function glCreateShader(gl:WebGLRenderContext, source:String, type:Int):GLShader
+function glCreateShader(gl:WebGL2RenderContext, source:String, type:Int):GLShader
 {
 	var shader = gl.createShader(type);
 	gl.shaderSource(shader, source);
@@ -40,7 +40,7 @@ function glCreateShader(gl:WebGLRenderContext, source:String, type:Int):GLShader
  * @param fragmentSource fragment shader GLSL source
  * @return Null<GLProgram> the compiled and linked program or null if unsuccessful.
  */
-function glCreateProgram(gl:WebGLRenderContext, vertexSource:String, fragmentSource:String):Null<GLProgram>
+function glCreateProgram(gl:WebGL2RenderContext, vertexSource:String, fragmentSource:String):Null<GLProgram>
 {
 	var vs = glCreateShader(gl, vertexSource, gl.VERTEX_SHADER);
 	var fs = glCreateShader(gl, fragmentSource, gl.FRAGMENT_SHADER);
@@ -72,13 +72,13 @@ function glCreateProgram(gl:WebGLRenderContext, vertexSource:String, fragmentSou
 
 /**
  * Create a Lime texture from an Image.
- * @param gl the WebGLRenderContext
+ * @param gl the WebGL2RenderContext
  * @param image the Lime image to create the texture from
  * @param wrap_s OpenGL texture S wrap option
  * @param wrap_t  OpenGL texture T wrap option
  * @return GLTexture
  */
-function glTextureFromImage(gl:WebGLRenderContext, image:Image, wrap_s:Int, wrap_t:Int):GLTexture
+function glTextureFromImage(gl:WebGL2RenderContext, image:Image, wrap_s:Int, wrap_t:Int):GLTexture
 {
 	var glTexture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, glTexture);
@@ -93,22 +93,22 @@ function glTextureFromImage(gl:WebGLRenderContext, image:Image, wrap_s:Int, wrap
 
 /**
  * Helper function to create a texture repeating in both axes.
- * @param gl the WebGLRenderContext
+ * @param gl the WebGL2RenderContext
  * @param image the Lime image to create the texture from
  * @return GLTexture
  */
-function glTextureFromImageRepeat(gl:WebGLRenderContext, image:Image):GLTexture
+function glTextureFromImageRepeat(glctx:WebGL2RenderContext, image:Image):GLTexture
 {
-	return glTextureFromImage(gl, image, gl.REPEAT, gl.REPEAT);
+	return glTextureFromImage(glctx, image, glctx.REPEAT, glctx.REPEAT);
 }
 
 /**
  * Helper function to create a texture clamping to both axes.
- * @param gl the WebGLRenderContext 
+ * @param gl the WebGL2RenderContext 
  * @param image the Lime image to create the texture from
  * @return GLTexture
  */
-function glTextureFromImageClampToEdge(gl:WebGLRenderContext, image:Image):GLTexture
+function glTextureFromImageClampToEdge(gl:WebGL2RenderContext, image:Image):GLTexture
 {
 	return glTextureFromImage(gl, image, gl.CLAMP_TO_EDGE, gl.CLAMP_TO_EDGE);
 }

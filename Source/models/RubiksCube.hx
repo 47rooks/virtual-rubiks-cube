@@ -16,7 +16,7 @@ import gl.PhongMaterialsProgram;
 import gl.Program;
 import gl.SimpleCubeProgram;
 import lime.graphics.Image;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLTexture;
 import lime.math.RGBA;
 import lime.utils.Assets;
@@ -201,7 +201,7 @@ class RubiksCube
 	 * @param scene the owning Scene object, for event dispatch
 	 * @param gl The WebGL render context
 	 */
-	public function new(x:Int, y:Int, z:Int, scene:BasicsScene, gl:WebGLRenderContext)
+	public function new(x:Int, y:Int, z:Int, scene:BasicsScene, gl:WebGL2RenderContext)
 	{
 		SIDE = 64; // FIXME this may need to be a constructor parameter
 		START_OFFSET = -(ROW_LEN * SIDE) / 2 + SIDE / 2;
@@ -249,7 +249,7 @@ class RubiksCube
 	 * @param gl the GL render context to use
 	 * @return Map<String, CubeData>
 	 */
-	function createCubes(gl:WebGLRenderContext):Map<String, CubeData>
+	function createCubes(gl:WebGL2RenderContext):Map<String, CubeData>
 	{
 		var cubes = new Map<String, CubeData>();
 		for (i in 0...ROW_LEN)
@@ -860,7 +860,7 @@ class RubiksCube
 		return rv;
 	}
 
-	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array, cameraPosition:Float32Array,
+	public function render(gl:WebGL2RenderContext, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array, cameraPosition:Float32Array,
 			ui:UI):Void
 	{
 		if (ui.sceneRubiks)

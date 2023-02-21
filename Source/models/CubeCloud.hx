@@ -5,7 +5,7 @@ import MatrixUtils.createTranslationMatrix;
 import gl.LightCastersProgram;
 import gl.OpenGLUtils.glTextureFromImageClampToEdge;
 import lights.PointLight;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.graphics.opengl.GLTexture;
 import lime.math.RGBA;
 import lime.utils.Assets;
@@ -30,12 +30,12 @@ class CubeCloud
 
 	private var _specularLightMapTexture:GLTexture;
 
-	public function new(gl:WebGLRenderContext)
+	public function new(gl:WebGL2RenderContext)
 	{
 		initializeCubePositions(gl);
 	}
 
-	private function initializeCubePositions(gl:WebGLRenderContext):Void
+	private function initializeCubePositions(gl:WebGL2RenderContext):Void
 	{
 		_cubesPositions = new Array<Float32Array>();
 		_cubesPositions[0] = new Float32Array([0.0, 0.0, 0.0]);
@@ -63,7 +63,7 @@ class CubeCloud
 	public function update(elapsed:Float) {}
 
 	/* FIXME lightPosition is not used - remove */
-	public function render(gl:WebGLRenderContext, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array, cameraPosition:Float32Array,
+	public function render(gl:WebGL2RenderContext, projectionMatrix:Matrix3D, lightColor:RGBA, lightPosition:Float32Array, cameraPosition:Float32Array,
 			pointLights:Array<PointLight>, flashlightPos:Float32Array, flashlightDir:Float32Array, ui:UI):Void
 	{
 		var lightColorArr = new Float32Array([lightColor.r, lightColor.g, lightColor.b]);

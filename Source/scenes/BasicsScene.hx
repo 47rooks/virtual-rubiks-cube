@@ -5,6 +5,7 @@ import MatrixUtils.createPerspectiveProjection;
 import MatrixUtils.vector3DToFloat32Array;
 import lights.Flashlight;
 import lights.PointLight;
+import lime.graphics.WebGL2RenderContext;
 import lime.math.RGBA;
 import lime.utils.Float32Array;
 import models.CubeCloud;
@@ -12,6 +13,7 @@ import models.Light;
 import models.RubiksCube;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
+import openfl.events.RenderEvent;
 import openfl.geom.Vector3D;
 import openfl.ui.Keyboard;
 import scenes.BaseScene;
@@ -71,7 +73,7 @@ class BasicsScene extends BaseScene
 
 	function addedToStage(e:Event):Void
 	{
-		_gl = stage.window.context.webgl;
+		_gl = cast(stage.window.context.webgl, WebGL2RenderContext);
 
 		// Compute projection matrix
 		// Uncomment the createOrthoProjection() line and comment the next for an orthographic view.

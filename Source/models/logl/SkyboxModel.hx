@@ -1,7 +1,7 @@
 package models.logl;
 
 import gl.Program;
-import lime.graphics.WebGLRenderContext;
+import lime.graphics.WebGL2RenderContext;
 import lime.utils.Assets;
 import models.logl.Mesh.Texture;
 import models.logl.Mesh.UnsignedInt;
@@ -14,7 +14,7 @@ import models.logl.Model.MATERIAL_DIFFUSE;
  */
 class SkyboxModel extends Model
 {
-	public function new(gl:WebGLRenderContext)
+	public function new(gl:WebGL2RenderContext)
 	{
 		super(gl);
 
@@ -102,8 +102,7 @@ class SkyboxModel extends Model
 		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_MAG_FILTER, _gl.LINEAR);
 		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_WRAP_S, _gl.CLAMP_TO_EDGE);
 		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_WRAP_T, _gl.CLAMP_TO_EDGE);
-		// TEXTURE_WRAP_R is new in WebGL 2.0 so not supported with this context.
-		// _gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_WRAP_R, _gl.CLAMP_TO_EDGE);
+		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_WRAP_R, _gl.CLAMP_TO_EDGE);
 
 		_gl.activeTexture(0);
 
