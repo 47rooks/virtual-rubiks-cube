@@ -32,10 +32,10 @@ class CullingScene extends BaseScene
 
 	function addedToStage(e:Event)
 	{
-		_camera = new Camera(new Vector3D(0, 0, 200), new Vector3D(0, 1, 0));
+		_camera = new Camera(new Vector3D(0, 0, 3), new Vector3D(0, 1, 0));
 
 		// Compute projection matrix
-		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
+		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 0.1, 100);
 
 		_models.push(new CubeModel(_gl));
 

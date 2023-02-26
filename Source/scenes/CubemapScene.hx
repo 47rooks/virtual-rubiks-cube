@@ -67,10 +67,10 @@ class CubemapScene extends BaseScene
 
 	function addedToStage(e:Event)
 	{
-		_camera = new Camera(new Vector3D(0, 0, 100.0), new Vector3D(0, 1, 0));
+		_camera = new Camera(new Vector3D(0, 0, 2.0), new Vector3D(0, 1, 0));
 
 		// Compute projection matrix
-		projectionTransform = createPerspectiveProjection(_camera.fov, 640.0 / 480.0, 0.1, 1000.0);
+		projectionTransform = createPerspectiveProjection(_camera.fov, 640.0 / 480.0, 0.1, 100.0);
 
 		_skyboxTexture = loadSkyboxTexture();
 

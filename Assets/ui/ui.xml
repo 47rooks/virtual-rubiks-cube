@@ -441,7 +441,7 @@
                     </vbox>
                 </vbox>
                 <vbox id="cullingControls" text="Culling" styleName="controlBox"
-                    style="background-color: #ffffff;" disabled="true">
+                    style="background-color: #ffffff;">
                     <vbox width="100%">
                         <checkbox id="uiCullingEnabled"
                             text="Enable face culling" selected="true" />

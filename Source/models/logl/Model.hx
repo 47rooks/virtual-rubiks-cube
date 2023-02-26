@@ -1,5 +1,6 @@
 package models.logl;
 
+import MatrixUtils.createScaleMatrix;
 import MatrixUtils.createTranslationMatrix;
 import gl.Program;
 import lime.graphics.WebGL2RenderContext;
@@ -21,6 +22,7 @@ class Model
 	var _x:Float;
 	var _y:Float;
 	var _z:Float;
+	var _scale:Float;
 
 	var debugFlag = true;
 
@@ -30,13 +32,15 @@ class Model
 	 * @param x x position coordinate
 	 * @param y y position coordinate
 	 * @param z z position coordinate
+	 * @param scale the scaling factor
 	 */
-	public function new(gl:WebGL2RenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
+	public function new(gl:WebGL2RenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0, scale:Float = 1.0)
 	{
 		_gl = gl;
 		_x = x;
 		_y = y;
 		_z = z;
+		_scale = scale;
 		_meshes = new Array<Mesh>();
 		_loadedTextures = new Array<Texture>();
 	}
@@ -62,7 +66,8 @@ class Model
 	 */
 	public function draw(program:Program, params:ProgramParameters):Void
 	{
-		var matrix = createTranslationMatrix(_x, _y, _z);
+		var matrix = createScaleMatrix(_scale, _scale, _scale);
+		matrix.append(createTranslationMatrix(_x, _y, _z));
 		matrix.append(params.modelMatrix);
 		var meshParams = {
 			vbo: null,

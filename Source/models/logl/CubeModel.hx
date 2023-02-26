@@ -15,9 +15,9 @@ import models.logl.Model.MATERIAL_SPECULAR;
  */
 class CubeModel extends Model
 {
-	public function new(gl:WebGL2RenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0)
+	public function new(gl:WebGL2RenderContext, x:Float = 0.0, y:Float = 0.0, z:Float = 0.0, scale:Float = 1.0)
 	{
-		super(gl, x, y, z);
+		super(gl, x, y, z, scale);
 
 		final side = 1.0;
 

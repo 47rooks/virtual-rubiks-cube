@@ -1,7 +1,6 @@
 package scenes;
 
 import MatrixUtils.createPerspectiveProjection;
-import MatrixUtils.createRotationMatrix;
 import MatrixUtils.vector3DToFloat32Array;
 import gl.FramebufferProgram;
 import gl.ModelLoadingProgram;
@@ -70,9 +69,9 @@ class FramebufferScene extends BaseScene
 
 	function addedToStage(e:Event)
 	{
-		_camera = new Camera(new Vector3D(0, 0, 200), new Vector3D(0, 1, 0));
+		_camera = new Camera(new Vector3D(0, 0, 3), new Vector3D(0, 1, 0));
 		// Compute projection matrix
-		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
+		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 0.1, 100);
 
 		for (l in _locs)
 		{

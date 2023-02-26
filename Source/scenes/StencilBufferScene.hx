@@ -13,6 +13,7 @@ import models.logl.CubeModel;
 import models.logl.Model;
 import models.logl.PlaneModel;
 import openfl.events.Event;
+import openfl.geom.Matrix3D;
 import openfl.geom.Vector3D;
 import ui.UI;
 
@@ -28,6 +29,9 @@ class StencilBufferScene extends BaseScene
 
 	// Flashlight
 	var _flashlight:Flashlight;
+
+	// Scaling constant for cubes
+	final MODEL_SCALE = 64.0;
 
 	var _models:Array<Model>;
 	var _modelLoadingProgram:ModelLoadingProgram;
@@ -51,9 +55,9 @@ class StencilBufferScene extends BaseScene
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
 		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
 
-		_models.push(new CubeModel(_gl));
-		_models.push(new CubeModel(_gl, 0.5, 0.25, 0.5));
-		_models.push(new CubeModel(_gl, -0.75, 0.25, 0.5));
+		_models.push(new CubeModel(_gl, 0.0, 0.0, 0.0, MODEL_SCALE));
+		_models.push(new CubeModel(_gl, MODEL_SCALE * 0.5, MODEL_SCALE * 0.25, MODEL_SCALE * 0.5, MODEL_SCALE));
+		_models.push(new CubeModel(_gl, MODEL_SCALE * -0.75, MODEL_SCALE * 0.25, MODEL_SCALE * 0.5, MODEL_SCALE));
 		_models.push(new PlaneModel(_gl));
 
 		_modelLoadingProgram = new ModelLoadingProgram(_gl);
@@ -90,8 +94,10 @@ class StencilBufferScene extends BaseScene
 		// Draw floor before enabling the stencil buffer. If the floor were to write to the stencil
 		// buffer the outlining would not appear when looking down on the scene from above.
 		// Offset floor a little downward to prevent z-fighting between the bottom of the cubes and the floor.
-		var translation = createTranslationMatrix(0.0, -0.001, 0.0);
-		translation.append(_sceneRotation);
+		var modelMatrix = new Matrix3D();
+		modelMatrix.appendScale(64.0, 64.0, 64.0);
+		modelMatrix.append(createTranslationMatrix(0.0, -0.001, 0.0));
+		modelMatrix.append(_sceneRotation);
 
 		_models[3].draw(_modelLoadingProgram, {
 			vbo: null,
@@ -100,7 +106,7 @@ class StencilBufferScene extends BaseScene
 			numIndexes: 0,
 			indexBufferData: null,
 			textures: null,
-			modelMatrix: translation,
+			modelMatrix: modelMatrix,
 			projectionMatrix: lookAtMat,
 			cameraPosition: cameraPos,
 			lightColor: null,

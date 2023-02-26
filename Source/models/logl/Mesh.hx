@@ -7,7 +7,6 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.utils.Float32Array;
 import lime.utils.Int32Array;
-import openfl.geom.Matrix3D;
 
 /**
  * An unsigned integer implementation which throws an exception rather
@@ -213,11 +212,7 @@ class Mesh
 		// FIXME Hacked in passing the textures. Not generalized
 		if (params.modelMatrix != null)
 		{
-			var modelMatrix = new Matrix3D();
-			modelMatrix.identity();
-			modelMatrix.appendScale(64, 64, 64);
-			modelMatrix.append(params.modelMatrix);
-			var fullProjection = modelMatrix.clone();
+			var fullProjection = params.modelMatrix.clone();
 			fullProjection.append(params.projectionMatrix);
 			program.render({
 				vbo: vbo,
@@ -226,7 +221,7 @@ class Mesh
 				numIndexes: _indices.length,
 				indexBufferData: null,
 				textures: params.textures != null ? params.textures : _glTextures,
-				modelMatrix: modelMatrix,
+				modelMatrix: params.modelMatrix,
 				projectionMatrix: fullProjection,
 				cameraPosition: params.cameraPosition,
 				lightColor: null,
