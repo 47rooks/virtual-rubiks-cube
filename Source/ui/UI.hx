@@ -351,6 +351,13 @@ class UI extends VBox
 	@:bind(uiEdgeDetection.selected)
 	public var edgeDetection(default, null):Bool;
 
+	// Cubemap properties
+	@:bind(uiCubemapReflection.selected)
+	public var cubemapReflection(default, null):Bool;
+
+	@:bind(uiCubemapRefraction.selected)
+	public var cubemapRefraction(default, null):Bool;
+
 	public function new()
 	{
 		super();
@@ -474,7 +481,7 @@ class UI extends VBox
 			tipData: {
 				title: "Cubemap",
 				footer: "",
-				content: "An example of a skybox created with a cubemap."
+				content: "An example of a skybox created with a cubemap. Environment mapping creating reflection and refraaction is also demonstrated."
 			}
 		});
 	}

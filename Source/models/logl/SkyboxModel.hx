@@ -2,6 +2,7 @@ package models.logl;
 
 import gl.Program;
 import lime.graphics.WebGL2RenderContext;
+import lime.graphics.opengl.GLTexture;
 import lime.utils.Assets;
 import models.logl.Mesh.Texture;
 import models.logl.Mesh.UnsignedInt;
@@ -14,7 +15,7 @@ import models.logl.Model.MATERIAL_DIFFUSE;
  */
 class SkyboxModel extends Model
 {
-	public function new(gl:WebGL2RenderContext)
+	public function new(gl:WebGL2RenderContext, skyboxTexture:GLTexture)
 	{
 		super(gl);
 
@@ -74,47 +75,16 @@ class SkyboxModel extends Model
 			21, 23, 22
 		];
         // @formatter:on
-		_meshes.push(new SkyboxMesh(_gl, vertices, indices, loadSkyboxTexture()));
-	}
-
-	private function loadSkyboxTexture():Array<Texture>
-	{
-		var rv = new Array<Texture>();
-		var faces = [
-			"assets/skybox/right.jpg",
-			"assets/skybox/left.jpg",
-			"assets/skybox/top.jpg",
-			"assets/skybox/bottom.jpg",
-			"assets/skybox/front.jpg",
-			"assets/skybox/back.jpg"
-		];
-
-		_gl.activeTexture(_gl.TEXTURE0);
-		var tex = _gl.createTexture();
-		_gl.bindTexture(_gl.TEXTURE_CUBE_MAP, tex);
-		for (i => path in faces)
-		{
-			var img = Assets.getImage(path);
-			_gl.texImage2D(_gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, _gl.RGBA, img.buffer.width, img.buffer.height, 0, _gl.RGBA, _gl.UNSIGNED_BYTE,
-				img.buffer.data);
-		}
-		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_MIN_FILTER, _gl.LINEAR);
-		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_MAG_FILTER, _gl.LINEAR);
-		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_WRAP_S, _gl.CLAMP_TO_EDGE);
-		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_WRAP_T, _gl.CLAMP_TO_EDGE);
-		_gl.texParameteri(_gl.TEXTURE_CUBE_MAP, _gl.TEXTURE_WRAP_R, _gl.CLAMP_TO_EDGE);
-
-		_gl.activeTexture(0);
-
-		rv.push({
+		var texArr = new Array<Texture>();
+		texArr.push({
 			textureId: 0,
 			textureType: MATERIAL_DIFFUSE,
 			texturePath: 'skybox',
-			texture: tex
+			texture: skyboxTexture
 		});
-
-		return rv;
+		_meshes.push(new SkyboxMesh(_gl, vertices, indices, texArr));
 	}
+
 
 	override public function draw(program:Program, params:ProgramParameters):Void
 	{

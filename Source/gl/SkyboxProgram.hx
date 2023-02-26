@@ -9,6 +9,7 @@ import lime.utils.Float32Array;
 
 /**
  * This program renders a skybox.
+ * The cubemap texture must be bound to TEXTURE0.
  */
 class SkyboxProgram extends Program
 {
@@ -51,13 +52,8 @@ class SkyboxProgram extends Program
 
 	public function render(params:ProgramParameters)
 	{
-		// Bind cubemap texture
-		// trace('text=${params.textures[0]}');
+		// Bind cubemap texture - skybox must be bind to TEXTURE0.
 		_gl.uniform1i(_programTextureUniform, 0);
-		_gl.activeTexture(_gl.TEXTURE0);
-		_gl.bindTexture(_gl.TEXTURE_CUBE_MAP, params.textures[0]);
-		// _gl.bindTexture(_gl.TEXTURE_2D, params.textures[0]);
-		_gl.activeTexture(0);
 
 		// Add projection and pass in to shader
 		_gl.uniformMatrix4fv(_programProjectionMatrixUniform, false, matrix3DToFloat32Array(params.projectionMatrix));

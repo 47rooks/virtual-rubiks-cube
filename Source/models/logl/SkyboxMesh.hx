@@ -1,5 +1,6 @@
 package models.logl;
 
+import gl.Program.ProgramParameters;
 import gl.Program;
 import lime.graphics.WebGL2RenderContext;
 import models.logl.Mesh.Texture;
