@@ -703,84 +703,12 @@ class UI extends VBox
 		uiMouseTargetsCube.selected = false;
 	}
 
-	@:bind(stencilBufferConfig, UIEvent.CHANGE)
-	function stencilBufferConfigFn(_)
-	{
-		resetLightingValues(true, true, true, false);
-		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, true, true, true, false);
-
-		// Enable light casters and cube cloud
-		uiLightCasters.selected = true;
-
-		// Materials
-		useLightMaps.selected = true;
-
-		// Scene
-		uiSceneCustom.selected = true;
-
-		uiMouseTargetsCube.selected = true;
-	}
-
-	@:bind(blendingConfig, UIEvent.CHANGE)
-	function blendingConfigFn(_)
-	{
-		resetLightingValues(true, true, true, false);
-		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, true, true, true, false);
-
-		// Enable light casters and cube cloud
-		uiLightCasters.selected = true;
-
-		// Materials
-		useLightMaps.selected = true;
-
-		// Scene
-		uiSceneCustom.selected = true;
-
-		uiMouseTargetsCube.selected = true;
-	}
-
-	@:bind(cullingConfig, UIEvent.CHANGE)
-	function cullingConfigFn(_)
-	{
-		resetLightingValues(true, true, true, false);
-		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, true, true, true, false);
-
-		// Enable light casters and cube cloud
-		uiLightCasters.selected = true;
-
-		// Materials
-		useLightMaps.selected = true;
-
-		// Scene
-		uiSceneCustom.selected = true;
-
-		uiMouseTargetsCube.selected = true;
-	}
-
-	@:bind(framebufferConfig, UIEvent.CHANGE)
-	function framebufferConfigFn(_)
-	{
-		resetLightingValues(true, true, true, false);
-		resetMaterialsValues(true, true, true, false);
-		resetSceneValues(true, true, true, true, false);
-
-		// Enable light casters and cube cloud
-		uiLightCasters.selected = true;
-
-		// Materials
-		useLightMaps.selected = true;
-
-		// Scene
-		uiSceneCustom.selected = true;
-
-		uiMouseTargetsCube.selected = true;
-	}
-
 	@:bind(cubemapConfig, UIEvent.CHANGE)
-	function cubemapConfigFn(_)
+	@:bind(framebufferConfig, UIEvent.CHANGE)
+	@:bind(cullingConfig, UIEvent.CHANGE)
+	@:bind(blendingConfig, UIEvent.CHANGE)
+	@:bind(stencilBufferConfig, UIEvent.CHANGE)
+	function customSceneConfigFn(_)
 	{
 		resetLightingValues(true, true, true, false);
 		resetMaterialsValues(true, true, true, false);
