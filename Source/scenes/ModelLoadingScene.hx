@@ -61,7 +61,7 @@ class ModelLoadingScene extends BaseScene
 
 	function addedToStage(e:Event)
 	{
-		_camera = new Camera(new Vector3D(0, 0, 500), new Vector3D(0, 1, 0));
+		_camera = new Camera(new Vector3D(0, 0, 5.0), new Vector3D(0, 1, 0));
 
 		// Compute projection matrix
 		// Uncomment the createOrthoProjection() line and comment the next for an orthographic view.
@@ -69,7 +69,7 @@ class ModelLoadingScene extends BaseScene
 		//      recreates the projection matrix and only supports doing so for the
 		//      perspective projection. See mouseOnWheel().
 		// projectionTransform = createOrthoProjection(-300.0, 300.0, 300.0, -300.0, 100, 1000);
-		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 100, 1000);
+		projectionTransform = createPerspectiveProjection(_camera.fov, 640 / 480, 0.1, 100);
 
 		_modelLoading = new ModelLoading(_gl);
 
