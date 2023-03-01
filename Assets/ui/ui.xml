@@ -72,6 +72,10 @@
                                 <optionbox id="cubemapConfig" componentGroup="config"
                                     userData="Cubemap"
                                     text="Cubemap" />
+                                <optionbox id="instancingConfig"
+                                    componentGroup="config"
+                                    userData="Instancing"
+                                    text="Instancing" if="html5" />
                             </group>
                         </vbox>
                     </frame>

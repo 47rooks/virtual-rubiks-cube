@@ -18,6 +18,9 @@ import scenes.FramebufferScene;
 import scenes.ModelLoadingScene;
 import scenes.StencilBufferScene;
 import ui.UI;
+#if html5
+import scenes.InstancingScene;
+#end
 
 /**
  * This is the main class which sets up both the 3D scene and the 2D UI objects.
@@ -135,6 +138,12 @@ class Main extends Sprite
 					{
 						newScene = new CubemapScene(_ui);
 					}
+				#if html5
+				case INSTANCING:
+					{
+						newScene = new InstancingScene(_ui);
+					}
+				#end
 			}
 
 			// Clean up and remove the old scene

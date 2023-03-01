@@ -74,6 +74,13 @@
         "description": "This example shows the use of a cubemap to implement a skybox. It also shows how to use environment mapping to create reflection and refraction in the scene.",
         "learnopenglReferences": ["Ch 27"],
         "codeReferences": [],
-        "uiReferences": [{"scene": "Framebuffer"}]
+        "uiReferences": [{"scene": "Cubemap"}]
+    },
+    {
+        "title": "Instancing",
+        "description": "These examples show the use of instancing.\n\nThis is only supported on some ports where Lime supports GLES3 - HTML5 for example, not Windows.",
+        "learnopenglReferences": ["Ch 31"],
+        "codeReferences": [],
+        "uiReferences": [{"scene": "Custom"}]
     }
 ]

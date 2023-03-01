@@ -20,6 +20,9 @@ enum SceneType
 	CULLING;
 	FRAMEBUFFER;
 	CUBEMAP;
+	#if html5
+	INSTANCING;
+	#end
 }
 
 /**
@@ -240,6 +243,12 @@ class UI extends VBox
 		{
 			return SceneType.CUBEMAP;
 		}
+		#if html5
+		else if (instancingConfig.selected)
+		{
+			return SceneType.INSTANCING;
+		}
+		#end
 
 		// Default case just return the Rubik's cube
 		return SceneType.BASIC;
@@ -484,6 +493,17 @@ class UI extends VBox
 				content: "An example of a skybox created with a cubemap. Environment mapping creating reflection and refraaction is also demonstrated."
 			}
 		});
+
+		#if html5
+		ToolTipManager.instance.registerTooltip(instancingConfig, {
+			renderer: tooltipRenderer,
+			tipData: {
+				title: "Instancing",
+				footer: "",
+				content: "An example of instancing. The code in this example also uses VAOs rather than just VBOs with attribute pointer set on every draw. Both instancing and VAOs are supported only in GLES3 and thus not available on all targets."
+			}
+		});
+		#end
 	}
 
 	public function toggleVisibility():Void
@@ -703,6 +723,9 @@ class UI extends VBox
 		uiMouseTargetsCube.selected = false;
 	}
 
+	#if html5
+	@:bind(instancingConfig, UIEvent.CHANGE)
+	#end
 	@:bind(cubemapConfig, UIEvent.CHANGE)
 	@:bind(framebufferConfig, UIEvent.CHANGE)
 	@:bind(cullingConfig, UIEvent.CHANGE)

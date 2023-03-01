@@ -1,0 +1,22 @@
+<!-- 
+    Instancing demo UI component.
+-->
+<vbox id="instancingControls" text="Cubemap" styleName="controlBox"
+    style="background-color: #ffffff;" height="100%"
+    width="100%">
+    <frame text="Instancing" styleName="parameterTitle" height="100%"
+        width="100%">
+        <vbox width="100%">
+            <optionbox id="uiInstancingHouses"
+                componentGroup="instancingGroup"
+                selected="true"
+                text="House"></optionbox>
+            <optionbox id="uiInstancingExplode"
+                componentGroup="instancingGroup"
+                text="Exploding objects"></optionbox>
+            <optionbox id="uiInstancingNormals"
+                componentGroup="instancingGroup"
+                text="Visualize normals"></optionbox>
+        </vbox>
+    </frame>
+</vbox>
