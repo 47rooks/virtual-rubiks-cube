@@ -367,6 +367,16 @@ class UI extends VBox
 	@:bind(uiCubemapRefraction.selected)
 	public var cubemapRefraction(default, null):Bool;
 
+	// Instancing properties
+	@:bind(uiInstancingQuads.selected)
+	public var instancingQuads(default, null):Bool;
+
+	@:bind(uiQuadsSameSize.selected)
+	public var quadsSameSize(default, null):Bool;
+
+	@:bind(uiQuadsDiminishing.selected)
+	public var quadsDiminishing(default, null):Bool;
+
 	public function new()
 	{
 		super();

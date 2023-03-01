@@ -111,6 +111,15 @@ class InstancingScene extends BaseScene
 	{
 		_instSquaresProgram.use();
 
+		if (_ui.quadsDiminishing)
+		{
+			_instSquaresProgram.setBool('quadsDiminishing', true);
+		}
+		else
+		{
+			_instSquaresProgram.setBool('quadsDiminishing', false);
+		}
+
 		_gl.bindVertexArray(_vao);
 
 		_gl.drawArraysInstanced(_gl.TRIANGLES, 0, 6, 100);

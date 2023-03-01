@@ -13,8 +13,14 @@ layout (location = 2) in vec2 offset;
 out vec3 fColor;
 
 uniform vec2 offsets[100];
+/* Set true to have quads size depend upon the instance ID */
+uniform bool quadsDiminishing;
 
 void main() {
-    gl_Position = vec4(aPos + offset, 0.0, 1.0);
+    vec2 pos = aPos;
+    if (quadsDiminishing) {
+        pos = aPos * float(gl_InstanceID) / 100.0;
+    }
+    gl_Position = vec4(pos + offset, 0.0, 1.0);
     fColor = aColor;
 }

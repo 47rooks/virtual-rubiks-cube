@@ -514,6 +514,7 @@
                     </frame>
                 </vbox>
                 <import resource="cubemap.xml" />
+                <import resource="instancing.xml" />
                 <vbox id="sceneControls" text="Scene" styleName="sceneBox">
                     <group id="sceneGroup">
                         <vbox>

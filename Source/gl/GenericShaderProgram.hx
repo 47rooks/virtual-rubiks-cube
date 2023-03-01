@@ -53,4 +53,10 @@ class GenericShaderProgram
 		var loc = _gl.getUniformLocation(_glProgram, name);
 		_gl.uniform2fv(loc, value, 0);
 	}
+
+	public function setBool(name:String, value:Bool):Void
+	{
+		var loc = _gl.getUniformLocation(_glProgram, name);
+		_gl.uniform1i(loc, value == true ? 1 : 0);
+	}
 }

@@ -7,16 +7,24 @@
     <frame text="Instancing" styleName="parameterTitle" height="100%"
         width="100%">
         <vbox width="100%">
-            <optionbox id="uiInstancingHouses"
+            <optionbox id="uiInstancingQuads"
                 componentGroup="instancingGroup"
                 selected="true"
-                text="House"></optionbox>
-            <optionbox id="uiInstancingExplode"
+                text="Instanced quads"></optionbox>
+            <frame text="Quad sizing" styleName="parameterTitle"
+                disabled="${!uiInstancingQuads.selected}" hidden="${!uiInstancingQuads.selected}">
+                <vbox>
+                    <optionbox id="uiQuadsSameSize"
+                        componentGroup="quadsGroup"
+                        text="Quads all the same size" selected="true"></optionbox>
+                    <optionbox id="uiQuadsDiminishing"
+                        componentGroup="quadsGroup"
+                        text="Quads diminishing in size"></optionbox>
+                </vbox>
+            </frame>
+            <optionbox id="uiInstancingAsteroids"
                 componentGroup="instancingGroup"
-                text="Exploding objects"></optionbox>
-            <optionbox id="uiInstancingNormals"
-                componentGroup="instancingGroup"
-                text="Visualize normals"></optionbox>
+                text="Asteroid field"></optionbox>
         </vbox>
     </frame>
 </vbox>
